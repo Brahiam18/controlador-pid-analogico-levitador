@@ -1,0 +1,22 @@
+etapa,nodo,caso_error,v_sensor_V,teorico_V,practico_V,error_relativo_pct,notas
+Diferenciador,Salida U1,minimo,0,-2,,,
+Diferenciador,Salida U1,medio,2,0,,,
+Diferenciador,Salida U1,maximo,5,3,,,
+Proporcional (P),Salida U2,minimo,0,4.38,,,
+Proporcional (P),Salida U2,medio,2,-0.01,,,
+Proporcional (P),Salida U2,maximo,5,-6.6,,,
+Integral (I),Salida U3,minimo,0,9.14,,,
+Integral (I),Salida U3,medio,2,0.07,,,
+Integral (I),Salida U3,maximo,5,-13.5,,,
+Derivativo (D),Salida U4,minimo,0,-0.00324,,,"teórico en V (-3.24 mV)"
+Derivativo (D),Salida U4,medio,2,-0.00324,,,"teórico en V (-3.24 mV)"
+Derivativo (D),Salida U4,maximo,5,-0.0033,,,"teórico en V (-3.3 mV)"
+Sumador,Salida U5,minimo,0,-0.35,,,
+Sumador,Salida U5,medio,2,1,,,
+Sumador,Salida U5,maximo,5,3.01,,,
+Divisor Vref,Salida U6,minimo,0,2,,,
+Divisor Vref,Salida U6,medio,2,2,,,
+Divisor Vref,Salida U6,maximo,5,2,,,
+Divisor Voff,Salida U7,minimo,0,-10.1,,,
+Divisor Voff,Salida U7,medio,2,-10.1,,,
+Divisor Voff,Salida U7,maximo,5,-10.1,,,
