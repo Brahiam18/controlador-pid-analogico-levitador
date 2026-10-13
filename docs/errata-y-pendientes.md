@@ -1,6 +1,6 @@
 # Errata y pendientes del informe
 
-Revisión de consistencia del informe `Informe_PID_Analogico_Levitador.pdf` frente a la nomenclatura vigente ([`nomenclatura.md`](nomenclatura.md)). **El PDF y el código fuente de este repositorio se conservan tal como fueron entregados**; esta lista sirve para preparar una versión 1.1.
+Revisión de consistencia del informe `Informe_PID_Analogico_Levitador.pdf` frente a la nomenclatura vigente ([`nomenclatura.md`](nomenclatura.md)). **El texto del informe se conserva como fue entregado** (solo se actualizaron la Tabla I con las mediciones prácticas y las fotografías del montaje); esta lista sirve para preparar una versión 1.1.
 
 Las referencias de sección, ecuación y figura son las del PDF.
 
@@ -32,10 +32,12 @@ Las referencias de sección, ecuación y figura son las del PDF.
 | 12 | Figs. 7 y 8 | Ambas tienen el pie "Esquemático en Proteus del controlador PID completo", pero muestran los buffers de `V_off` (U7) y `V_ref` (U6). | Cambiar los pies a "Divisor y buffer de `V_off`" y "Divisor y buffer de `V_ref`". |
 | 13 | Varios | Ortografía y redacción: "proteous", "Esquematico", "Ecuacion", "practicos", "encuetran", "apartado IV" (es la Sección IV). En IV-A, "ganancia (la cual era de 23.24 V)" mezcla ganancia y tensión (es la salida del sumador). | Revisar. |
 
-## D. Pendientes de datos del laboratorio
+## D. Estado de los datos del laboratorio
 
-- [ ] **Tabla I:** la columna "Práctico" tiene un valor provisional (1 V) en todas las celdas. Reemplazar por las mediciones reales (ver [`../datos/mediciones_practicas.csv`](../datos/mediciones_practicas.csv)).
+- [x] **Tabla I:** la columna "Práctico" ya contiene las mediciones reales (ver [`../datos/mediciones_practicas.csv`](../datos/mediciones_practicas.csv)).
+- [x] **Fotografías del montaje:** Figs. 10 a 12 del informe (ver [`../informe/figuras/pruebas/`](../informe/figuras/pruebas/)).
 - [ ] **Tabla III:** `R14` figura como "falta medir".
-- [ ] **Imágenes de pruebas prácticas:** fotografía del montaje y las tomas de voltaje por etapa (ver [`../informe/figuras/pruebas/`](../informe/figuras/pruebas/)).
-- [ ] **Apéndice, Tabla IV:** actualizar el índice de anexos cuando se agreguen las nuevas imágenes (las filas 2 y 14–19 siguen reservadas).
+- [ ] **Texto de la Sección V-B:** sigue sin comentar los resultados de la Tabla I (en especial, la etapa integral con error mínimo y la derivativa con error máximo).
+- [ ] **Capturas de osciloscopio:** repetir con escala legible (500 mV/div o menos) y señal de 10 Hz, 1 Vpp, offset 2 V.
+- [ ] **Apéndice, Tabla IV:** actualizar el índice de anexos si se agregan nuevas imágenes (las filas 2 y 14–19 siguen reservadas).
 - [ ] Archivo del proyecto de **Proteus** (`.pdsprj`), aún no incluido en el repositorio.
