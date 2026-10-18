@@ -16,7 +16,7 @@ def make_parts(seed):
     parts['J_PWR'].r=0; parts['J_PWR'].x=6*PITCH; parts['J_PWR'].y=(HCELLS-2)*PITCH
     free=[r for r in parts if r not in('J_IN','J_OUT','J_PWR')]
     for r in free:
-        p=parts[r]; p.r=rng.choice([0,1,2,3]) if p.kind!='DIP8' else 0
+        p=parts[r]; p.r=rng.choice([0,1,2,3]) if not p.kind.startswith('DIP') else 0
         p.x=rng.randint(4,WCELLS-8)*PITCH; p.y=rng.randint(4,HCELLS-5)*PITCH
     return parts,free
 
@@ -53,7 +53,7 @@ def anneal(seed,iters=60000):
         r=rng.choice(free); p=parts[r]; old=(p.x,p.y,p.r)
         m=rng.random()
         if m<0.6: p.x+=rng.choice([-3,-2,-1,1,2,3])*PITCH if rng.random()<.5 else 0; p.y+=rng.choice([-3,-2,-1,1,2,3])*PITCH if rng.random()<.5 else 0
-        elif m<0.8 and p.kind!='DIP8': p.r=(p.r+rng.choice([1,2,3]))%4
+        elif m<0.8 and not p.kind.startswith('DIP'): p.r=(p.r+rng.choice([1,2,3]))%4
         else: p.x=rng.randint(3,WCELLS-3)*PITCH; p.y=rng.randint(3,HCELLS-3)*PITCH
         nc=cost(parts,N.NETS)
         if nc<=cur or rng.random()<math.exp((cur-nc)/T): cur=nc

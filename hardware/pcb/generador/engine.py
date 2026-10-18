@@ -14,6 +14,10 @@ def fp_pads(kind):
         pads=[(str(n),0,-(n-1)*PITCH) for n in range(1,5)]
         pads+=[(str(n),7.62,-(8-n)*PITCH) for n in range(5,9)]
         return pads
+    if kind=='DIP14':
+        pads=[(str(n),0,-(n-1)*PITCH) for n in range(1,8)]
+        pads+=[(str(n),7.62,-(14-n)*PITCH) for n in range(8,15)]
+        return pads
     if kind=='RES': return [('1',0,0),('2',7.62,0)]
     if kind=='CAP': return [('1',0,0),('2',5.08,0)]
     if kind=='POT': return [('1',0,0),('2',5.08,0),('3',10.16,0)]

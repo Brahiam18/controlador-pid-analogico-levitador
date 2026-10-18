@@ -61,7 +61,7 @@ def assembly_pdf(path,parts,routes,W,H,nets):
         loc=ref.split('_',1)[1]; val=N.PARTS[loc][1]
         x0,y0,x1,y1=p.box()
         pads=p.pads(); pts=list(pads.values())
-        if p.kind=='DIP8':
+        if p.kind.startswith('DIP'):
             xs=[a for a,b in pts]; ys=[b for a,b in pts]
             ax.add_patch(Rectangle((min(xs)+1.3,min(ys)-1.3),max(xs)-min(xs)-2.6,max(ys)-min(ys)+2.6,fc='#222',ec='k',lw=0.5,zorder=2,alpha=0.85) if p.r%2==0 else Rectangle((min(xs)-1.3,min(ys)+1.3),max(xs)-min(xs)+2.6,max(ys)-min(ys)-2.6,fc='#222',ec='k',lw=0.5,zorder=2,alpha=0.85))
         elif p.kind=='RES':
@@ -78,7 +78,7 @@ def assembly_pdf(path,parts,routes,W,H,nets):
             ax.add_patch(Circle((x,y),PAD_D/2,fc='#d4a017',ec='k',lw=0.3,zorder=3))
             ax.add_patch(Circle((x,y),DRILL/2,fc='w',ec='k',lw=0.2,zorder=4))
         cx,cy=(x0+x1)/2,(y0+y1)/2
-        ax.text(cx,cy,ref.replace('_',' ',1)+'\n'+val if p.kind!='RES' else ref.replace('_',' ',1)+' '+val,fontsize=3.4,ha='center',va='center',zorder=8,color='#0b3d91' if p.kind!='DIP8' else 'w')
+        ax.text(cx,cy,ref.replace('_',' ',1)+'\n'+val if p.kind!='RES' else ref.replace('_',' ',1)+' '+val,fontsize=3.4,ha='center',va='center',zorder=8,color='#0b3d91' if not p.kind.startswith('DIP') else 'w')
         # marca pin 1
         x,y=pads['1']; ax.add_patch(Circle((x,y),PAD_D/2+0.5,fc='none',ec='#0b3d91',lw=0.5,zorder=6))
     # agujeros de fijación

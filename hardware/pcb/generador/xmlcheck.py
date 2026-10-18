@@ -64,13 +64,13 @@ def check_sch_vs_brd(sch,brd):
     t=ET.parse(sch).getroot()
     dsmap={}
     for ds in t.findall('.//deviceset'):
-        mp={c.get('pin'):c.get('pad') for c in ds.findall('.//connect')}
+        mp={(c.get('gate'),c.get('pin')):c.get('pad') for c in ds.findall('.//connect')}
         dsmap[ds.get('name')]=mp
     parts={p.get('name'):p.get('deviceset') for p in t.findall('.//parts/part')}
     nets=collections.defaultdict(set)
     for n in t.findall('.//sheet/nets/net'):
         for pr in n.findall('.//pinref'):
-            nets[n.get('name')].add((pr.get('part'),dsmap[parts[pr.get('part')]][pr.get('pin')]))
+            nets[n.get('name')].add((pr.get('part'),dsmap[parts[pr.get('part')]][(pr.get('gate'),pr.get('pin'))]))
     pads,sigs=load_board(brd)
     bad=[]
     for name,s in sigs.items():
