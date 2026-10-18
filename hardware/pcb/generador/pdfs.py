@@ -2,7 +2,7 @@ import matplotlib; matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.patches import Circle, Rectangle, Polygon
 from matplotlib.backends.backend_pdf import PdfPages
-import collections
+import collections, math
 from engine import *
 import netlist as N
 from eagle import merge_edges
@@ -43,23 +43,21 @@ def copper_pdf(path,parts,routes,W,H,mirror=True):
     ax.text(W/2,-7.2,'Verificar: esta regla debe medir 50 mm  |  Impresión 1:1 (sin escalar), cara de cobre ESPEJADA' if mirror else 'Verificar 50 mm',ha='center',va='center',fontsize=5.5,zorder=6)
     fig.savefig(path,format='pdf'); plt.close(fig)
 
-def assembly_pdf(path,parts,routes,W,H,nets):
-    fig,ax=_fig(W,H)
-    ax.add_patch(Rectangle((0,0),W,H,fc='#f6f3e8',ec='k',lw=0.8,zorder=0))
+def _draw_assembly(ax,parts,routes,nets,jitems,fs=3.4,short=False,jfs=4.5):
     # cobre inferior (fantasma)
     for net,rt in routes.items():
         for (x0,y0,x1,y1) in merge_edges(rt['edges'],0):
             ax.plot([x0,x1],[y0,y1],color='#c9c2a6',lw=N.width_of(net)*PT,solid_capstyle='round',zorder=1)
     # puentes
-    jl=jumpers(parts,routes,nets)
-    for k,jp in enumerate(jl,1):
+    for k,jp in jitems:
         for (x0,y0,x1,y1) in jp['segs']:
             ax.plot([x0,x1],[y0,y1],color='#d62728',lw=1.2,solid_capstyle='round',zorder=5)
         mx,my=jp['label']
-        ax.text(mx,my,'J%d'%k,fontsize=4.5,color='#d62728',ha='center',va='bottom',zorder=7,fontweight='bold')
+        ax.text(mx,my,'J%d'%k,fontsize=jfs,color='#d62728',ha='center',va='bottom',zorder=7,fontweight='bold')
     # componentes
     for ref,p in parts.items():
         loc=ref.split('_',1)[1]; val=N.PARTS[loc][1]
+        name=loc if short else ref.replace('_',' ',1)
         x0,y0,x1,y1=p.box()
         pads=p.pads(); pts=list(pads.values())
         if p.kind.startswith('DIP'):
@@ -90,18 +88,68 @@ def assembly_pdf(path,parts,routes,W,H,nets):
             xs=[a for a,b in pts]; ys=[b for a,b in pts]
             ax.add_patch(Rectangle((min(xs)-1.4,min(ys)-1.4),max(xs)-min(xs)+2.8,max(ys)-min(ys)+2.8,fc='#8fb8d8' if p.kind!='CAP' else '#b9d89b',ec='k',lw=0.4,zorder=2,alpha=0.8))
         for pin,(x,y) in pads.items():
-            sq=(pin=='1')
             ax.add_patch(Circle((x,y),PAD_D/2,fc='#d4a017',ec='k',lw=0.3,zorder=3))
             ax.add_patch(Circle((x,y),DRILL/2,fc='w',ec='k',lw=0.2,zorder=4))
         cx,cy=(x0+x1)/2,(y0+y1)/2
         if p.kind=='RSBANK':
             cx,cy=p.x+rot(2*RSB_DX*G,RSB_YT*G,p.r)[0],p.y+rot(2*RSB_DX*G,RSB_YT*G,p.r)[1]
-        ax.text(cx,cy,ref.replace('_',' ',1)+'\n'+val if p.kind!='RES' else ref.replace('_',' ',1)+' '+val,fontsize=3.4,ha='center',va='center',zorder=8,color='#0b3d91' if not p.kind.startswith('DIP') else 'w')
+        ax.text(cx,cy,name+'\n'+val if p.kind!='RES' else name+' '+val,fontsize=fs,ha='center',va='center',zorder=8,color='#0b3d91' if not p.kind.startswith('DIP') else 'w')
         # marca pin 1
         x,y=pads['1']; ax.add_patch(Circle((x,y),PAD_D/2+0.5,fc='none',ec='#0b3d91',lw=0.5,zorder=6))
-    # agujeros de fijación
-    ax.text(W/2,-4,'Vista de ensamble (lado componentes)  |  rojo = puentes de alambre aislado en el lado componentes  |  1:1',ha='center',fontsize=5.5)
-    fig.savefig(path,format='pdf'); plt.close(fig)
+    # etapas U1..U8 sobre el cuerpo de cada TL074 (en la fila del pin de salida)
+    for ref,p in parts.items():
+        if not p.kind.startswith('DIP'): continue
+        k,ic=ref.split('_',1)
+        pads=p.pads(); xs=[a for a,b in pads.values()]; ys=[b for a,b in pads.values()]
+        cx,cy=sum(xs)/len(xs),sum(ys)/len(ys)
+        for (ic_,pin),stage in N.chan_labels().items():
+            if ic_!=ic: continue
+            x,y=pads[pin]
+            tx,ty,rt=(cx+(x-cx)*0.33,y,0) if p.r%2==0 else (x,cy+(y-cy)*0.33,90)
+            ax.text(tx,ty,stage,fontsize=fs*1.3,fontweight='bold',color='k',ha='center',va='center',rotation=rt,zorder=9,
+                    bbox=dict(boxstyle='round,pad=0.12',fc='#ffd54a',ec='none'))
+
+def _leyenda():
+    pines={}
+    for (ic,pin),st in N.chan_labels().items(): pines.setdefault(ic,[]).append((int(pin),st))
+    t1='   '.join('%s: '%ic+', '.join('pin %d = %s'%(a,b) for a,b in sorted(v)) for ic,v in sorted(pines.items()))
+    t2='U1 diferenciador de error · U2 P · U3 I · U4 D · U5 sumador · U6 Vref · U7 Voff · U8 convertidor V-I (potencia)'
+    return t1,t2
+
+def assembly_pdf(path,parts,routes,W,H,nets):
+    jl=jumpers(parts,routes,nets)
+    jall=list(enumerate(jl,1))
+    t1,t2=_leyenda()
+    with PdfPages(path) as pdf:
+        # pagina 1: placa completa 1:1
+        fig,ax=_fig(W,H)
+        ax.add_patch(Rectangle((0,0),W,H,fc='#f6f3e8',ec='k',lw=0.8,zorder=0))
+        _draw_assembly(ax,parts,routes,nets,jall)
+        ax.text(W/2,-3.2,'Vista de ensamble (lado componentes)  |  rojo = puentes de alambre aislado en el lado componentes  |  1:1',ha='center',fontsize=5.5)
+        ax.text(W/2,-5.2,'Cuadro amarillo = amplificador del TL074 (U1..U8 del informe), en la fila de su pin de salida',ha='center',fontsize=4.6)
+        ax.text(W/2,-6.9,t2,ha='center',fontsize=4.2)
+        pdf.savefig(fig); plt.close(fig)
+        # paginas 2-5: cada PID ampliado
+        PW,PH=210.0,297.0
+        for k in range(1,5):
+            pk={r:q for r,q in parts.items() if r.startswith('P%d_'%k)}
+            bx=[q.box() for q in pk.values()]
+            x0=min(b[0] for b in bx); y0=min(b[1] for b in bx); x1=max(b[2] for b in bx); y1=max(b[3] for b in bx)
+            z=min((PW-10)/(x1-x0),(PH-30)/(y1-y0)); z=math.floor(z*20)/20
+            fig=plt.figure(figsize=(PW/25.4,PH/25.4)); ax=fig.add_axes([0,0,1,1])
+            cx=(x0+x1)/2; cy=(y0+y1)/2-1.0
+            ax.set_xlim(cx-PW/2/z,cx+PW/2/z); ax.set_ylim(cy-PH/2/z,cy+PH/2/z); ax.set_aspect('equal'); ax.axis('off')
+            ax.add_patch(Rectangle((x0-2,y0-2),x1-x0+4,y1-y0+4,fc='#f6f3e8',ec='k',lw=0.6,zorder=0))
+            ji=[(n,jp) for n,jp in jall if x0-2<=jp['label'][0]<=x1+2 and y0-2<=jp['label'][1]<=y1+2]
+            fsz=3.4+(z-1)*1.0
+            _draw_assembly(ax,pk,routes,nets,ji,fs=fsz,short=True,jfs=4.5+(z-1)*1.0)
+            top=cy+PH/2/z
+            ax.text(cx,top-5/z,'PID %d  |  vista de ensamble (lado componentes)  |  escala %.2f:1'%(k,z),ha='center',va='center',fontsize=9,fontweight='bold')
+            ax.text(cx,top-10/z,'Cuadro amarillo = amplificador U1..U8 del informe sobre el TL074 (pin 1 = círculo azul)',ha='center',va='center',fontsize=6)
+            bot=cy-PH/2/z
+            ax.text(cx,bot+9/z,t1,ha='center',va='center',fontsize=5.2)
+            ax.text(cx,bot+5/z,t2,ha='center',va='center',fontsize=5.2)
+            pdf.savefig(fig); plt.close(fig)
     return jl
 
 def jumpers(parts,routes,nets):
