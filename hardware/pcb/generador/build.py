@@ -24,6 +24,14 @@ def build(selfile,outdir,gx=3,gy=2,m=2,name='pid4'):
         x,y=p.pads()['1']; labels.append((x-2.2,y-1.2,'VSEN',1.0,'R0'))
         p=parts['P%d_J_OUT'%k]
         x,y=p.pads()['1']; labels.append((x+2.2,y-1.2,'VPID',1.0,'R0'))
+        # etapa de potencia
+        for ref,names in (('J_COIL',('BOB+','BOB-')),('J_VBOB',('+VBOB','PGND')),('JP_GND',('GND','PGND')),('Q1',('B','C','E'))):
+            p=parts['P%d_%s'%(k,ref)]
+            for pin,txt in zip(sorted(p.pads()),names):
+                x,y=p.pads()[pin]
+                dx,dy=(-1.0,-3.4) if ref in('J_COIL','J_VBOB') else ((-0.5,-3.0) if ref=='Q1' else (-1.0,-2.8))
+                labels.append((x+dx,y+dy,txt,0.9 if ref in('Q1','JP_GND') else 1.0,'R0'))
+        labels.append((parts['P%d_RS'%k].x+1.0,parts['P%d_RS'%k].y+RSB_YT*G+4.8,'RS 10 x 1R/5W = 0.1R',1.0,'R0'))
         # titulo del módulo
         x0,y0,x1,y1=[min(v) if i<2 else max(v) for i,v in enumerate(zip(*[q.box() for r,q in parts.items() if r.startswith('P%d_'%k)]))]
         labels.append((x0+1,y1-1.5,'PID %d'%k,2.2,'R0'))

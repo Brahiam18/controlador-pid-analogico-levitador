@@ -28,3 +28,14 @@ R12,Resistencia,160 kΩ,160 kΩ,1,Divisor Vref,A GND
 R13,Resistencia,240 kΩ,240 kΩ,1,Divisor Vref,A +5 V
 R14,Resistencia,96 kΩ,falta medir,1,Divisor Voff,Valor calculado
 R15,Resistencia,160 kΩ,160 kΩ,1,Divisor Voff,A GND
+U8,LM741 (simulación) / TL074CN canal 4 (PCB),,,1,Etapa de potencia,Convertidor tensión-corriente
+R16,Resistencia,270 Ω,270 Ω,1,Etapa de potencia,Entre el divisor y la entrada + de U8
+RBASE,Resistencia,270 Ω,270 Ω,1,Etapa de potencia,Entre la salida de U8 y la base del TIP122
+Q1,TIP122,,,1,Etapa de potencia,Darlington NPN; requiere disipador
+R_sense,Resistencia 1 Ω / 5 W,1 Ω (1 unidad en la simulación),0.1 Ω (10 × 1 Ω en paralelo),10,Etapa de potencia,Sensado de corriente; con 10 en paralelo la ganancia es 10 A/V por voltio de entrada
+D1,1N5408,,,1,Etapa de potencia,Protección contra el pico inductivo de la bobina
+R17,Resistencia,—,56 kΩ,1,Etapa de potencia,Agregada en la PCB: divisor de calibración (necesaria con R_sense = 0.1 Ω)
+Pot4,Potenciómetro,—,10 kΩ,1,Etapa de potencia,Agregado en la PCB: ajusta la corriente de la bobina
+D2,1N4148,,,1,Etapa de potencia,Agregado en la PCB: diodo en serie con la base
+R18,Resistencia,—,1 kΩ,1,Etapa de potencia,Agregada en la PCB: en serie con la entrada − de U8 (compensación opcional)
+C3,Capacitor,—,10 nF (opcional),0,Etapa de potencia,Agregado en la PCB: solo si el lazo de corriente oscila

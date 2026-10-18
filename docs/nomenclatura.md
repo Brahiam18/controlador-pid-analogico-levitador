@@ -29,6 +29,21 @@ Esta es la nomenclatura **vigente**: la que usan las ecuaciones del informe, los
 | **Offset V_off (U7)** | R14 | Divisor, resistencia superior | 96 kΩ (calculada; falta medir) |
 | | R15 | Divisor, resistencia a GND | 160 kΩ |
 
+## Etapa de potencia (U8)
+
+Nombres usados en el esquemático de Proteus de la etapa de potencia y en la PCB (ver [`../hardware/pcb/README.md`](../hardware/pcb/README.md)). No aparecen en el informe.
+
+| Ref. | Función | Valor |
+|---|---|---:|
+| U8 | Convertidor tensión‑corriente (comparador de corriente) | LM741 (sim.) / TL074CN (PCB) |
+| R16 | Entre la señal de entrada y la entrada + de U8 | 270 Ω |
+| RBASE | Entre la salida de U8 y la base del TIP122 | 270 Ω |
+| Q1 (POTENCIA) | Transistor de potencia | TIP122 |
+| R_sense (R10W en Proteus) | Sensado de corriente en el emisor | 0.1 Ω (10 × 1 Ω / 5 W en paralelo) |
+| D1 (PROTECCION) | Diodo en paralelo con la bobina | 1N5408 |
+| R17, Pot4 | Divisor de calibración de la corriente (solo PCB) | 56 kΩ, 10 kΩ |
+| D2, R18, C3 | Diodo en serie con la base, resistencia en la entrada − y capacitor opcional (solo PCB) | 1N4148, 1 kΩ, 10 nF |
+
 ## Equivalencias con la primera versión del informe
 
 Cambios de nombre aplicados a las ecuaciones, al desarrollo del sumador y a la sección de ajustes. Renombrar no altera los valores; la última columna recuerda los ajustes teórico → final que ya figuraban en la Tabla III de la versión anterior, para que el elemento sea fácil de rastrear.

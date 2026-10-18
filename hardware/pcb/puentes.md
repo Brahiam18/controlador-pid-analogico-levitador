@@ -1,42 +1,51 @@
 | N.º | Red | Longitud aprox. | Extremos |
 |:-:|---|--:|---|
-| J1 | `+5V` | 48 mm | agujero (12.7; 88.9) mm, junto a P1_R3.1 ↔ P1_J_PWR.4 ↔ P1_R13.2 |
-| J2 | `P1_SUMN` | 18 mm | P1_ROFFSET.2 ↔ agujero (73.7; 104.1) mm, junto a P1_IC2.11 |
-| J3 | `-16V` | 15 mm | agujero (94.0; 114.3) mm, junto a P2_J_PWR.1 ↔ P2_J_PWR.2 |
-| J4 | `+5V` | 46 mm | agujero (99.1; 94.0) mm, junto a P2_R3.1 ↔ P2_J_PWR.4 ↔ P2_R13.2 |
-| J5 | `P2_SUMN` | 18 mm | P2_ROFFSET.2 ↔ agujero (157.5; 104.1) mm, junto a P2_IC2.11 |
-| J6 | `+16V` | 10 mm | P1_IC2.4 ↔ agujero (71.1; 111.8) mm, junto a P1_IC2.1 |
-| J7 | `+16V` | 10 mm | P2_IC2.4 ↔ agujero (154.9; 111.8) mm, junto a P2_IC2.1 |
-| J8 | `P1_VPID` | 15 mm | P1_R10.2 ↔ P1_IC2.7 |
-| J9 | `P2_VPID` | 15 mm | P2_R10.2 ↔ P2_IC2.7 |
-| J10 | `-16V` | 48 mm | P1_R14.1 ↔ P1_IC2.11 ↔ agujero (83.8; 104.1) mm, junto a P1_IC2.11 |
-| J11 | `GND` | 5 mm | agujero (94.0; 104.1) mm, junto a P2_R4.2 ↔ P2_R4.2 |
-| J12 | `-16V` | 48 mm | P2_R14.1 ↔ P2_IC2.11 ↔ agujero (167.6; 94.0) mm, junto a P2_IC2.8 |
-| J13 | `P1_VREFD` | 10 mm | agujero (33.0; 94.0) mm, junto a P1_IC1.2 ↔ P1_R12.1 |
-| J14 | `P2_VREFD` | 10 mm | agujero (116.8; 94.0) mm, junto a P2_IC1.2 ↔ P2_R12.1 |
-| J15 | `P1_SUMN` | 13 mm | P1_R9.2 ↔ P1_R7.2 |
-| J16 | `P2_SUMN` | 13 mm | P2_R9.2 ↔ P2_R7.2 |
-| J17 | `P1_U1P` | 23 mm | P1_R3.2 ↔ P1_IC1.5 |
-| J18 | `P1_U4N` | 8 mm | P1_C2.2 ↔ P1_POT3.1 |
-| J19 | `P2_U1P` | 23 mm | P2_R3.2 ↔ P2_IC1.5 |
-| J20 | `P2_U4N` | 8 mm | P2_C2.2 ↔ P2_POT3.1 |
-| J21 | `+5V` | 38 mm | agujero (27.9; 63.5) mm, junto a P3_J_PWR.4 ↔ P3_R13.2 |
-| J22 | `+5V` | 38 mm | agujero (111.8; 63.5) mm, junto a P4_J_PWR.4 ↔ P4_R13.2 |
-| J23 | `P3_SUMN` | 18 mm | P3_ROFFSET.2 ↔ agujero (73.7; 43.2) mm, junto a P3_IC2.11 |
-| J24 | `P4_SUMN` | 18 mm | P4_ROFFSET.2 ↔ agujero (157.5; 43.2) mm, junto a P4_IC2.11 |
-| J25 | `-16V` | 5 mm | agujero (94.0; 53.3) mm, junto a P4_J_PWR.1 ↔ agujero (99.1; 53.3) mm, junto a P4_J_PWR.1 |
-| J26 | `+16V` | 10 mm | P3_IC2.4 ↔ agujero (71.1; 50.8) mm, junto a P3_IC2.1 |
-| J27 | `+16V` | 10 mm | P4_IC2.4 ↔ agujero (154.9; 50.8) mm, junto a P4_IC2.1 |
-| J28 | `P3_VPID` | 15 mm | P3_R10.2 ↔ P3_IC2.7 |
-| J29 | `P4_VPID` | 15 mm | P4_R10.2 ↔ P4_IC2.7 |
-| J30 | `-16V` | 48 mm | P3_R14.1 ↔ P3_IC2.11 ↔ agujero (83.8; 43.2) mm, junto a P3_IC2.11 |
-| J31 | `GND` | 5 mm | agujero (94.0; 43.2) mm, junto a P4_R4.2 ↔ P4_R4.2 |
-| J32 | `-16V` | 48 mm | P4_R14.1 ↔ P4_IC2.11 ↔ agujero (167.6; 43.2) mm, junto a P4_IC2.11 |
-| J33 | `P3_VREFD` | 10 mm | agujero (33.0; 33.0) mm, junto a P3_IC1.2 ↔ P3_R12.1 |
-| J34 | `P4_VREFD` | 10 mm | agujero (116.8; 33.0) mm, junto a P4_IC1.2 ↔ P4_R12.1 |
-| J35 | `P3_SUMN` | 13 mm | P3_R9.2 ↔ P3_R7.2 |
-| J36 | `P4_SUMN` | 13 mm | P4_R9.2 ↔ P4_R7.2 |
-| J37 | `P3_U1P` | 23 mm | P3_R3.2 ↔ P3_IC1.5 |
-| J38 | `P3_U4N` | 8 mm | P3_C2.2 ↔ P3_POT3.1 |
-| J39 | `P4_U1P` | 23 mm | P4_R3.2 ↔ P4_IC1.5 |
-| J40 | `P4_U4N` | 8 mm | P4_C2.2 ↔ P4_POT3.1 |
+| J1 | `-16V` | 9 mm | P1_J_PWR.2 ↔ agujero (22.9; 278.1) mm, junto a P1_J_PWR.2 |
+| J2 | `+5V` | 6 mm | P1_J_PWR.4 ↔ agujero (27.9; 275.6) mm, junto a P1_J_PWR.4 |
+| J3 | `+5V` | 6 mm | P2_J_PWR.4 ↔ agujero (121.9; 275.6) mm, junto a P2_J_PWR.4 |
+| J4 | `+16V` | 5 mm | agujero (53.3; 270.5) mm, junto a P1_IC1.1 ↔ agujero (58.4; 270.5) mm, junto a P1_C1.1 |
+| J5 | `+16V` | 5 mm | agujero (109.2; 269.2) mm, junto a P2_J_PWR.1 ↔ P2_J_PWR.1 |
+| J6 | `GND` | 29 mm | P1_R4.2 ↔ P1_R12.2 ↔ agujero (47.0; 268.0) mm, junto a P1_R12.2 |
+| J7 | `GND` | 29 mm | P2_R4.2 ↔ P2_R12.2 ↔ agujero (141.0; 268.0) mm, junto a P2_R12.2 |
+| J8 | `+16V` | 29 mm | P1_IC2.4 ↔ agujero (41.9; 256.5) mm, junto a P1_R12.1 |
+| J9 | `+16V` | 29 mm | P2_IC2.4 ↔ agujero (135.9; 256.5) mm, junto a P2_R12.1 |
+| J10 | `P1_U1P` | 17 mm | P1_R4.1 ↔ agujero (39.4; 251.5) mm, junto a P1_R6.1 |
+| J11 | `P1_VE` | 38 mm | P1_R2.2 ↔ P1_R5.1 |
+| J12 | `P2_U1P` | 17 mm | P2_R4.1 ↔ agujero (133.3; 251.5) mm, junto a P2_R6.1 |
+| J13 | `P2_VE` | 38 mm | P2_R2.2 ↔ P2_R5.1 |
+| J14 | `GND` | 5 mm | agujero (99.1; 247.7) mm, junto a P2_C2.2 ↔ agujero (104.1; 247.7) mm, junto a P2_C2.2 |
+| J15 | `GND` | 5 mm | P1_POT4.3 ↔ agujero (78.7; 246.4) mm, junto a P1_POT4.3 |
+| J16 | `P1_INMU` | 15 mm | P1_IC2.13 ↔ P1_C3.1 |
+| J17 | `P2_INMU` | 15 mm | P2_IC2.13 ↔ P2_C3.1 |
+| J18 | `P1_VINP` | 18 mm | P1_IC2.12 ↔ P1_R16.2 |
+| J19 | `P2_VINP` | 18 mm | P2_IC2.12 ↔ P2_R16.2 |
+| J20 | `P1_U2N` | 6 mm | P1_POT1.1 ↔ agujero (62.2; 238.8) mm, junto a P1_POT1.2 |
+| J21 | `P2_U2N` | 6 mm | P2_POT1.1 ↔ agujero (156.2; 238.8) mm, junto a P2_POT1.2 |
+| J22 | `P1_VPID` | 30 mm | P1_IC2.7 ↔ P1_R10.2 ↔ agujero (57.1; 223.5) mm, junto a P1_R8.1 |
+| J23 | `P2_VPID` | 30 mm | P2_IC2.7 ↔ P2_R10.2 ↔ agujero (151.1; 223.5) mm, junto a P2_R8.1 |
+| J24 | `P1_SUMN` | 5 mm | agujero (30.5; 221.0) mm, junto a P1_RBIAS.2 ↔ agujero (30.5; 226.1) mm, junto a P1_IC2.7 |
+| J25 | `P2_SUMN` | 5 mm | agujero (124.5; 221.0) mm, junto a P2_RBIAS.2 ↔ agujero (124.5; 226.1) mm, junto a P2_IC2.7 |
+| J26 | `GND` | 9 mm | P3_J_PWR.3 ↔ agujero (25.4; 141.0) mm, junto a P3_J_PWR.3 |
+| J27 | `+5V` | 6 mm | P3_J_PWR.4 ↔ agujero (27.9; 138.4) mm, junto a P3_J_PWR.4 |
+| J28 | `+5V` | 25 mm | agujero (99.1; 134.6) mm, junto a P4_J_PWR.1 ↔ P4_J_PWR.4 |
+| J29 | `+16V` | 5 mm | agujero (53.3; 133.3) mm, junto a P3_IC1.1 ↔ agujero (58.4; 133.3) mm, junto a P3_C1.1 |
+| J30 | `+16V` | 5 mm | agujero (109.2; 132.1) mm, junto a P4_J_PWR.1 ↔ P4_J_PWR.1 |
+| J31 | `GND` | 29 mm | P3_R4.2 ↔ P3_R12.2 ↔ agujero (47.0; 130.8) mm, junto a P3_R12.2 |
+| J32 | `GND` | 29 mm | P4_R4.2 ↔ P4_R12.2 ↔ agujero (141.0; 130.8) mm, junto a P4_R12.2 |
+| J33 | `+16V` | 29 mm | P3_IC2.4 ↔ agujero (41.9; 119.4) mm, junto a P3_R12.1 |
+| J34 | `+16V` | 29 mm | P4_IC2.4 ↔ agujero (135.9; 119.4) mm, junto a P4_R12.1 |
+| J35 | `P3_U1P` | 17 mm | P3_R4.1 ↔ agujero (39.4; 114.3) mm, junto a P3_R6.1 |
+| J36 | `P3_VE` | 38 mm | P3_R2.2 ↔ P3_R5.1 |
+| J37 | `P4_U1P` | 17 mm | P4_R4.1 ↔ agujero (133.3; 114.3) mm, junto a P4_R6.1 |
+| J38 | `P4_VE` | 38 mm | P4_R2.2 ↔ P4_R5.1 |
+| J39 | `GND` | 5 mm | P3_POT4.3 ↔ agujero (78.7; 109.2) mm, junto a P3_POT4.3 |
+| J40 | `P3_INMU` | 15 mm | P3_IC2.13 ↔ P3_C3.1 |
+| J41 | `P4_INMU` | 15 mm | P4_IC2.13 ↔ P4_C3.1 |
+| J42 | `P3_VINP` | 18 mm | P3_IC2.12 ↔ P3_R16.2 |
+| J43 | `P4_VINP` | 18 mm | P4_IC2.12 ↔ P4_R16.2 |
+| J44 | `P3_U2N` | 6 mm | P3_POT1.1 ↔ agujero (62.2; 101.6) mm, junto a P3_POT1.2 |
+| J45 | `P4_U2N` | 6 mm | P4_POT1.1 ↔ agujero (156.2; 101.6) mm, junto a P4_POT1.2 |
+| J46 | `P3_VPID` | 30 mm | P3_IC2.7 ↔ P3_R10.2 ↔ agujero (57.1; 86.4) mm, junto a P3_R8.1 |
+| J47 | `P4_VPID` | 30 mm | P4_IC2.7 ↔ P4_R10.2 ↔ agujero (151.1; 86.4) mm, junto a P4_R8.1 |
+| J48 | `P3_SUMN` | 5 mm | agujero (30.5; 83.8) mm, junto a P3_RBIAS.2 ↔ agujero (30.5; 88.9) mm, junto a P3_IC2.7 |
+| J49 | `P4_SUMN` | 5 mm | agujero (124.5; 83.8) mm, junto a P4_RBIAS.2 ↔ agujero (124.5; 88.9) mm, junto a P4_IC2.7 |

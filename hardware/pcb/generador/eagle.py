@@ -63,6 +63,38 @@ def packages_xml():
     L.append('<text x="5.08" y="5.3" size="1.27" layer="25" align="bottom-center">&gt;NAME</text>')
     L.append('<text x="5.08" y="-5.3" size="1.0" layer="27" align="top-center">&gt;VALUE</text>')
     P.append(('POT','Potenciómetro 3 pines, separación 5.08 mm',L))
+    # TO220 (TIP122): 1 = B, 2 = C, 3 = E
+    L=[pad(str(i+1),i*PITCH,0,'square' if i==0 else 'round',drill_of('TO220')) for i in range(3)]
+    L+=rect_lines(-2.56,1.4,7.64,5.9)+[wire(-2.56,5.9,7.64,5.9,0.6,21)]
+    L.append('<text x="2.54" y="3.0" size="1.0" layer="25" align="center">&gt;NAME</text>')
+    L.append('<text x="2.54" y="-1.9" size="1.0" layer="27" align="top-center">&gt;VALUE</text>')
+    P.append(('TO220','TO-220 vertical (TIP122): 1 = B, 2 = C, 3 = E; lado grueso = aleta para disipador',L))
+    # DIODE (1N5408, DO-201): 1 = ánodo, 2 = cátodo (raya)
+    L=[pad('1',0,0,'square',drill_of('DIODE')),pad('2',15.24,0,'round',drill_of('DIODE'))]
+    L+=rect_lines(2.87,-2.7,12.37,2.7)+[wire(10.9,-2.7,10.9,2.7,0.8,21),wire(0,0,2.87,0,0.2,21),wire(12.37,0,15.24,0,0.2,21)]
+    L.append('<text x="6.6" y="3.4" size="1.27" layer="25" align="bottom-center">&gt;NAME</text>')
+    P.append(('DIODE','Diodo axial DO-201 (1N5408), 15.24 mm; la raya marca el cátodo (pad 2)',L))
+    # DIODE_S (1N4148, DO-35)
+    L=[pad('1',0,0,'square'),pad('2',7.62,0)]
+    L+=rect_lines(2.0,-1.1,5.6,1.1)+[wire(5.0,-1.1,5.0,1.1,0.6,21),wire(0,0,2.0,0,0.2,21),wire(5.6,0,7.62,0,0.2,21)]
+    L.append('<text x="3.81" y="1.9" size="1.0" layer="25" align="bottom-center">&gt;NAME</text>')
+    P.append(('DIODE_S','Diodo axial DO-35 (1N4148), 7.62 mm; la raya marca el cátodo (pad 2)',L))
+    # TERM2: bornera de tornillo, paso 5.08
+    L=[pad('1',0,0,'square',drill_of('TERM2')),pad('2',5.08,0,'round',drill_of('TERM2'))]
+    L+=rect_lines(-2.54,-3.8,7.62,4.4)
+    L.append('<text x="2.54" y="5.2" size="1.27" layer="25" align="bottom-center">&gt;NAME</text>')
+    P.append(('TERM2','Bornera de tornillo de 2 vías, paso 5.08 mm',L))
+    # RSBANK: 10 resistencias axiales de 5 W en paralelo, en dos filas de 5 (cuerpo de 22 x 9.5 mm)
+    L=[]
+    for p_,x_,y_ in fp_pads('RSBANK'):
+        L.append(pad(p_,x_,y_,'square' if p_=='1' else 'round',drill_of('RSBANK')))
+    for k in range(RSB_COLS):
+        x_=k*RSB_DX*G
+        for yc in (12.7,40.64):
+            L+=rect_lines(x_-4.75,yc-11.0,x_+4.75,yc+11.0)
+    L.append('<text x="%s" y="%s" size="1.27" layer="25" align="center">&gt;NAME</text>'%(f(2*RSB_DX*G),f(RSB_YT*G+3.5)))
+    L.append('<text x="%s" y="%s" size="1.0" layer="27" align="center">&gt;VALUE</text>'%(f(2*RSB_DX*G),f(RSB_YT*G-3.5)))
+    P.append(('RSBANK','Banco de sensado: 10 x 1 ohm / 5 W axiales en paralelo (0.1 ohm); 20 pads, ver README',L))
     # HDR2/HDR4
     for nm,n in (('HDR1',1),('HDR2',2),('HDR4',4)):
         L=[pad(str(i+1),i*PITCH,0,'square' if i==0 else 'round') for i in range(n)]
@@ -94,6 +126,16 @@ def build_symbols():
     L=rect_lines(-2.54,-2.54,2.54,2.54,0.254,94)+['<text x="3.2" y="0.5" size="1.778" layer="95">&gt;NAME</text>','<text x="-2.0" y="-0.6" size="1.27" layer="94">TL074</text>',
        sym_pin('V+',0,5.08,'R270','pwr'),sym_pin('V-',0,-5.08,'R90','pwr')]
     S['OPWR']=(L,{'V+':(0,5.08,'U'),'V-':(0,-5.08,'D')})
+    # diodo
+    L=[wire(-2.54,2.54,-2.54,-2.54,0.254,94),wire(-2.54,-2.54,2.54,0,0.254,94),wire(2.54,0,-2.54,2.54,0.254,94),wire(2.54,2.54,2.54,-2.54,0.254,94),
+       '<text x="-3.8" y="3.4" size="1.778" layer="95">&gt;NAME</text>','<text x="-3.8" y="-5.4" size="1.778" layer="96">&gt;VALUE</text>',
+       sym_pin('A',-5.08,0),sym_pin('K',5.08,0,'R180')]
+    S['D']=(L,{'A':(-5.08,0,'L'),'K':(5.08,0,'R')})
+    # transistor NPN
+    L=[wire(0,-2.54,0,2.54,0.4,94),wire(0,1.27,2.54,2.54,0.254,94),wire(0,-1.27,2.54,-2.54,0.254,94),wire(-2.54,0,0,0,0.254,94),
+       '<text x="3.8" y="1.0" size="1.778" layer="95">&gt;NAME</text>','<text x="3.8" y="-1.8" size="1.778" layer="96">&gt;VALUE</text>',
+       sym_pin('B',-5.08,0),sym_pin('C',2.54,5.08,'R270'),sym_pin('E',2.54,-5.08,'R90')]
+    S['NPN']=(L,{'B':(-5.08,0,'L'),'C':(2.54,5.08,'U'),'E':(2.54,-5.08,'D')})
     # R
     L=rect_lines(-2.54,-1.016,2.54,1.016,0.254,94)+['<text x="-3.81" y="2.2" size="1.778" layer="95">&gt;NAME</text>','<text x="-3.81" y="-3.9" size="1.778" layer="96">&gt;VALUE</text>',
         sym_pin('1',-5.08,0),sym_pin('2',5.08,0,'R180')]
@@ -127,19 +169,24 @@ DEVSETS={ # nombre: prefijo, paquete, compuertas [(nombre,símbolo,addlevel)], c
               ('D','IN+','12'),('D','IN-','13'),('D','OUT','14'),
               ('P','V+','4'),('P','V-','11')]),
  'R':_single('R','RES','R',['1','2']),
+ 'TIP122':dict(prefix='Q',package='TO220',gates=[('G$1','NPN','next')],connects=[('G$1','B','1'),('G$1','C','2'),('G$1','E','3')]),
+ 'D1N5408':dict(prefix='D',package='DIODE',gates=[('G$1','D','next')],connects=[('G$1','A','1'),('G$1','K','2')]),
+ 'D1N4148':dict(prefix='D',package='DIODE_S',gates=[('G$1','D','next')],connects=[('G$1','A','1'),('G$1','K','2')]),
+ 'TERM2':_single('HDR2','TERM2','J',['1','2']),
+ 'RSB':dict(prefix='RS',package='RSBANK',gates=[('G$1','R','next')],connects=[('G$1','1',' '.join(str(k) for k in range(6,16))),('G$1','2',' '.join(str(k) for k in list(range(1,6))+list(range(16,21))))]),
  'C':_single('C','CAP','C',['1','2']),
  'POT':_single('POT','POT','RV',['1','2','3']),
  'HDR1':_single('HDR1','HDR1','J',['1']),
  'HDR2':_single('HDR2','HDR2','J',['1','2']),
  'HDR4':_single('HDR4','HDR4','J',['1','2','3','4']),
 }
-KIND2DEV={'DIP14':'TL074','RES':'R','CAP':'C','POT':'POT','HDR1':'HDR1','HDR2':'HDR2','HDR4':'HDR4'}
-KIND2PKG={'DIP14':'DIL14','RES':'RES','CAP':'CAP','POT':'POT','HDR1':'HDR1','HDR2':'HDR2','HDR4':'HDR4'}
+KIND2DEV={'DIP14':'TL074','RES':'R','CAP':'C','POT':'POT','HDR1':'HDR1','HDR2':'HDR2','HDR4':'HDR4','TO220':'TIP122','DIODE':'D1N5408','DIODE_S':'D1N4148','TERM2':'TERM2','RSBANK':'RSB'}
+KIND2PKG={'DIP14':'DIL14','RES':'RES','CAP':'CAP','POT':'POT','HDR1':'HDR1','HDR2':'HDR2','HDR4':'HDR4','TO220':'TO220','DIODE':'DIODE','DIODE_S':'DIODE_S','TERM2':'TERM2','RSBANK':'RSBANK'}
 # pad de componente -> (compuerta, pin de símbolo)
 def sympin(kind,pad):
     dev=DEVSETS[KIND2DEV[kind]]
     for g,sp,pd in dev['connects']:
-        if pd==pad: return g,sp
+        if pad in pd.split(): return g,sp
     raise KeyError((kind,pad))
 
 def libraries_sch():
@@ -173,9 +220,10 @@ def sch_xml(nmod,nets_global_by_module):
     gk=lambda st:(N.where(st)[0],N.GATE[N.where(st)[1]])
     rows=[[gk('U6'),'R12','R13'],['R1'] and [gk('U1'),'R1','R2','R3','R4'],[gk('U2'),'R5','POT1','R7'],[gk('U3'),'POT2','C1','R11','R8'],
           [gk('U4'),'R6','C2','POT3','R9'],[gk('U5'),'ROFFSET','R10','RBIAS'],[gk('U7'),'R14','R15'],
-          [gk('SPARE'),'J_IN','J_OUT','J_PWR'],[('IC1','P'),('IC2','P')]]
+          ['J_IN','J_OUT','J_PWR'],[('IC1','P'),('IC2','P')],
+          [gk('U8'),'R17','POT4','R16','R18'],['C3','RBASE','D2','Q1'],['D1','RS','J_COIL','J_VBOB','JP_GND']]
     keyof=lambda it: it if isinstance(it,tuple) else (it,'G$1')
-    stage_of={gk(st):N.NAMES[st] for st in N.STAGES+['SPARE']}
+    stage_of={gk(st):N.NAMES[st] for st in N.STAGES}
     stage_of[('IC1','P')]='alimentación IC1'; stage_of[('IC2','P')]='alimentación IC2'
     flat=sorted({keyof(r)[0] for row in rows for r in row})
     assert flat==sorted(N.PARTS),set(N.PARTS)^set(flat)
@@ -264,7 +312,7 @@ def brd_xml(parts,routes,W,H,nets,labels=()):
         for ref,pin in pins: sig+='<contactref element="%s" pad="%s"/>\n'%(ref,pin)
         rt=routes.get(net)
         if rt:
-            for s in merge_edges(rt['edges'],0): sig+=wire(*s,TRACE,16)+'\n'
+            for s in merge_edges(rt['edges'],0): sig+=wire(*s,N.width_of(net),16)+'\n'
             for s in merge_edges(rt['edges'],1): sig+=wire(*s,0.6,1)+'\n'
             for (i,j) in sorted(rt['vias']): sig+='<via x="%s" y="%s" extent="1-16" drill="%s" diameter="%s"/>\n'%(f(i*G),f(j*G),f(DRILL),f(PAD_D))
         sig+='</signal>\n'

@@ -9,6 +9,10 @@ def rot(x,y,r):
     return x,y
 
 # huellas: lista de (pin, x, y) en mm, en coordenadas locales (origen = pin 1)
+RSB_COLS=5; RSB_DX=8     # banco de sensado: 5 columnas separadas 8 celdas (10.16 mm)
+RSB_YA,RSB_YI1,RSB_YT,RSB_YI2,RSB_YC=0,20,21,22,42   # filas (en celdas de 1.27 mm)
+RSB_XB=-4                # columna del puente de tierra (celdas)
+
 def fp_pads(kind):
     if kind=='DIP8':
         pads=[(str(n),0,-(n-1)*PITCH) for n in range(1,5)]
@@ -24,13 +28,63 @@ def fp_pads(kind):
     if kind=='HDR1': return [('1',0,0)]
     if kind=='HDR2': return [('1',0,0),('2',PITCH,0)]
     if kind=='HDR4': return [('%d'%i,i*PITCH-PITCH,0) for i in range(1,5)]
+    if kind=='TO220': return [('1',0,0),('2',PITCH,0),('3',2*PITCH,0)]          # B, C, E
+    if kind=='DIODE': return [('1',0,0),('2',15.24,0)]                          # 1 = ánodo, 2 = cátodo (raya)
+    if kind=='DIODE_S': return [('1',0,0),('2',7.62,0)]
+    if kind=='TERM2': return [('1',0,0),('2',5.08,0)]
+    if kind=='RSBANK':
+        p=[]
+        for k in range(RSB_COLS):
+            x=k*RSB_DX*G
+            p.append(('%d'%(k+1),x,RSB_YA*G))        # abajo: tierra de potencia
+            p.append(('%d'%(k+6),x,RSB_YI1*G))       # ISENSE (mitad inferior)
+            p.append(('%d'%(k+11),x,RSB_YI2*G))      # ISENSE (mitad superior)
+            p.append(('%d'%(k+16),x,RSB_YC*G))       # arriba: tierra de potencia
+        return sorted(p,key=lambda t:int(t[0]))
     raise KeyError(kind)
 
+# taladro por tipo de huella (mm); el resto usa DRILL
+DRILL_OF={'TO220':1.0,'DIODE':1.3,'TERM2':1.3,'RSBANK':1.1}
+def drill_of(kind): return DRILL_OF.get(kind,DRILL)
+
+# cajas de cuerpo especiales (xmin,ymin,xmax,ymax) locales, en mm
+BOX_OF={
+ 'TO220':(-3.0,-4.0,8.1,6.0),
+ 'TERM2':(-3.6,-5.2,8.7,5.6),
+ 'RSBANK':((RSB_XB-2)*G-1.0,-3.2,(RSB_COLS-1)*RSB_DX*G+3.6,RSB_YC*G+3.2),
+}
 def fp_box(kind):
     """caja de cuerpo (xmin,ymin,xmax,ymax) local, para evitar solapes"""
+    if kind in BOX_OF: return BOX_OF[kind]
     p=fp_pads(kind); xs=[a[1] for a in p]; ys=[a[2] for a in p]
     m=2.54
     return (min(xs)-m,min(ys)-m,max(xs)+m,max(ys)+m)
+
+def frozen_routes(parts):
+    """Pistas fijas que forman parte de una huella (troncales del banco de sensado).
+    Devuelve {red_local: {'nodes','edges'}} en celdas de la placa/módulo (capa 0)."""
+    out={}
+    def seg(net,i0,j0,i1,j1,R):
+        di=(i1>i0)-(i1<i0); dj=(j1>j0)-(j1<j0)
+        i,j=i0,j0
+        while (i,j)!=(i1,j1):
+            a=(0,i,j); b=(0,i+di,j+dj)
+            R['edges'].add((a,b)); R['nodes'].add(a); R['nodes'].add(b)
+            i,j=i+di,j+dj
+        R['nodes'].add((0,i1,j1))
+    for ref,p in parts.items():
+        if p.kind!='RSBANK': continue
+        i0=int(round(p.x/G)); j0=int(round(p.y/G))
+        P=out.setdefault('PGND',{'nodes':set(),'edges':set()}); I=out.setdefault('ISENSE',{'nodes':set(),'edges':set()})
+        xe=(RSB_COLS-1)*RSB_DX
+        seg('PGND',i0+RSB_XB,j0+RSB_YA,i0+xe,j0+RSB_YA,P)
+        seg('PGND',i0+RSB_XB,j0+RSB_YC,i0+xe,j0+RSB_YC,P)
+        seg('PGND',i0+RSB_XB,j0+RSB_YA,i0+RSB_XB,j0+RSB_YC,P)
+        seg('ISENSE',i0,j0+RSB_YT,i0+xe,j0+RSB_YT,I)
+        for k in range(RSB_COLS):
+            seg('ISENSE',i0+k*RSB_DX,j0+RSB_YI1,i0+k*RSB_DX,j0+RSB_YT,I)
+            seg('ISENSE',i0+k*RSB_DX,j0+RSB_YI2,i0+k*RSB_DX,j0+RSB_YT,I)
+    return out
 
 class Placed:
     def __init__(s,ref,kind,x,y,r):

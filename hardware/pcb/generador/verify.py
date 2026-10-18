@@ -3,6 +3,7 @@ from shapely.geometry import LineString, Point
 from shapely.strtree import STRtree
 from engine import *
 from eagle import merge_edges
+import netlist as N
 
 def verify(parts,routes,nets,W,H,min_clear=0.30,verbose=True):
     problems=[]
@@ -21,7 +22,7 @@ def verify(parts,routes,nets,W,H,min_clear=0.30,verbose=True):
                 geoms.append(('NC_%s_%s'%(ref,pin),Point(x,y).buffer(PAD_D/2),'pad'))
     for net,rt in routes.items():
         for s in merge_edges(rt['edges'],0):
-            geoms.append((net,LineString([(s[0],s[1]),(s[2],s[3])]).buffer(TRACE/2,cap_style=1),'trace'))
+            geoms.append((net,LineString([(s[0],s[1]),(s[2],s[3])]).buffer(N.width_of(net)/2,cap_style=1),'trace'))
         for (i,j) in rt['vias']:
             geoms.append((net,Point(i*G,j*G).buffer(PAD_D/2),'via'))
     tree=STRtree([g for _,g,_ in geoms])

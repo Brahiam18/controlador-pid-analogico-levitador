@@ -2,19 +2,24 @@ import random, math, sys
 from engine import *
 import netlist as N
 
-WCELLS,HCELLS=int(sys.argv[1]) if len(sys.argv)>1 else 30, int(sys.argv[2]) if len(sys.argv)>2 else 22
+WCELLS,HCELLS=int(sys.argv[1]) if len(sys.argv)>1 else 31, int(sys.argv[2]) if len(sys.argv)>2 else 47
 W=WCELLS*PITCH; H=HCELLS*PITCH
 
+FIXED=('J_IN','J_OUT','J_PWR','RS','J_VBOB','J_COIL')
 def make_parts(seed):
     rng=random.Random(seed)
     parts={}
     for ref,(kind,val) in N.PARTS.items():
         parts[ref]=Placed(ref,kind,0,0,0)
     # fijos
-    parts['J_IN'].r=1; parts['J_IN'].x=2*PITCH; parts['J_IN'].y=(HCELLS//2-1)*PITCH
-    parts['J_OUT'].r=1; parts['J_OUT'].x=(WCELLS-2)*PITCH; parts['J_OUT'].y=(HCELLS//2-1)*PITCH
+    parts['J_IN'].r=1; parts['J_IN'].x=2*PITCH; parts['J_IN'].y=(HCELLS//2+8)*PITCH
+    parts['J_OUT'].r=1; parts['J_OUT'].x=(WCELLS-2)*PITCH; parts['J_OUT'].y=(HCELLS//2+8)*PITCH
     parts['J_PWR'].r=0; parts['J_PWR'].x=6*PITCH; parts['J_PWR'].y=(HCELLS-2)*PITCH
-    free=[r for r in parts if r not in('J_IN','J_OUT','J_PWR')]
+    # banco de sensado (huella con pistas troncales) abajo a la izquierda; bornes de alimentación y bobina a su derecha
+    parts['RS'].r=0; parts['RS'].x=5*PITCH; parts['RS'].y=4*PITCH
+    parts['J_VBOB'].r=0; parts['J_VBOB'].x=25*PITCH; parts['J_VBOB'].y=3*PITCH
+    parts['J_COIL'].r=0; parts['J_COIL'].x=25*PITCH; parts['J_COIL'].y=9*PITCH
+    free=[r for r in parts if r not in FIXED]
     for r in free:
         p=parts[r]; p.r=rng.choice([0,1,2,3]) if not p.kind.startswith('DIP') else 0
         p.x=rng.randint(4,WCELLS-8)*PITCH; p.y=rng.randint(4,HCELLS-5)*PITCH
@@ -28,7 +33,7 @@ def cost(parts,nets,boxes=None):
         xs=[];ys=[]
         for ref,pin in pins:
             x,y=pin_xy(parts,ref,pin); xs.append(x); ys.append(y)
-        w=0.15 if name in N.SHARED else 1.0
+        w=0.15 if name in N.SHARED else (3.0 if name in N.WIDE else 1.0)
         c+=w*((max(xs)-min(xs))+(max(ys)-min(ys)))
     bx={r:p.box() for r,p in parts.items()}
     refs=list(parts)

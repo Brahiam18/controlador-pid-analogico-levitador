@@ -66,6 +66,12 @@ La nomenclatura de las resistencias fue actualizada respecto a la primera versi�
 2. **Topología del integrador.** La resistencia de anti-windup se había conectado *en serie* con el capacitor, dejando la realimentación abierta en continua. Al colocarla en **paralelo** (`R11 ‖ Ci`) el integrador recuperó su comportamiento (salida nula para error nulo, rampa ante un escalón). Además se rediseñó `Ki` (ganancia DC máxima de 80 → 4.5) porque la original saturaba ante errores pequeños.
 3. **Efecto de carga en los divisores.** Los divisores de `V_ref` y `V_off` entregaban menos voltaje del calculado al conectarse a la etapa siguiente. Se intercaló un seguidor de voltaje (U6 y U7) en cada uno.
 
+## Placa de circuito impreso (4 PID con etapa de potencia)
+
+En [`hardware/pcb/`](hardware/pcb/) hay una placa de una sola cara (190.5 × 279.4 mm) con **cuatro controladores PID independientes, cada uno con su etapa de potencia** (TIP122, banco de sensado de 0.1 Ω y bornes de bobina), lista para quemar en baquela: archivos EAGLE para Fusion, PDF de cobre espejado a escala 1:1, lista de puentes y el generador en Python. Está pensada para TL074CN (2 por controlador). El informe todavía describe el diseño con LM741.
+
+![Placa de 4 PID](hardware/pcb/img/ensamble.png)
+
 ## Simulación en Proteus
 
 Cada etapa se simuló y midió con voltímetros virtuales antes del montaje. El esquemático completo está en [`informe/figuras/proteus_circuito_completo.png`](informe/figuras/proteus_circuito_completo.png) y el esquemático hecho a mano en [`informe/figuras/circuito_manuscrito.jpeg`](informe/figuras/circuito_manuscrito.jpeg).

@@ -61,6 +61,12 @@ def connect_shared(parts,routes,W,H,nets,jump_cost=40,top_cost=6.0,via_cost=10):
     for net,rt in routes.items():
         for (l,i,j) in rt['nodes']: g.own[l][(i,j)]=net
         for (i,j) in rt['vias']: g.add_pad(i,j,net)
+        if N.base_net(net) in N.WIDE:     # pista de 2.0 mm: las celdas vecinas quedan reservadas
+            for (l,i,j) in rt['nodes']:
+                if l!=0: continue
+                for di,dj in ((1,0),(-1,0),(0,1),(0,-1)):
+                    k=(i+di,j+dj); cur=g.res[0].get(k)
+                    g.res[0][k]=net if (cur is None or cur==net) else -1
     # nodos de cada red: separar en componentes conexas (por módulo)
     log={}
     for net in sorted(N.SHARED):

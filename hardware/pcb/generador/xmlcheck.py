@@ -70,7 +70,8 @@ def check_sch_vs_brd(sch,brd):
     nets=collections.defaultdict(set)
     for n in t.findall('.//sheet/nets/net'):
         for pr in n.findall('.//pinref'):
-            nets[n.get('name')].add((pr.get('part'),dsmap[parts[pr.get('part')]][(pr.get('gate'),pr.get('pin'))]))
+            for pd_ in dsmap[parts[pr.get('part')]][(pr.get('gate'),pr.get('pin'))].split():
+                nets[n.get('name')].add((pr.get('part'),pd_))
     pads,sigs=load_board(brd)
     bad=[]
     for name,s in sigs.items():

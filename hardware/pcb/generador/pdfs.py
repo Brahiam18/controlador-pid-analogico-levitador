@@ -6,6 +6,7 @@ import collections
 from engine import *
 import netlist as N
 from eagle import merge_edges
+from matplotlib.patches import Polygon as MPoly
 
 MARG=8.0   # mm de margen de página alrededor de la placa
 
@@ -21,7 +22,7 @@ def copper_pdf(path,parts,routes,W,H,mirror=True):
     if mirror: ax.invert_xaxis()
     for net,rt in routes.items():
         for (x0,y0,x1,y1) in merge_edges(rt['edges'],0):
-            ax.plot([x0,x1],[y0,y1],color='k',lw=TRACE*PT,solid_capstyle='round',zorder=2)
+            ax.plot([x0,x1],[y0,y1],color='k',lw=N.width_of(net)*PT,solid_capstyle='round',zorder=2)
     holes=[]
     for ref,p in parts.items():
         for pin,(x,y) in p.pads().items(): holes.append((x,y))
@@ -48,7 +49,7 @@ def assembly_pdf(path,parts,routes,W,H,nets):
     # cobre inferior (fantasma)
     for net,rt in routes.items():
         for (x0,y0,x1,y1) in merge_edges(rt['edges'],0):
-            ax.plot([x0,x1],[y0,y1],color='#c9c2a6',lw=TRACE*PT,solid_capstyle='round',zorder=1)
+            ax.plot([x0,x1],[y0,y1],color='#c9c2a6',lw=N.width_of(net)*PT,solid_capstyle='round',zorder=1)
     # puentes
     jl=jumpers(parts,routes,nets)
     for k,jp in enumerate(jl,1):
@@ -70,6 +71,21 @@ def assembly_pdf(path,parts,routes,W,H,nets):
             if p.r%2==0: ax.add_patch(Rectangle((mx-2.6,my-1.1),5.2,2.2,fc='#d9b77e',ec='k',lw=0.4,zorder=2))
             else: ax.add_patch(Rectangle((mx-1.1,my-2.6),2.2,5.2,fc='#d9b77e',ec='k',lw=0.4,zorder=2))
             ax.plot([ax1,ax2],[ay1,ay2],color='k',lw=0.4,zorder=1.5)
+        elif p.kind in('TO220','DIODE','DIODE_S','TERM2','RSBANK'):
+            def poly(x0_,y0_,x1_,y1_,fc,ec='k',z=2,lw=0.4):
+                q=[rot(a_,b_,p.r) for a_,b_ in ((x0_,y0_),(x1_,y0_),(x1_,y1_),(x0_,y1_))]
+                ax.add_patch(MPoly([(p.x+a_,p.y+b_) for a_,b_ in q],closed=True,fc=fc,ec=ec,lw=lw,zorder=z))
+            if p.kind=='TO220':
+                poly(-2.56,1.4,7.64,5.9,'#6b6b6b'); poly(-2.56,5.0,7.64,5.9,'#222')
+            elif p.kind=='DIODE':
+                poly(2.87,-2.7,12.37,2.7,'#222'); poly(10.4,-2.7,11.4,2.7,'#e8e8e8',ec='none',z=2.1)
+            elif p.kind=='DIODE_S':
+                poly(2.0,-1.1,5.6,1.1,'#d98c2b'); poly(4.7,-1.1,5.3,1.1,'#222',ec='none',z=2.1)
+            elif p.kind=='TERM2':
+                poly(-2.54,-3.8,7.62,4.4,'#2a6fb0')
+            else:
+                for k_ in range(RSB_COLS):
+                    for yc in (12.7,40.64): poly(k_*RSB_DX*G-4.75,yc-11.0,k_*RSB_DX*G+4.75,yc+11.0,'#d9b77e')
         elif p.kind in('CAP','POT','HDR1','HDR2','HDR4'):
             xs=[a for a,b in pts]; ys=[b for a,b in pts]
             ax.add_patch(Rectangle((min(xs)-1.4,min(ys)-1.4),max(xs)-min(xs)+2.8,max(ys)-min(ys)+2.8,fc='#8fb8d8' if p.kind!='CAP' else '#b9d89b',ec='k',lw=0.4,zorder=2,alpha=0.8))
@@ -78,6 +94,8 @@ def assembly_pdf(path,parts,routes,W,H,nets):
             ax.add_patch(Circle((x,y),PAD_D/2,fc='#d4a017',ec='k',lw=0.3,zorder=3))
             ax.add_patch(Circle((x,y),DRILL/2,fc='w',ec='k',lw=0.2,zorder=4))
         cx,cy=(x0+x1)/2,(y0+y1)/2
+        if p.kind=='RSBANK':
+            cx,cy=p.x+rot(2*RSB_DX*G,RSB_YT*G,p.r)[0],p.y+rot(2*RSB_DX*G,RSB_YT*G,p.r)[1]
         ax.text(cx,cy,ref.replace('_',' ',1)+'\n'+val if p.kind!='RES' else ref.replace('_',' ',1)+' '+val,fontsize=3.4,ha='center',va='center',zorder=8,color='#0b3d91' if not p.kind.startswith('DIP') else 'w')
         # marca pin 1
         x,y=pads['1']; ax.add_patch(Circle((x,y),PAD_D/2+0.5,fc='none',ec='#0b3d91',lw=0.5,zorder=6))
