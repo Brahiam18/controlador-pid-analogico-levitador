@@ -66,11 +66,11 @@ La nomenclatura de las resistencias fue actualizada respecto a la primera versi�
 2. **Topología del integrador.** La resistencia de anti-windup se había conectado *en serie* con el capacitor, dejando la realimentación abierta en continua. Al colocarla en **paralelo** (`R11 ‖ Ci`) el integrador recuperó su comportamiento (salida nula para error nulo, rampa ante un escalón). Además se rediseñó `Ki` (ganancia DC máxima de 80 → 4.5) porque la original saturaba ante errores pequeños.
 3. **Efecto de carga en los divisores.** Los divisores de `V_ref` y `V_off` entregaban menos voltaje del calculado al conectarse a la etapa siguiente. Se intercaló un seguidor de voltaje (U6 y U7) en cada uno.
 
-## Placa de circuito impreso (4 PID con etapa de potencia)
+## Placa de circuito impreso (2 PID con etapa de potencia por tarjeta)
 
-En [`hardware/pcb/`](hardware/pcb/) hay una placa de una sola cara (190.5 × 279.4 mm) con **cuatro controladores PID independientes, cada uno con su etapa de potencia** (TIP122, banco de sensado de 0.1 Ω y bornes de bobina), lista para quemar en baquela: archivos EAGLE para Fusion, PDF de cobre espejado a escala 1:1, lista de puentes y el generador en Python. Está pensada para TL074CN (2 por controlador). El informe todavía describe el diseño con LM741.
+En [`hardware/pcb/`](hardware/pcb/) hay una placa de una sola cara (170.2 × 116.8 mm, cabe en una baquela de 20 × 20 cm) con **dos controladores PID independientes, cada uno con su etapa de potencia** (TIP122, banco de sensado de 3 × 1 Ω y bornes de bobina). Para los cuatro controladores se hacen **dos tarjetas iguales**. Está lista para quemar en baquela: archivos EAGLE para Fusion, hojas de cobre espejado a escala 1:1 y de ensamble con los nombres de cada pieza (U1 a U8 sobre los TL074CN), lista de puentes y el generador en Python. El informe todavía describe el diseño con LM741.
 
-![Placa de 4 PID](hardware/pcb/img/ensamble.png)
+![Placa de 2 PID](hardware/pcb/img/ensamble.png)
 
 ## Simulación en Proteus
 

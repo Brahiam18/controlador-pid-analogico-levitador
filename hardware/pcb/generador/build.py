@@ -4,7 +4,7 @@ import netlist as N, assemble as A, verify as V, eagle as E, pdfs
 from engine import *
 import xml.etree.ElementTree as ET
 
-def build(selfile,outdir,gx=3,gy=2,m=2,name='pid4'):
+def build(selfile,outdir,gx=3,gy=2,m=2,name='pid2_levitador'):
     js=json.load(open(selfile))
     N.set_assign(js.get('assign','a1'))
     sel=dict(wc=js['wc'],hc=js['hc'],parts={k:tuple(v) for k,v in js['parts'].items()},
