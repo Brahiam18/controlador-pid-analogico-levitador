@@ -3,24 +3,30 @@ import heapq, pickle, collections
 from engine import *
 import netlist as N
 
-NMOD=4
+NMOD=2          # módulos PID por placa
 class Board: pass
 
 def module_data(sel):
     parts={k:Placed(k,v[0],v[1],v[2],v[3]) for k,v in sel['parts'].items()}
     return parts,sel['routes']
 
+def grid_of(n):
+    """(columnas, filas) de la disposición de n módulos"""
+    return (n,1) if n<=2 else (2,(n+1)//2)
+
 def assemble(sel,gap_x=8*PITCH, gap_y=5*PITCH, margin=3*PITCH):
     """devuelve parts (con prefijo), routes (por red global), W,H"""
     wc,hc=sel['wc'],sel['hc']
     MW,MH=wc*PITCH,hc*PITCH
-    W=margin*2+2*MW+gap_x; H=margin*2+2*MH+gap_y
+    ncols,nrows=grid_of(NMOD)
+    W=margin*2+ncols*MW+(ncols-1)*gap_x; H=margin*2+nrows*MH+(nrows-1)*gap_y
     mparts,mroutes=module_data(sel)
     parts={}; routes=collections.defaultdict(lambda:{'edges':set(),'vias':set(),'nodes':set()})
     offs=[]
     k=0
-    for row in (1,0):          # fila superior = P1,P2 ; inferior = P3,P4
-        for col in (0,1):
+    for row in range(nrows-1,-1,-1):      # fila superior primero: P1,P2,...
+        for col in range(ncols):
+            if k>=NMOD: break
             k+=1
             ox=margin+col*(MW+gap_x); oy=margin+row*(MH+gap_y)
             offs.append((k,ox,oy))

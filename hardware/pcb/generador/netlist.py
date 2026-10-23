@@ -8,6 +8,7 @@ TL074 (DIP-14): 1 OUT1  2 IN1-  3 IN1+  4 V+  5 IN2+  6 IN2-  7 OUT2
                 8 OUT3  9 IN3-  10 IN3+ 11 V-  12 IN4+ 13 IN4- 14 OUT4
 """
 # canal -> (pin OUT, pin IN-, pin IN+) del TL074
+from engine import RSB_COLS
 CH = {1:('1','2','3'), 2:('7','6','5'), 3:('8','9','10'), 4:('14','13','12')}
 GATE = {1:'A', 2:'B', 3:'C', 4:'D'}
 SLOTS = [('IC1',1),('IC1',2),('IC1',3),('IC1',4),('IC2',1),('IC2',2),('IC2',3),('IC2',4)]
@@ -29,9 +30,9 @@ PARTS = {
  'R13':('RES','240k'),'R14':('RES','96k'),'R15':('RES','160k'),
  'POT1':('POT','22k'),'POT2':('POT','220k'),'POT3':('POT','22k'),
  'C1':('CAP','1u'),'C2':('CAP','1u'),
- 'R16':('RES','270'),'R17':('RES','56k'),'R18':('RES','1k'),'RBASE':('RES','270'),'C3':('CAP','10n (opc.)'),
+ 'R16':('RES','270'),'R17':('RES','10k'),'R18':('RES','1k'),'RBASE':('RES','270'),'C3':('CAP','10n (opc.)'),
  'POT4':('POT','10k'),'D1':('DIODE','1N5408'),'D2':('DIODE_S','1N4148'),'Q1':('TO220','TIP122'),
- 'RS':('RSBANK','10 x 1R 5W'),
+ 'RS':('RSBANK','3 x 1R 5W'),
  'J_COIL':('TERM2','BOBINA'),'J_VBOB':('TERM2','VBOB'),'JP_GND':('HDR2','GND-PGND'),
  'J_IN':('HDR1','VSENSOR'),'J_OUT':('HDR1','VPID'),'J_PWR':('HDR4','PWR'),
 }
@@ -85,7 +86,7 @@ def build(assign=None):
     add('VINP',('R16','2'),INP['U8'])
     # realimentación de corriente: emisor -> R18 -> entrada - ; C3 opcional (salida -> entrada -)
     add('ISENSE',('Q1','3'),('R18','1'))
-    for k in range(6,16): add('ISENSE',('RS','%d'%k))
+    for k in range(RSB_COLS+1,2*RSB_COLS+1): add('ISENSE',('RS','%d'%k))
     add('INMU',('R18','2'),('C3','1'),INM['U8'])
     add('IOUT',OUT['U8'],('C3','2'),('RBASE','1'))
     add('BASEA',('RBASE','2'),('D2','1'))
@@ -93,7 +94,7 @@ def build(assign=None):
     # colector, bobina y protección
     add('COILN',('Q1','2'),('D1','1'),('J_COIL','2'))
     add('+VBOB',('D1','2'),('J_COIL','1'),('J_VBOB','1'))
-    for k in list(range(1,6))+list(range(16,21)): add('PGND',('RS','%d'%k))
+    for k in range(1,RSB_COLS+1): add('PGND',('RS','%d'%k))
     add('PGND',('J_VBOB','2'),('JP_GND','2')); add('GND',('JP_GND','1'))
     # conectores de alimentación del módulo
     add('+16V',('J_PWR','1')); add('-16V',('J_PWR','2')); add('GND',('J_PWR','3')); add('+5V',('J_PWR','4'))

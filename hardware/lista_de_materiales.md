@@ -50,9 +50,9 @@ Esquema de Proteus de la etapa de potencia: convertidor tensión‑corriente con
 | R16 | Resistencia | 270 Ω | 270 Ω | 1 | Entre el divisor y la entrada + de U8 |
 | RBASE | Resistencia | 270 Ω | 270 Ω | 1 | Entre la salida de U8 y la base del TIP122 |
 | Q1 | TIP122 | — | — | 1 | Darlington NPN; requiere disipador |
-| R_sense | Resistencia 1 Ω / 5 W | 1 Ω (una, en la simulación) | 0.1 Ω (10 × 1 Ω en paralelo) | 10 | Con 10 en paralelo la ganancia es 10 A por voltio de entrada |
+| R_sense | Resistencia 1 Ω / 5 W | 1 Ω (una, en la simulación) | 0.33 Ω (3 × 1 Ω en paralelo) | 3 | Por PID. Con 3 en paralelo la corriente es I = 3 · k · V_PID (k es la fracción del divisor R17 + Pot4) |
 | D1 | 1N5408 | — | — | 1 | Protección contra el pico inductivo de la bobina |
-| R17 | Resistencia | — | 56 kΩ | 1 | Agregada en la PCB: divisor de calibración |
+| R17 | Resistencia | — | 10 kΩ | 1 | Agregada en la PCB: divisor de calibración |
 | Pot4 | Potenciómetro | — | 10 kΩ | 1 | Agregado en la PCB: ajusta la corriente de la bobina |
 | D2 | 1N4148 | — | — | 1 | Agregado en la PCB: diodo en serie con la base |
 | R18 | Resistencia | — | 1 kΩ | 1 | Agregada en la PCB: en serie con la entrada − de U8 |

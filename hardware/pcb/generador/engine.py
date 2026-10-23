@@ -9,9 +9,8 @@ def rot(x,y,r):
     return x,y
 
 # huellas: lista de (pin, x, y) en mm, en coordenadas locales (origen = pin 1)
-RSB_COLS=5; RSB_DX=8     # banco de sensado: 5 columnas separadas 8 celdas (10.16 mm)
-RSB_YA,RSB_YI1,RSB_YT,RSB_YI2,RSB_YC=0,20,21,22,42   # filas (en celdas de 1.27 mm)
-RSB_XB=-4                # columna del puente de tierra (celdas)
+RSB_COLS=3; RSB_DX=8     # banco de sensado: 3 resistencias de 5 W en una fila, separadas 8 celdas (10.16 mm)
+RSB_YA=0; RSB_YI=20; RSB_YT=RSB_YI   # pads de tierra de potencia abajo (y=0) y de ISENSE arriba (y=20 celdas = 25.4 mm, largo de la resistencia)
 
 def fp_pads(kind):
     if kind=='DIP8':
@@ -36,10 +35,8 @@ def fp_pads(kind):
         p=[]
         for k in range(RSB_COLS):
             x=k*RSB_DX*G
-            p.append(('%d'%(k+1),x,RSB_YA*G))        # abajo: tierra de potencia
-            p.append(('%d'%(k+6),x,RSB_YI1*G))       # ISENSE (mitad inferior)
-            p.append(('%d'%(k+11),x,RSB_YI2*G))      # ISENSE (mitad superior)
-            p.append(('%d'%(k+16),x,RSB_YC*G))       # arriba: tierra de potencia
+            p.append(('%d'%(k+1),x,RSB_YA*G))                # abajo: tierra de potencia (PGND)
+            p.append(('%d'%(k+1+RSB_COLS),x,RSB_YI*G))       # arriba: ISENSE (emisor del TIP122)
         return sorted(p,key=lambda t:int(t[0]))
     raise KeyError(kind)
 
@@ -51,7 +48,7 @@ def drill_of(kind): return DRILL_OF.get(kind,DRILL)
 BOX_OF={
  'TO220':(-3.0,-4.0,8.1,6.0),
  'TERM2':(-3.6,-5.2,8.7,5.6),
- 'RSBANK':((RSB_XB-2)*G-1.0,-3.2,(RSB_COLS-1)*RSB_DX*G+3.6,RSB_YC*G+3.2),
+ 'RSBANK':(-5.5,-3.2,(RSB_COLS-1)*RSB_DX*G+5.5,RSB_YI*G+3.2),
 }
 def fp_box(kind):
     """caja de cuerpo (xmin,ymin,xmax,ymax) local, para evitar solapes"""
@@ -61,29 +58,25 @@ def fp_box(kind):
     return (min(xs)-m,min(ys)-m,max(xs)+m,max(ys)+m)
 
 def frozen_routes(parts):
-    """Pistas fijas que forman parte de una huella (troncales del banco de sensado).
-    Devuelve {red_local: {'nodes','edges'}} en celdas de la placa/módulo (capa 0)."""
+    """Pistas fijas que forman parte de una huella (troncales del banco de sensado):
+    una barra de PGND por los pads inferiores y otra de ISENSE por los superiores.
+    Se calculan con las coordenadas reales de los pads, así que valen con cualquier giro."""
     out={}
-    def seg(net,i0,j0,i1,j1,R):
+    def seg(i0,j0,i1,j1,R):
         di=(i1>i0)-(i1<i0); dj=(j1>j0)-(j1<j0)
         i,j=i0,j0
+        R['nodes'].add((0,i,j))
         while (i,j)!=(i1,j1):
             a=(0,i,j); b=(0,i+di,j+dj)
             R['edges'].add((a,b)); R['nodes'].add(a); R['nodes'].add(b)
             i,j=i+di,j+dj
-        R['nodes'].add((0,i1,j1))
     for ref,p in parts.items():
         if p.kind!='RSBANK': continue
-        i0=int(round(p.x/G)); j0=int(round(p.y/G))
-        P=out.setdefault('PGND',{'nodes':set(),'edges':set()}); I=out.setdefault('ISENSE',{'nodes':set(),'edges':set()})
-        xe=(RSB_COLS-1)*RSB_DX
-        seg('PGND',i0+RSB_XB,j0+RSB_YA,i0+xe,j0+RSB_YA,P)
-        seg('PGND',i0+RSB_XB,j0+RSB_YC,i0+xe,j0+RSB_YC,P)
-        seg('PGND',i0+RSB_XB,j0+RSB_YA,i0+RSB_XB,j0+RSB_YC,P)
-        seg('ISENSE',i0,j0+RSB_YT,i0+xe,j0+RSB_YT,I)
-        for k in range(RSB_COLS):
-            seg('ISENSE',i0+k*RSB_DX,j0+RSB_YI1,i0+k*RSB_DX,j0+RSB_YT,I)
-            seg('ISENSE',i0+k*RSB_DX,j0+RSB_YI2,i0+k*RSB_DX,j0+RSB_YT,I)
+        pads=p.pads()
+        for net,pins in (('PGND',range(1,RSB_COLS+1)),('ISENSE',range(RSB_COLS+1,2*RSB_COLS+1))):
+            R=out.setdefault(net,{'nodes':set(),'edges':set()})
+            pts=sorted((int(round(pads[str(k)][0]/G)),int(round(pads[str(k)][1]/G))) for k in pins)
+            for a_,b_ in zip(pts,pts[1:]): seg(a_[0],a_[1],b_[0],b_[1],R)
     return out
 
 class Placed:

@@ -17,8 +17,8 @@ def make_parts(seed):
     parts['J_PWR'].r=0; parts['J_PWR'].x=6*PITCH; parts['J_PWR'].y=(HCELLS-2)*PITCH
     # banco de sensado (huella con pistas troncales) abajo a la izquierda; bornes de alimentación y bobina a su derecha
     parts['RS'].r=0; parts['RS'].x=5*PITCH; parts['RS'].y=4*PITCH
-    parts['J_VBOB'].r=0; parts['J_VBOB'].x=25*PITCH; parts['J_VBOB'].y=3*PITCH
-    parts['J_COIL'].r=0; parts['J_COIL'].x=25*PITCH; parts['J_COIL'].y=9*PITCH
+    parts['J_VBOB'].r=0; parts['J_VBOB'].x=(WCELLS-9)*PITCH; parts['J_VBOB'].y=3*PITCH
+    parts['J_COIL'].r=0; parts['J_COIL'].x=(WCELLS-9)*PITCH; parts['J_COIL'].y=9*PITCH
     free=[r for r in parts if r not in FIXED]
     for r in free:
         p=parts[r]; p.r=rng.choice([0,1,2,3]) if not p.kind.startswith('DIP') else 0

@@ -16,7 +16,7 @@ def build(selfile,outdir,gx=3,gy=2,m=2,name='pid4'):
     assert not prob,prob[:5]
     # etiquetas de serigrafía
     labels=[]
-    for k in range(1,5):
+    for k in range(1,A.NMOD+1):
         p=parts['P%d_J_PWR'%k]
         for pin,txt in zip('1234',('+16V','-16V','GND','+5V')):
             x,y=p.pads()[pin]; labels.append((x,y-3.6,txt,1.0,'R0'))
@@ -31,11 +31,11 @@ def build(selfile,outdir,gx=3,gy=2,m=2,name='pid4'):
                 x,y=p.pads()[pin]
                 dx,dy=(-1.0,-3.4) if ref in('J_COIL','J_VBOB') else ((-0.5,-3.0) if ref=='Q1' else (-1.0,-2.8))
                 labels.append((x+dx,y+dy,txt,0.9 if ref in('Q1','JP_GND') else 1.0,'R0'))
-        labels.append((parts['P%d_RS'%k].x+1.0,parts['P%d_RS'%k].y+RSB_YT*G+4.8,'RS 10 x 1R/5W = 0.1R',1.0,'R0'))
+        labels.append((parts['P%d_RS'%k].x+1.0,parts['P%d_RS'%k].y+RSB_YT*G+4.8,'RS 3 x 1R/5W = 0.33R',1.0,'R0'))
         # titulo del módulo
         x0,y0,x1,y1=[min(v) if i<2 else max(v) for i,v in enumerate(zip(*[q.box() for r,q in parts.items() if r.startswith('P%d_'%k)]))]
         labels.append((x0+1,y1-1.5,'PID %d'%k,2.2,'R0'))
-    for k in range(1,5):
+    for k in range(1,A.NMOD+1):
         for (ic,pin),stage in N.chan_labels().items():
             p=parts['P%d_%s'%(k,ic)]
             x,y=p.pads()[pin]
@@ -43,13 +43,13 @@ def build(selfile,outdir,gx=3,gy=2,m=2,name='pid4'):
             labels.append((p.x+3.81-0.55*len(txt)*0.9,y-0.5,txt,1.0,'R0'))
     open(outdir+'/'+name+'.brd','w',encoding='utf-8').write(E.brd_xml(parts,routes,W,H,nets,labels))
     # esquemático
-    bymod={k:{} for k in range(1,5)}
-    for k in range(1,5):
+    bymod={k:{} for k in range(1,A.NMOD+1)}
+    for k in range(1,A.NMOD+1):
         pre='P%d_'%k
         for net,pins in N.NETS.items():
             g=net if net in N.SHARED else pre+net
             bymod[k][g]=list(pins)
-    open(outdir+'/'+name+'.sch','w',encoding='utf-8').write(E.sch_xml(4,bymod))
+    open(outdir+'/'+name+'.sch','w',encoding='utf-8').write(E.sch_xml(A.NMOD,bymod))
     for f_ in ('.brd','.sch'): ET.parse(outdir+'/'+name+f_)
     return parts,routes,W,H,nets
 if __name__=='__main__':

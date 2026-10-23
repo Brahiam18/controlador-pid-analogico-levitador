@@ -84,17 +84,16 @@ def packages_xml():
     L+=rect_lines(-2.54,-3.8,7.62,4.4)
     L.append('<text x="2.54" y="5.2" size="1.27" layer="25" align="bottom-center">&gt;NAME</text>')
     P.append(('TERM2','Bornera de tornillo de 2 vías, paso 5.08 mm',L))
-    # RSBANK: 10 resistencias axiales de 5 W en paralelo, en dos filas de 5 (cuerpo de 22 x 9.5 mm)
+    # RSBANK: 3 resistencias axiales de 5 W en paralelo, en una fila (cuerpo de 22 x 9.5 mm)
     L=[]
     for p_,x_,y_ in fp_pads('RSBANK'):
         L.append(pad(p_,x_,y_,'square' if p_=='1' else 'round',drill_of('RSBANK')))
     for k in range(RSB_COLS):
-        x_=k*RSB_DX*G
-        for yc in (12.7,40.64):
-            L+=rect_lines(x_-4.75,yc-11.0,x_+4.75,yc+11.0)
-    L.append('<text x="%s" y="%s" size="1.27" layer="25" align="center">&gt;NAME</text>'%(f(2*RSB_DX*G),f(RSB_YT*G+3.5)))
-    L.append('<text x="%s" y="%s" size="1.0" layer="27" align="center">&gt;VALUE</text>'%(f(2*RSB_DX*G),f(RSB_YT*G-3.5)))
-    P.append(('RSBANK','Banco de sensado: 10 x 1 ohm / 5 W axiales en paralelo (0.1 ohm); 20 pads, ver README',L))
+        x_=k*RSB_DX*G; yc=RSB_YI*G/2
+        L+=rect_lines(x_-4.75,yc-11.0,x_+4.75,yc+11.0)
+    L.append('<text x="%s" y="%s" size="1.27" layer="25" align="center">&gt;NAME</text>'%(f((RSB_COLS-1)*RSB_DX*G/2),f(RSB_YI*G+3.5)))
+    L.append('<text x="%s" y="%s" size="1.0" layer="27" align="center">&gt;VALUE</text>'%(f((RSB_COLS-1)*RSB_DX*G/2),f(-3.5)))
+    P.append(('RSBANK','Banco de sensado: %d x 1 ohm / 5 W axiales en paralelo (%.2f ohm); %d pads, ver README'%(RSB_COLS,1.0/RSB_COLS,2*RSB_COLS),L))
     # HDR2/HDR4
     for nm,n in (('HDR1',1),('HDR2',2),('HDR4',4)):
         L=[pad(str(i+1),i*PITCH,0,'square' if i==0 else 'round') for i in range(n)]
@@ -173,7 +172,7 @@ DEVSETS={ # nombre: prefijo, paquete, compuertas [(nombre,símbolo,addlevel)], c
  'D1N5408':dict(prefix='D',package='DIODE',gates=[('G$1','D','next')],connects=[('G$1','A','1'),('G$1','K','2')]),
  'D1N4148':dict(prefix='D',package='DIODE_S',gates=[('G$1','D','next')],connects=[('G$1','A','1'),('G$1','K','2')]),
  'TERM2':_single('HDR2','TERM2','J',['1','2']),
- 'RSB':dict(prefix='RS',package='RSBANK',gates=[('G$1','R','next')],connects=[('G$1','1',' '.join(str(k) for k in range(6,16))),('G$1','2',' '.join(str(k) for k in list(range(1,6))+list(range(16,21))))]),
+ 'RSB':dict(prefix='RS',package='RSBANK',gates=[('G$1','R','next')],connects=[('G$1','1',' '.join(str(k) for k in range(RSB_COLS+1,2*RSB_COLS+1))),('G$1','2',' '.join(str(k) for k in range(1,RSB_COLS+1)))]),
  'C':_single('C','CAP','C',['1','2']),
  'POT':_single('POT','POT','RV',['1','2','3']),
  'HDR1':_single('HDR1','HDR1','J',['1']),
@@ -264,7 +263,7 @@ def sch_xml(nmod,nets_global_by_module):
         for ref in N.PARTS:
             kind,val=N.PARTS[ref]
             allparts.append('<part name="%s%s" library="%s" deviceset="%s" device="" value="%s"/>'%(pre,ref,LIB,KIND2DEV[kind],escape(val)))
-    out=HEAD+layers_xml()+'<schematic xreflabel="%F%N/%S.%C%R" xrefpart="/%S.%C%R">\n<description>Cuatro controladores PID analógicos (levitador magnético) - Brahiam Alberto Campiño Romero</description>\n'
+    out=HEAD+layers_xml()+'<schematic xreflabel="%F%N/%S.%C%R" xrefpart="/%S.%C%R">\n<description>Controladores PID analógicos con etapa de potencia (levitador magnético) - Brahiam Alberto Campiño Romero</description>\n'
     out+=libraries_sch()+'<attributes>\n</attributes>\n<variantdefs>\n</variantdefs>\n<classes>\n<class number="0" name="default" width="0" drill="0"/>\n</classes>\n<parts>\n'+'\n'.join(allparts)+'\n</parts>\n<sheets>\n'+sheets+'</sheets>\n</schematic>\n'+TAIL
     return out
 
@@ -324,7 +323,7 @@ def brd_xml(parts,routes,W,H,nets,labels=()):
                 ('rlMinPadBottom','0.5mm'),('rlMaxPadBottom','2mm'),('rlMinViaOuter','0.5mm'),('rlMaxViaOuter','2mm')):
         dr+='<param name="%s" value="%s"/>\n'%(k,v)
     dr+='</designrules>\n'
-    out=HEAD+layers_xml()+'<board>\n<description>Placa de 4 controladores PID analógicos, una cara (cobre inferior) con puentes de alambre</description>\n<plain>\n'+plain+'</plain>\n'
+    out=HEAD+layers_xml()+'<board>\n<description>Placa de controladores PID analógicos con etapa de potencia, una cara (cobre inferior) con puentes de alambre</description>\n<plain>\n'+plain+'</plain>\n'
     out+=libraries_brd()+'<attributes>\n</attributes>\n<variantdefs>\n</variantdefs>\n<classes>\n<class number="0" name="default" width="%s" drill="%s"/>\n</classes>\n'%(f(TRACE),f(DRILL))
     out+=dr+'<elements>\n'+elems+'</elements>\n<signals>\n'+sig+'</signals>\n</board>\n'+TAIL
     return out

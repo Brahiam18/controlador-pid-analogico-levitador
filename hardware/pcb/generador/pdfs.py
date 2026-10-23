@@ -5,14 +5,17 @@ from matplotlib.backends.backend_pdf import PdfPages
 import collections, math
 from engine import *
 import netlist as N
+from assemble import NMOD
 from eagle import merge_edges
 from matplotlib.patches import Polygon as MPoly
 
 MARG=8.0   # mm de margen de página alrededor de la placa
 
-def _fig(W,H):
-    fig=plt.figure(figsize=((W+2*MARG)/25.4,(H+2*MARG)/25.4))
-    ax=fig.add_axes([0,0,1,1]); ax.set_xlim(-MARG,W+MARG); ax.set_ylim(-MARG,H+MARG); ax.set_aspect('equal'); ax.axis('off')
+PAGE=(210.0,279.0)   # hoja que entra en A4 y en Carta sin escalar; la placa va arriba y centrada
+def _fig(W,H,page=PAGE):
+    PW,PH=page
+    fig=plt.figure(figsize=(PW/25.4,PH/25.4))
+    ax=fig.add_axes([0,0,1,1]); ax.set_xlim(W/2-PW/2,W/2+PW/2); ax.set_ylim(H+MARG+4-PH,H+MARG+4); ax.set_aspect('equal'); ax.axis('off')
     return fig,ax
 
 PT=72/25.4   # puntos por mm
@@ -83,7 +86,7 @@ def _draw_assembly(ax,parts,routes,nets,jitems,fs=3.4,short=False,jfs=4.5):
                 poly(-2.54,-3.8,7.62,4.4,'#2a6fb0')
             else:
                 for k_ in range(RSB_COLS):
-                    for yc in (12.7,40.64): poly(k_*RSB_DX*G-4.75,yc-11.0,k_*RSB_DX*G+4.75,yc+11.0,'#d9b77e')
+                    yc=RSB_YI*G/2; poly(k_*RSB_DX*G-4.75,yc-11.0,k_*RSB_DX*G+4.75,yc+11.0,'#d9b77e')
         elif p.kind in('CAP','POT','HDR1','HDR2','HDR4'):
             xs=[a for a,b in pts]; ys=[b for a,b in pts]
             ax.add_patch(Rectangle((min(xs)-1.4,min(ys)-1.4),max(xs)-min(xs)+2.8,max(ys)-min(ys)+2.8,fc='#8fb8d8' if p.kind!='CAP' else '#b9d89b',ec='k',lw=0.4,zorder=2,alpha=0.8))
@@ -92,7 +95,7 @@ def _draw_assembly(ax,parts,routes,nets,jitems,fs=3.4,short=False,jfs=4.5):
             ax.add_patch(Circle((x,y),DRILL/2,fc='w',ec='k',lw=0.2,zorder=4))
         cx,cy=(x0+x1)/2,(y0+y1)/2
         if p.kind=='RSBANK':
-            cx,cy=p.x+rot(2*RSB_DX*G,RSB_YT*G,p.r)[0],p.y+rot(2*RSB_DX*G,RSB_YT*G,p.r)[1]
+            cx,cy=p.x+rot((RSB_COLS-1)*RSB_DX*G/2,RSB_YI*G/2,p.r)[0],p.y+rot((RSB_COLS-1)*RSB_DX*G/2,RSB_YI*G/2,p.r)[1]
         ax.text(cx,cy,name+'\n'+val if p.kind!='RES' else name+' '+val,fontsize=fs,ha='center',va='center',zorder=8,color='#0b3d91' if not p.kind.startswith('DIP') else 'w')
         # marca pin 1
         x,y=pads['1']; ax.add_patch(Circle((x,y),PAD_D/2+0.5,fc='none',ec='#0b3d91',lw=0.5,zorder=6))
@@ -131,7 +134,7 @@ def assembly_pdf(path,parts,routes,W,H,nets):
         pdf.savefig(fig); plt.close(fig)
         # paginas 2-5: cada PID ampliado
         PW,PH=210.0,297.0
-        for k in range(1,5):
+        for k in range(1,NMOD+1):
             pk={r:q for r,q in parts.items() if r.startswith('P%d_'%k)}
             bx=[q.box() for q in pk.values()]
             x0=min(b[0] for b in bx); y0=min(b[1] for b in bx); x1=max(b[2] for b in bx); y1=max(b[3] for b in bx)
