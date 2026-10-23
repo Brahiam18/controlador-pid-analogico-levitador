@@ -99,6 +99,16 @@ def _draw_assembly(ax,parts,routes,nets,jitems,fs=3.4,short=False,jfs=4.5):
         ax.text(cx,cy,name+'\n'+val if p.kind!='RES' else name+' '+val,fontsize=fs,ha='center',va='center',zorder=8,color='#0b3d91' if not p.kind.startswith('DIP') else 'w')
         # marca pin 1
         x,y=pads['1']; ax.add_patch(Circle((x,y),PAD_D/2+0.5,fc='none',ec='#0b3d91',lw=0.5,zorder=6))
+    # nombre de cada pin de regletas, borneras, transistor y diodos
+    PINLAB={'J_PWR':('+16V','-16V','GND','+5V'),'J_IN':('VSEN',),'J_OUT':('VPID',),'J_COIL':('BOB+','BOB-'),
+            'J_VBOB':('+VBOB','PGND'),'JP_GND':('GND','PGND'),'Q1':('B','C','E'),'D1':('A','K'),'D2':('A','K')}
+    for ref,p in parts.items():
+        loc=ref.split('_',1)[1]
+        if loc not in PINLAB: continue
+        pads=p.pads()
+        for pin,txt in zip(sorted(pads,key=int),PINLAB[loc]):
+            x,y=pads[pin]
+            ax.text(x,y+2.0,txt,fontsize=fs*0.8,rotation=90,ha='center',va='bottom',color='#8b0000',fontweight='bold',zorder=9)
     # etapas U1..U8 sobre el cuerpo de cada TL074 (en la fila del pin de salida)
     for ref,p in parts.items():
         if not p.kind.startswith('DIP'): continue

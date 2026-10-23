@@ -19,7 +19,7 @@ Placa de **una sola cara** para fabricar en baquela (transferencia de tóner o f
 |---|---|
 | [`pid2_levitador.sch`](pid2_levitador.sch) y [`pid2_levitador.brd`](pid2_levitador.brd) | Esquemático (una hoja por PID) y placa en formato EAGLE; Fusion los abre en Electronics |
 | [`cobre_espejado_1a1.pdf`](cobre_espejado_1a1.pdf) | **Hoja de cobre espejado a escala 1:1** para imprimir y quemar la placa (imprimirla dos veces: una por tarjeta) |
-| [`ensamble_1a1.pdf`](ensamble_1a1.pdf) | **Hoja del lado de componentes** (3 páginas: la placa completa 1:1 y cada PID ampliado): nombre de cada pieza, amplificadores U1 a U8 marcados sobre cada TL074 y puentes en rojo (J1 a J24) |
+| [`ensamble_1a1.pdf`](ensamble_1a1.pdf) | **Hoja del lado de componentes** (3 páginas: la placa completa 1:1 y cada PID ampliado): nombre de cada pieza y de cada pin de las regletas, borneras, TIP122 y diodos, amplificadores U1 a U8 marcados sobre cada TL074 y puentes en rojo (J1 a J24) |
 | [`puentes.md`](puentes.md) | Lista de los 24 puentes con red, longitud y extremos |
 | [`generador/`](generador/) | Código en Python que genera todo lo anterior a partir de un módulo ruteado (`modulo_ruteado.json`) |
 
