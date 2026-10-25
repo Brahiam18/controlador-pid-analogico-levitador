@@ -1,0 +1,27 @@
+% ---------- Etapa 1: entrada AC, transformador, rectificadores de media onda y filtros ----------
+% red eléctrica y primario (fuera de la placa)
+\draw (-6.2,1.5) node[ocirc, label=left:{\scriptsize L}]{} to[fuse, l=$F_1$ T315 mA] (-3.8,1.5) to[spst, l=$S_1$] (-2.0,1.5) -- (-1.6,1.5);
+\draw (-6.2,-1.5) node[ocirc, label=left:{\scriptsize N}]{} -- (-1.6,-1.5);
+\node[font=\scriptsize, align=center] at (-5.0,0) {115 V\\60 Hz};
+\draw[dashed, gray] (1.0,-2.6) -- (1.0,3.4); \node[gray, font=\scriptsize, anchor=south east] at (0.9,2.9) {fuera de la placa}; \node[gray, font=\scriptsize, anchor=south west] at (1.1,2.9) {placa};
+% transformador M509 (núcleo de hierro)
+\draw (-1.6,1.5) to[L] (-1.6,-1.5);
+\draw (0.0,1.5) to[L] (0.0,-1.5);
+\draw[thick] (-0.92,1.4) -- (-0.92,-1.4); \draw[thick] (-0.68,1.4) -- (-0.68,-1.4);
+\node[font=\footnotesize\bfseries] at (-0.8,2.4) {$T_1$ M509};
+\node[font=\scriptsize] at (-0.8,1.95) {115 V : 9-6-0-6-9 V, 2 A};
+\draw (0,0) -- (0.3,0); \node[font=\tiny, align=center] at (-0.4,-2.15) {tomas 0 y 6 V\\aisladas, sin conexión};
+% secundario: extremo superior (9 V) -> F2 -> AC ; extremo inferior (9 V) -> GND
+\draw (0,1.5) -- (1.4,1.5) node[ocirc]{} node[above, font=\tiny]{J1-2} to[fuse, l=$F_2$ 1 A] (3.6,1.5) node[circ](ac){} node[below right, net]{AC};
+\draw (0,-1.5) -- (1.4,-1.5) node[ocirc]{} node[below, font=\tiny]{J1-1} -- (2.2,-1.5) node[ground]{};
+\node[font=\scriptsize, align=left, anchor=west] at (1.5,0) {18 V$_\mathrm{rms}$ entre\\los extremos};
+% rama positiva: D1 + C1
+\draw (ac) -- (3.6,3.0) to[D*, l=$D_1$ 1N4007] (6.2,3.0) node[circ](vp){};
+\draw (vp) to[eC, l_=$C_1$, a^={\SI{3300}{\micro\farad}/50 V}] (6.2,0.9) node[ground]{};
+\draw (vp) -- (8.6,3.0) node[ocirc]{} node[right, net]{$V_{RAW+}$ (TP1)};
+% rama negativa: D2 + C2
+\draw (ac) -- (3.6,-0.4);
+\draw (6.2,-0.4) to[D*, l_=$D_2$ 1N4007] (3.6,-0.4);
+\draw (6.2,-0.4) node[circ](vn){};
+\draw (vn) to[eC, invert, l=$C_2$, a_={\SI{3300}{\micro\farad}/50 V}] (6.2,-2.5) node[ground]{};
+\draw (vn) -- (8.6,-0.4) node[ocirc]{} node[right, net]{$V_{RAW-}$ (TP2)};

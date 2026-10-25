@@ -25,4 +25,4 @@ Resumen para retomar el trabajo en otra conversación (actualizado 2026-10-25).
 - Reabrir los nuevos `.sch`/`.brd` en Fusion (borrar `pid4_levitador` y subir `pid2_levitador`).
 - Vref ajustable (pot de 500k) y compensación del campo de la bobina (Rc) todavía no están en la PCB.
 - Montaje práctico: grabado de las dos tarjetas (revisar cortos +16 V / GND antes de soldar), soldadura y pruebas.
-- Proyecto de la fuente (monografía): lo que pida la monografía manda; no diseñar la fuente hasta recibirla.
+- Fuente ±16 V / +5 V (monografía, tema 3) diseñada en `fuente/`: informe, esquemáticos, simulación, PCB (EAGLE + cobre 1:1), lista de materiales y plan de pruebas. Falta fabricar, montar y llenar `fuente/pruebas/mediciones.csv`.

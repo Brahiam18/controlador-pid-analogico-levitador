@@ -1,0 +1,31 @@
+% ---------- Etapa 3: limitador de corriente + regulador LM337 de -16 V (imagen especular de la etapa 2) ----------
+% y = 0: riel; y = -4: GND
+\draw (0,0) node[ocirc]{} node[left, net]{$V_{RAW-}$} -- (1.0,0) node[circ](a){} to[R, l=$R_{SC2}$, a_={\SI{2.2}{\ohm} 1 W}] (3.4,0) node[circ](ve){} node[above, font=\tiny]{$V_{E3}$} -- (3.9,0);
+\draw (3.9,0) node[npn, rotate=-90, xscale=-1, anchor=E](Q3){};
+\node[lbl, anchor=south] at ($(Q3.B)+(0,1.0)$) {$Q_3$ TIP31C};
+\draw (Q3.C) -- (6.0,0) node[circ](vin){} node[above, font=\tiny]{$V_{IN2}$} -- (7.0,0);
+\draw (1.6,-1.6) node[npn, xscale=-1, yscale=-1, anchor=B](Q4){};
+\draw (Q4.B) -- (2.6,-1.6) -- (2.6,-0.8) -| (ve);
+\draw (Q4.E) |- (a);
+\node[lbl, anchor=east] at ($(Q4.B)+(-1.0,0)$) {\lab{$Q_4$}{BC547}};
+\draw (Q4.C) |- (Q3.B |- 0,-2.5) node[circ](vb){};
+\draw (Q3.B) -- (vb) node[right, font=\tiny]{$V_{B3}$};
+\draw (vb) to[R, l_={\lab{$R_4$}{\SI{820}{\ohm} 2 W}}] (Q3.B |- 0,-4);
+\draw (vin) to[C, l_={\lab{$C_6$}{\SI{100}{\nano\farad}}}] (6.0,-4);
+\reg{(7.0,0)}{U2 LM337T}{2}{3}{1}
+\draw (9.6,0) -- (10.4,0) node[circ](out){};
+\draw (out) -- (10.4,1.4) to[D*, invert, l_=$D_5$ 1N4007] (6.6,1.4) -- (6.6,0) node[circ]{};
+\draw (8.3,-0.7) -- (8.3,-1.6) node[circ](adj){} node[above left, font=\tiny]{ADJ2};
+\draw (adj) to[R, l_={\lab{$R_8$}{\SI{1.3}{\kilo\ohm} 1 \%}}] (8.3,-2.8) to[vR, l_={\lab{$RV_2$}{\SI{200}{\ohm} 3296}}] (8.3,-4);
+\draw (adj) -- (9.6,-1.6) node[circ]{} to[eC, invert, l={\lab{$C_8$}{\SI{10}{\micro\farad}/25 V}}] (9.6,-4);
+\draw (out) -- (11.2,0) node[circ]{} to[R, l={\lab{$R_6$}{\SI{120}{\ohm} 1 \%}}] (11.2,-1.6) -- (9.6,-1.6);
+\draw (11.2,-1.6) node[circ]{} -- (13.2,-1.6) to[D*, invert, l_={\lab{$D_6$}{1N4148}}] (13.2,0) node[circ]{};
+\draw (out) -- (21.0,0) node[ocirc]{} node[right, net]{$-$16 V};
+\draw (15.0,0) node[circ]{} to[eC, invert, l={\lab{$C_{11}$}{\SI{10}{\micro\farad} tánt.}}] (15.0,-4);
+\draw (16.7,0) node[circ]{} to[C, l={\lab{$C_{12}$}{\SI{100}{\nano\farad}}}] (16.7,-4);
+\draw (18.3,-4) to[D*, invert, l_={\lab{$D_8$}{1N4007}}] (18.3,0) node[circ]{};
+\draw (19.9,0) node[circ]{} to[R, l={\lab{$R_{13}$}{\SI{2.2}{\kilo\ohm}}}] (19.9,-2.2) to[leDo, invert, l={\lab{LED2}{verde}}] (19.9,-4);
+\draw (1.0,-4) -- (21.0,-4) node[ocirc]{} node[right, net]{GND};
+\foreach \x in {6.0,8.3,9.6,15.0,16.7,18.3,19.9} \draw (\x,-4) node[circ]{};
+\draw (Q3.B |- 0,-4) node[circ]{};
+\draw (1.0,-4) node[ground]{};

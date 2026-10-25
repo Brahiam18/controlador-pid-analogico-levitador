@@ -1,0 +1,59 @@
+* ============================================================================
+* Modelos para la simulación de la fuente ±16 V / +5 V
+* Los BJT de señal y los diodos usan parámetros SPICE publicados por los
+* fabricantes. LM317/LM337 y TIP31C/TIP32C son MODELOS DE COMPORTAMIENTO
+* propios (no del fabricante): reproducen referencia de 1.25 V, corriente de
+* ADJ, corriente de reposo, caída mínima (dropout), regulación de línea
+* (0.01 %/V), límite interno de 1.5 A y respuesta dinámica de primer orden.
+* ============================================================================
+.model D1N4007 D(IS=7.02767n RS=0.0341512 N=1.80803 EG=1.05743 XTI=5 BV=1000 IBV=5e-08 CJO=1e-11 VJ=0.7 M=0.5 FC=0.5 TT=1e-07)
+.model D1N4148 D(IS=2.52n RS=0.568 N=1.752 CJO=4p M=0.4 TT=20n BV=100 IBV=100u)
+.model LEDV D(IS=1e-22 N=1.6 RS=10 BV=5 IBV=10u)
+.model BC547B NPN(IS=2.39E-14 NF=1.008 ISE=3.545E-15 NE=1.541 BF=294.3 IKF=0.1357 VAF=63.2 NR=1.004
++ ISC=6.272E-14 NC=1.243 BR=7.946 IKR=0.1144 VAR=25.9 RB=1 IRB=1E-06 RBM=1 RE=0.4683 RC=0.85
++ CJE=1.358E-11 VJE=0.65 MJE=0.3279 TF=4.391E-10 XTF=120 VTF=2.643 ITF=0.7495 CJC=3.728E-12
++ VJC=0.3997 MJC=0.2955 XCJC=0.6193 FC=0.9579)
+.model BC557B PNP(IS=3.83E-14 NF=1.008 ISE=1.22E-14 NE=1.528 BF=344.4 IKF=0.08039 VAF=21.11 NR=1.005
++ ISC=2.85E-13 NC=1.28 BR=14.84 IKR=0.047 VAR=32.02 RB=1 IRB=1E-06 RBM=1 RE=0.6202 RC=0.5713
++ CJE=1.23E-11 VJE=0.6106 MJE=0.378 TF=5.6E-10 XTF=3.414 VTF=5.23 ITF=0.1483 CJC=1.08E-11
++ VJC=0.1022 MJC=0.3563 XCJC=0.6288 FC=0.8027)
+* Transistores de potencia: modelo genérico con hFE ~ 60 (hoja de datos: mínimo 25 a 1 A)
+.model TIP31C NPN(IS=1e-12 BF=60 NF=1 VAF=100 IKF=2 ISE=1e-11 NE=1.6 BR=5 RB=3 RE=0.05 RC=0.15
++ CJE=300p CJC=100p TF=30n)
+.model TIP32C PNP(IS=1e-12 BF=60 NF=1 VAF=100 IKF=2 ISE=1e-11 NE=1.6 BR=5 RB=3 RE=0.05 RC=0.15
++ CJE=300p CJC=100p TF=30n)
+
+* ---------------------------------------------------------------------------
+* LM317 (comportamiento).  Nodos: IN OUT ADJ
+* Lazo: amplificador de error (gm) -> red PI (Rz + Cx, Rleak) -> fuente de corriente de paso.
+* ---------------------------------------------------------------------------
+.subckt LM317 IN OUT ADJ
+* referencia con regulación de línea de 0.01 %/V
+Bref ref 0 V = 1.25*(1 + 1e-4*(V(IN,OUT)-3))
+Rref ref 0 1meg
+* error = Vref - V(OUT,ADJ)
+Berr 0 x I = { 10*(V(ref) - V(OUT,ADJ)) }
+Rleak x 0 20
+Rz x xz 1
+Cx xz 0 10u
+* corriente de paso: 1 A por voltio de V(x), limitada a 0..1.5 A y anulada por debajo del dropout
+Bpass IN OUT I = { max(0, min(V(x),1.5)) * 0.5*(1+tanh((V(IN,OUT)-(1.5+0.4*max(0,min(V(x),1.5))))/0.12)) }
+* corriente de ADJ (50 uA, sale por el pin ADJ) y de reposo (sale por OUT)
+Iadj IN ADJ 50u
+Iq IN OUT 2m
+.ends LM317
+
+* ---------------------------------------------------------------------------
+* LM337 (comportamiento).  Nodos: IN OUT ADJ  (todo con polaridad invertida)
+* ---------------------------------------------------------------------------
+.subckt LM337 IN OUT ADJ
+Bref ref 0 V = 1.25*(1 + 1e-4*(V(OUT,IN)-3))
+Rref ref 0 1meg
+Berr 0 x I = { 10*(V(ref) - V(ADJ,OUT)) }
+Rleak x 0 20
+Rz x xz 1
+Cx xz 0 10u
+Bpass OUT IN I = { max(0, min(V(x),1.5)) * 0.5*(1+tanh((V(OUT,IN)-(1.5+0.4*max(0,min(V(x),1.5))))/0.12)) }
+Iadj ADJ IN 65u
+Iq OUT IN 2m
+.ends LM337

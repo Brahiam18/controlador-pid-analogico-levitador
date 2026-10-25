@@ -1,0 +1,82 @@
+* Fuente ±16 V / +5 V para los 4 PID del levitador  -- circuito completo
+.include modelos.lib
+.param kl=1.0
+* ---- transformador M509: devanado 9-0-9 completo (18 Vrms a 2 A) ----
+* fuente de Thevenin: 19.8 Vrms en vacío, R = 1 ohm, L de dispersión 0.5 mH
+VAC t0 0 SIN(0 {19.8*1.41421*kl} 60)
+RW t0 t1 1
+LW t1 t2 0.5m
+RF2 t2 ac 0.01
+* T1 (extremo de 9 V) = GND ;  t2 = extremo opuesto
+* ---- rectificadores de media onda y filtros ----
+D1 ac vrawp D1N4007
+D2 vrawn ac D1N4007
+C1 vrawp 0 3300u
+C2 0 vrawn 3300u
+* ======================= riel +16 V =======================
+RSC1 vrawp ve1 1.8
+Q1 vin1 vb1 ve1 TIP32C
+Q2 vb1 ve1 vrawp BC557B
+R3 vb1 0 820
+C5 vin1 0 100n
+XU1 vin1 p16 adj1 LM317
+R5 p16 adj1 120
+R7 adj1 rv1 1.3k
+RV1 rv1 0 109
+C7 adj1 0 10u
+D3 p16 vin1 D1N4007
+D4 adj1 p16 D1N4148
+C9 p16 0 10u
+C10 p16 0 100n
+D7 0 p16 D1N4007
+R12 p16 led1 2.2k
+DL1 led1 0 LEDV
+* ======================= riel -16 V =======================
+RSC2 vrawn ve3 2.2
+Q3 vin2 vb3 ve3 TIP31C
+Q4 vb3 ve3 vrawn BC547B
+R4 vb3 0 820
+C6 vin2 0 100n
+XU2 vin2 n16 adj2 LM337
+R6 n16 adj2 120
+R8 adj2 rv2 1.3k
+RV2 rv2 0 107
+C8 0 adj2 10u
+D5 vin2 n16 D1N4007
+D6 n16 adj2 D1N4148
+C11 0 n16 10u
+C12 0 n16 100n
+D8 n16 0 D1N4007
+R13 0 led2 2.2k
+DL2 led2 n16 LEDV
+* ======================= riel +5 V =======================
+R9 p16 vin3 100
+C13 vin3 0 100u
+C14 vin3 0 100n
+XU3 vin3 p5 adj3 LM317
+R10 p5 adj3 120
+R11 adj3 rv3 330
+RV3 rv3 0 28.3
+C15 adj3 0 10u
+D9 p5 vin3 D1N4007
+D10 adj3 p5 D1N4148
+C16 p5 0 10u
+C17 p5 0 100n
+D11 0 p5 D1N4007
+R14 p5 led3 470
+DL3 led3 0 LEDV
+* ======================= cargas =======================
+VMP p16 lp 0
+VMN ln n16 0
+VM5 p5 l5 0
+BLP lp 0 I = { V(lp)*0.0125 }
+BLN 0 ln I = { -V(ln)*0.0125 }
+BL5 l5 0 I = { V(l5)*0.008 }
+.options method=gear reltol=1e-3 abstol=1e-9 vntol=1e-6 itl4=100 gmin=1e-10
+.tran 20u 0.8 0 50u
+.control
+run
+wrdata A_nominal.dat v(vrawp) v(vrawn) v(p16) v(n16) v(p5) i(VMP) i(VMN) i(VM5) v(vin1) v(vin2) v(vin3)
+quit
+.endc
+.end

@@ -1,0 +1,621 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\graphicspath{{figuras/}}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage[output-decimal-marker={,}]{siunitx}
+\usepackage[hidelinks]{hyperref}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{placeins}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,calc}
+
+\renewcommand{\tablename}{TABLA}
+\renewcommand{\figurename}{Fig.}
+\renewcommand{\abstractname}{Resumen}
+\renewcommand{\refname}{Referencias}
+\renewcommand{\IEEEkeywordsname}{Palabras clave}
+\newcommand{\ohm}{\Omega}
+
+\begin{document}
+
+\title{Diseño de una Fuente de Alimentación Lineal Regulada de $\pm$16~V y +5~V con Protección contra Cortocircuito para los Controladores PID Analógicos de un Levitador Magnético}
+
+\author{
+\IEEEauthorblockN{Brahiam Alberto Campiño Romero}
+\IEEEauthorblockA{\textit{Programa de Ingeniería Electrónica} \\
+\textit{Universidad de Ibagué}\\
+Ibagué-Tolima, Colombia \\
+brahiam.campino@estudiantesunibague.edu.co}
+}
+
+\maketitle
+
+\begin{abstract}
+Se diseña, simula y lleva a placa una fuente de alimentación lineal que entrega $+16$~V, $-16$~V y $+5$~V, ajustables y estables, para los cuatro controladores PID analógicos (ocho TL074CN y cuatro sensores Hall) de un levitador magnético. El diseño sigue el método del tema 3 de la monografía \emph{Electrónica Tomo II}~\cite{monografia}: transformador, rectificador, filtro capacitivo y regulador, con los parámetros de regulación de línea, regulación de carga, factor de rizado y protección. A partir de un transformador M509 de 9-6-0-6-9~V / 2~A se usa el devanado completo de 18~V con rectificación de media onda doble, filtros de $\SI{3300}{\micro F}$, reguladores LM317 y LM337 con red de ajuste por trimmer multivuelta y, antes de cada regulador, un limitador de corriente con transistor de paso según la Fig.~3-26 y la ecuación~(3.27) de la monografía ($I_{lim}=0{,}39$~A en $+16$~V y $0{,}32$~A en $-16$~V). El riel de $+5$~V se obtiene del de $+16$~V con un LM317 y una resistencia serie que fija su corriente de cortocircuito en 0,14~A. La simulación en ngspice muestra salidas de 16,00~V, $-16{,}00$~V y 5,00~V, con un rizado menor de 0,4~mV$_{pp}$, regulación de carga del 0,12~\% y recuperación automática tras un cortocircuito sostenido. Se entregan los esquemáticos, los archivos EAGLE/Fusion de una placa de una cara de $165\times109$~mm, la lista de materiales y un plan de pruebas con su tabla de mediciones.
+\end{abstract}
+
+\begin{IEEEkeywords}
+fuente lineal, LM317, LM337, limitador de corriente, rectificador de media onda, regulación de carga, factor de rizado, levitación magnética
+\end{IEEEkeywords}
+
+% =========================================================
+\section{Introducción}
+% =========================================================
+El levitador magnético del proyecto usa cuatro controladores PID analógicos idénticos, uno por bobina. Cada PID tiene dos TL074CN (siete etapas del controlador y el convertidor tensión-corriente de la etapa de potencia), un sensor Hall SS495A y un divisor que genera la referencia $V_{ref}=2$~V a partir de $+5$~V~\cite{informepid}. Los amplificadores se alimentan con $\pm16$~V, el divisor de $V_{ref}$ y los sensores con $+5$~V, y las bobinas con una fuente aparte ($V_{BOB}$, hasta 4,5~A por PID) cuyo negativo, PGND, se une a la tierra de señal en un solo punto.
+
+El controlador es sensible a lo que entra por sus rieles. Un cambio en $+5$~V se convierte directamente en un cambio de $V_{ref}$, es decir, de la posición de equilibrio del objeto. Ruido o rizado en $\pm16$~V aparecen en la salida de los TL074 atenuados solo por su rechazo a la fuente. Por eso los rieles de señal se separan de la fuente de las bobinas y se diseñan como una fuente \emph{regulada}, con bajo rizado y con protección contra cortocircuito, porque durante el montaje y las pruebas los cortos accidentales son frecuentes.
+
+El método de diseño es el del tema 3 de la monografía~\cite{monografia}. La fuente se divide en los bloques de la Fig.~3-1 (transformador, rectificador, filtro y regulador). Sus parámetros se definen como allí: voltaje y corriente de salida, regulación de línea ante $\pm10$~\% de la entrada, regulación de carga, factor de rizado y coeficiente de temperatura. Se usan reguladores lineales, que son los que trata la monografía (deja fuera los conmutados), y los criterios de diseño que repite en sus problemas resueltos.
+
+% =========================================================
+\section{Objetivos}
+% =========================================================
+\subsection{Objetivo general}
+Diseñar una fuente lineal regulada de $\pm16$~V y $+5$~V, con protección contra cortocircuito, que alimente los cuatro controladores PID del levitador, siguiendo el método de la monografía \emph{Electrónica Tomo II}.
+
+\subsection{Objetivos específicos}
+\begin{itemize}
+\item Determinar la corriente de cada riel a partir del consumo real de las tarjetas PID.
+\item Dimensionar el transformador, el rectificador y el filtro con el transformador disponible (M509).
+\item Diseñar los reguladores ajustables y su red de realimentación, y verificar el rango de ajuste con las tolerancias del integrado.
+\item Diseñar la limitación de corriente de cada riel y los disipadores para que la fuente soporte un cortocircuito sostenido.
+\item Comprobar el diseño por simulación (régimen, línea, carga y cortocircuito).
+\item Entregar la placa de circuito impreso, la lista de materiales y el plan de pruebas.
+\end{itemize}
+
+% =========================================================
+\section{Especificaciones}
+% =========================================================
+\subsection{Corriente de cada riel}
+Cada PID tiene dos TL074CN. Su hoja de datos da 1,4~mA típicos y 2,5~mA máximos por amplificador~\cite{tl074}, es decir, hasta 10~mA por integrado y 20~mA por PID. A eso se suman la corriente de base del TIP122 que maneja U8 ($I_C/h_{FE}=4{,}5\text{ A}/1000=4{,}5$~mA en el peor caso) y las corrientes de salida de las demás etapas hacia sus redes de $\si{\kilo\ohm}$. Con margen se toman \textbf{50~mA por PID y por riel}, el mismo valor del documento de estado del proyecto. Para los cuatro PID:
+\begin{equation}
+I_{ops}=4\times\SI{50}{mA}=\SI{200}{mA}\quad\text{(en +16~V y en $-16$~V)}.
+\end{equation}
+
+En $+5$~V hay cuatro sensores SS495A (10~mA máximo cada uno~\cite{ss495a}), cuatro divisores $R_{12}+R_{13}=\SI{400}{k\ohm}$ ($\SI{12,5}{\micro A}$ cada uno), la corriente de la red de ajuste del propio regulador ($I_1=1{,}25/120=10{,}42$~mA, sección~\ref{sec:reg}) y un LED indicador (6,6~mA):
+\begin{equation}
+I_{L(+5)}=40+0{,}05+10{,}47+6{,}6\approx\SI{57}{mA}.
+\end{equation}
+Como el riel de $+5$~V se toma del de $+16$~V (sección~\ref{sec:5v}), las corrientes de diseño de los reguladores quedan:
+\begin{align}
+I_{L(+16)}&=200+10{,}47+6{,}4+57=\SI{274}{mA},\\
+I_{L(-16)}&=200+10{,}48+6{,}4=\SI{217}{mA}.
+\end{align}
+
+\subsection{Tabla de especificaciones}
+La Tabla~\ref{tab:espec} resume lo que debe cumplir la fuente. El límite superior de $\pm16$~V lo fija el TL074, cuya alimentación máxima absoluta es $\pm18$~V~\cite{tl074}.
+
+\begin{table}[htbp]
+\caption{Especificaciones de la fuente}
+\label{tab:espec}
+\centering
+\footnotesize
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Parámetro & +16~V & $-16$~V & +5~V \\
+\midrule
+Ajuste de salida & \multicolumn{2}{c}{$\pm$15 a $\pm$17~V} & 4,7 a 5,2~V \\
+Corriente de diseño & 274~mA & 217~mA & 57~mA \\
+Límite de corriente & $\approx$0,4~A & $\approx$0,3~A & $\approx$0,15~A \\
+Regulación de carga & \multicolumn{3}{c}{$\leq$0,5~\%} \\
+Regulación de línea ($\pm10$~\%) & \multicolumn{3}{c}{$\leq$0,2~\% de $V_{out}$} \\
+Rizado de salida & \multicolumn{3}{c}{$<$1~mV$_{pp}$} \\
+Cortocircuito & \multicolumn{3}{c}{sostenido, con recuperación automática} \\
+Entrada & \multicolumn{3}{c}{115~V$_{rms}$ $\pm$10~\%, 60~Hz} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% =========================================================
+\section{Marco teórico}
+% =========================================================
+\subsection{Estructura y parámetros de la fuente}
+La fuente regulada clásica (Fig.~3-1 de~\cite{monografia}) tiene cuatro bloques: transformador reductor, rectificador, filtro y regulador. Los tres primeros forman la fuente no regulada (FNR), cuya salida es la entrada $V_{in}$ del regulador. La monografía caracteriza el regulador con cuatro parámetros:
+\begin{enumerate}
+\item Voltaje y corriente de salida ($V_{out}$, $I_L$).
+\item Regulación de línea: variación de $V_{out}$ cuando $V_{in}$ varía $\pm10$~\%. Regulación de carga, con la ecuación de la monografía:
+\begin{equation}
+\%\,\text{Regulación}=\frac{|V_{ro}|-|V_r|}{|V_r|}\times100\,\%,
+\label{eq:reg}
+\end{equation}
+donde $V_{ro}$ es la salida en vacío y $V_r$ a plena carga.
+\item Factor de rizado: $F_r=V_{r(rms)}/V_{DC}$.
+\item Coeficiente de temperatura.
+\end{enumerate}
+
+\subsection{Regulador ajustable de tres terminales}
+El LM317 mantiene $V_A=1{,}25$~V entre OUT y ADJ, y del pin ADJ sale una corriente pequeña $I_Q$ ($\SI{50}{\micro A}$ típicos)~\cite{lm317}. Con $R_1$ entre OUT y ADJ y $R_2$ de ADJ a tierra (Fig.~3-23 y ec.~(3.19) de~\cite{monografia}):
+\begin{equation}
+V_{out}=V_A\left(1+\frac{R_2}{R_1}\right)+I_Q R_2 ,
+\label{eq:vout}
+\end{equation}
+que se reduce a $V_A(1+R_2/R_1)$, ec.~(3.20), cuando $I_Q\ll I_1\ll I_L$, con $I_1=V_A/R_1$. El LM337 es su complemento negativo~\cite{lm337}. La monografía recomienda: capacitor de entrada de 100 a 200~nF (para la inductancia del cableado), capacitor de salida de hasta $\SI{10}{\micro F}$, preferiblemente de tántalo, y un diodo de OUT a IN que evita que el capacitor de salida se descargue a través del regulador si la entrada se pone en corto (Fig.~3-17 y Problema~3.6.10).
+
+\subsection{Limitación de corriente}
+En el limitador con transistor (Fig.~3-24b y Fig.~3-26 de~\cite{monografia}), la corriente de carga pasa por una resistencia $R_{SC}$ conectada entre la base y el emisor de un transistor sensor. Cuando $I_L R_{SC}\geq V_{BE}$, el sensor conduce y le quita la corriente de base al transistor de paso, que deja de entregar más corriente:
+\begin{equation}
+R_{SC}=\frac{V_{BE}}{I_{L(max)}}=\frac{\SI{0,7}{V}}{I_{L(max)}} .
+\label{eq:rsc}
+\end{equation}
+La Fig.~3-26 es la versión con transistor de paso PNP, la misma que se usa aquí. En un corto sostenido el transistor de paso disipa $V_{in}\cdot I_{L(max)}$. El tiempo que lo resiste depende de su temperatura de juntura. Por eso la monografía presenta también el limitador \emph{foldback} (Fig.~3-27), que reduce la corriente de cortocircuito a $I_{SC}=V_{BE}/(kR_{SC})$.
+
+% =========================================================
+\section{Diseño paso a paso}
+% =========================================================
+\subsection{Arquitectura}
+La Fig.~\ref{fig:bloques} muestra la arquitectura elegida. Hay tres decisiones de diseño.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[font=\scriptsize, node distance=3mm and 3mm, b/.style={draw, rounded corners=1pt, align=center, minimum height=7mm, inner sep=2pt}, >={Stealth[length=1.6mm]}]
+\node[b] (tr) {Transf.\\M509\\18~V};
+\node[b, right=of tr, yshift=6mm] (d1) {D1\\$\frac{1}{2}$ onda};
+\node[b, right=of tr, yshift=-6mm] (d2) {D2\\$\frac{1}{2}$ onda};
+\node[b, right=of d1] (c1) {C1\\3300~µF};
+\node[b, right=of d2] (c2) {C2\\3300~µF};
+\node[b, right=of c1] (l1) {Limit.\\0,39~A};
+\node[b, right=of c2] (l2) {Limit.\\0,32~A};
+\node[b, right=of l1] (u1) {LM317\\+16~V};
+\node[b, right=of l2] (u2) {LM337\\$-16$~V};
+\node[b, above=4mm of u1] (u3) {R9 +\\LM317\\+5~V};
+\draw[->] (tr) |- (d1); \draw[->] (tr) |- (d2);
+\draw[->] (d1) -- (c1); \draw[->] (c1) -- (l1); \draw[->] (l1) -- (u1);
+\draw[->] (d2) -- (c2); \draw[->] (c2) -- (l2); \draw[->] (l2) -- (u2);
+\draw[->] (u1.east) -- ++(2mm,0) |- (u3.east);
+\draw[->] (u1.east) -- ++(4mm,0) node[right]{+16};
+\draw[->] (u2.east) -- ++(4mm,0) node[right]{$-$16};
+\draw[->] (u3.north) -- ++(0,2mm) node[above]{+5};
+\end{tikzpicture}
+\caption{Diagrama de bloques de la fuente (estructura de la Fig.~3-1 de~\cite{monografia}, con un limitador antes de cada regulador).}
+\label{fig:bloques}
+\end{figure}
+
+\textit{1) Reguladores integrados ajustables.} Para $\pm16$~V no existe un 78XX/79XX de ese valor, y se requiere poder ajustar los rieles. Por eso se usan el LM317 y el LM337 en la configuración de la Fig.~3-23 de la monografía, la misma pareja de su Problema~3.6.13 (fuente doble). Comparada con un regulador serie discreto con amplificador de error (Fig.~3-14), el integrado incluye la referencia, el amplificador de error, la protección térmica y el límite interno de corriente.
+
+\textit{2) Limitador externo antes del regulador.} El límite interno del LM317 (1,5 a 2,2~A) es demasiado alto para las pruebas: en un corto, el transformador de 2~A quedaría al límite y los TL074 recibirían corrientes de falla grandes. Hace falta un límite cercano a la corriente de diseño. Limitar \emph{tirando del pin ADJ hacia tierra} no sirve en un corto franco, porque el LM317 sostiene 1,25~V entre OUT y ADJ: con ADJ en 0~V, su salida sigue en 1,25~V, y si la salida está en corto el regulador entrega su máximo interno. Por eso el limitador va \emph{antes} del regulador, como un elemento de paso PNP con sensor según la Fig.~3-26 de la monografía. Su caída en operación normal es pequeña: $V_{CE(sat)}$ más la de $R_{SC}$.
+
+\textit{3) El riel de +5~V desde +16~V.} La corriente de $+5$~V es pequeña. Tomarla del riel de $+16$~V ya regulado da dos etapas de rechazo de rizado en cascada para $V_{ref}$ (el riel que más afecta al equilibrio). Una resistencia serie limita su corriente de cortocircuito y forma con $C_{13}$ un filtro RC adicional.
+
+\subsection{Transformador y rectificador}
+El M509 tiene un secundario 9-6-0-6-9~V a 2~A. Con la derivación central como tierra y un puente rectificador se tendrían $\pm9\sqrt{2}-0{,}7\approx\pm12$~V de pico, menos que los $\pm16$~V que se quieren regular. Por eso se usa el \textbf{devanado completo de 18~V} (entre los dos extremos de 9~V): un extremo es la tierra y el otro, a través del fusible F2, alimenta dos rectificadores de media onda de polaridad opuesta (D1 para $+$ y D2 para $-$, Fig.~3-5 de~\cite{monografia}). Las tomas de 0 y 6~V quedan sin conexión. Con $V_D=1{,}0$~V para el 1N4007 en los picos de carga:
+\begin{align}
+V_p&=18\sqrt{2}-1{,}0=\SI{24,46}{V}\quad\text{(115~V)},\\
+V_{p(min)}&=0{,}9\cdot18\sqrt{2}-1{,}0=\SI{21,91}{V}\quad\text{(103,5~V)},\\
+V_{p(max)}&=1{,}1\cdot1{,}1\cdot18\sqrt{2}-1{,}0=\SI{29,8}{V}.
+\end{align}
+$V_{p(max)}$ supone red al $+10$~\% y un 10~\% adicional por la subida del transformador en vacío. Con este valor se eligen las tensiones nominales: capacitores de 50~V y diferencia entrada-salida del LM317 menor de 40~V. Cada diodo soporta en inversa el pico del devanado más la tensión del capacitor del otro semiciclo, $PIV\approx2V_{p(max)}=61{,}6$~V, muy por debajo de los 1000~V del 1N4007.
+
+Cada media onda carga el núcleo con corriente continua en un sentido. Como hay una por cada polaridad, la componente continua neta es la diferencia entre las dos corrientes: $297-240=57$~mA, despreciable para el núcleo. La corriente eficaz del secundario con filtro capacitivo es del orden de $2{,}4\,I_{DC}$ por rama:
+\begin{equation}
+I_{rms}\approx2{,}4\sqrt{0{,}297^2+0{,}240^2}=\SI{0,92}{A}<\SI{2}{A},
+\end{equation}
+y con los dos rieles en su límite, 1,21~A, todavía dentro de la capacidad del M509.
+
+\subsection{Capacitores de filtro}
+El rizado de media onda tiene la frecuencia de la red ($f=60$~Hz). Con la corriente que pasa por el filtro, que incluye la de base del transistor de paso (sección~\ref{sec:lim}): $I_{+}=274+23=297$~mA e $I_{-}=217+23=240$~mA. La condición de diseño es que el valle del rizado, a línea baja, supere lo que necesita el regulador:
+\begin{equation}
+V_{p(min)}-\frac{I}{fC}\geq V_{out}+V_{DO}+V_{CE(sat)}+I R_{SC},
+\end{equation}
+con $V_{DO}=2$~V (dropout máximo del LM317 a 0,3~A~\cite{lm317}) y $V_{CE(sat)}=0{,}3$~V. Para la salida máxima del ajuste, $V_{out}=16{,}95$~V:
+\begin{equation}
+C_{min}=\frac{0{,}297}{60\,(21{,}91-16{,}95-2{,}3-0{,}53)}=\SI{2330}{\micro F}.
+\end{equation}
+Se eligen \textbf{$C_1=C_2=\SI{3300}{\micro F}/50$~V}. Con ellos:
+\begin{align}
+V_{r(pp)+}&=\frac{0{,}297}{60\cdot3300\times10^{-6}}=\SI{1,50}{V},\\
+V_{valle(min)+}&=21{,}91-1{,}50=\SI{20,41}{V}.
+\end{align}
+Lo que necesita el regulador es 18,83~V para 16,00~V y 19,78~V para 16,95~V: quedan márgenes de 1,57~V y 0,62~V en el peor caso de línea. En el riel negativo, $V_{r(pp)-}=1{,}21$~V y los márgenes son 1,87 y 0,92~V. El factor de rizado a la salida del filtro, con $V_{r(rms)}=V_{r(pp)}/(2\sqrt{3})$ (onda diente de sierra) y línea nominal, es:
+\begin{equation}
+F_{r+}=\frac{0{,}433}{23{,}71}=1{,}83\,\% ,\qquad F_{r-}=\frac{0{,}350}{23{,}85}=1{,}47\,\% .
+\end{equation}
+
+\subsection{Reguladores y red de ajuste}
+\label{sec:reg}
+\textit{Elección de $R_1$.} La monografía pide $I_Q\ll I_1\ll I_L$. El LM317 y el LM337 además necesitan una carga mínima de hasta 10~mA para regular~\cite{lm317,lm337}. Con $R_1=\SI{120}{\ohm}$ al 1~\% ($R_5$, $R_6$, $R_{10}$ en el esquemático):
+\begin{equation}
+I_1=\frac{1{,}25}{120}=\SI{10,42}{mA},\qquad \SI{50}{\micro A}\ll\SI{10,42}{mA}\ll\SI{274}{mA}.
+\end{equation}
+Esa corriente sola ya garantiza la carga mínima, aunque las tarjetas PID estén desconectadas.
+
+\textit{Cálculo de $R_2$ para 16~V.} De (\ref{eq:vout}):
+\begin{equation}
+R_2=\frac{V_{out}-V_A}{I_1+I_Q}=\frac{16-1{,}25}{\SI{10,467}{mA}}=\SI{1409}{\ohm}.
+\end{equation}
+Se implementa como $R_7=\SI{1,3}{k\ohm}$ al 1~\% en serie con el trimmer multivuelta $RV_1=\SI{200}{\ohm}$ (3296W, conectado como reóstato). El rango de ajuste es
+\begin{align}
+V_{out(min)}&=1{,}25\left(1+\tfrac{1300}{120}\right)+1300\cdot50\,\mu=\SI{14,86}{V},\\
+V_{out(max)}&=1{,}25\left(1+\tfrac{1500}{120}\right)+1500\cdot50\,\mu=\SI{16,95}{V}.
+\end{align}
+Con los extremos de tolerancia de $V_A$ (1,20 a 1,30~V), el rango pasa a 14,27--16,27~V o 15,45--17,62~V. En los dos casos 16,00~V queda dentro del recorrido, y el máximo posible (17,62~V) sigue por debajo de los 18~V del TL074. El riel negativo usa los mismos valores ($R_6$, $R_8$, $RV_2$). Con $I_Q=\SI{65}{\micro A}$ del LM337, su rango es $-14{,}88$ a $-16{,}97$~V.
+
+\textit{+5~V.} $R_2=(5-1{,}25)/\SI{10,467}{mA}=\SI{358}{\ohm}$, implementada como $R_{11}=\SI{330}{\ohm}$ más $RV_3=\SI{50}{\ohm}$: rango de 4,70 a 5,23~V (4,52--5,02~V y 4,89--5,44~V con las tolerancias de $V_A$).
+
+\textit{Capacitores y diodos.} $C_5$, $C_6$ y $C_{14}$ (100~nF) son el C2 de la Fig.~3-17. $C_9$, $C_{11}$ y $C_{16}$ ($\SI{10}{\micro F}$ de tántalo) son el C3 que recomienda la monografía, y además cumplen el mínimo de estabilidad del LM337 ($\SI{1}{\micro F}$ de tántalo~\cite{lm337}). $C_{10}$, $C_{12}$ y $C_{17}$ (100~nF) atenúan el ruido de alta frecuencia. $C_7$, $C_8$ y $C_{15}$ ($\SI{10}{\micro F}$) desacoplan el pin ADJ: así el rizado de la referencia no se amplifica por $(1+R_2/R_1)=12{,}7$, y el rechazo sube de unos 62~dB a 80~dB típicos (66~dB mínimos)~\cite{lm317}. Los diodos $D_3$, $D_5$ y $D_9$ (1N4007, de OUT a IN) son la protección del Problema~3.6.10. $D_4$, $D_6$ y $D_{10}$ (1N4148, de ADJ a OUT) descargan $C_7$, $C_8$ y $C_{15}$ si la salida se pone en corto, para que no se descarguen por dentro del integrado.
+
+\subsection{Limitadores de corriente}
+\label{sec:lim}
+\textit{Resistencia de sensado.} Con (\ref{eq:rsc}) y $V_{BE}=0{,}7$~V, para un límite ligeramente mayor que la corriente de diseño:
+\begin{align}
+R_{SC1}&=\frac{0{,}7}{0{,}39}=\SI{1,79}{\ohm}\rightarrow\SI{1,8}{\ohm}\;(I_{lim+}=\SI{0,39}{A}),\\
+R_{SC2}&=\frac{0{,}7}{0{,}32}=\SI{2,19}{\ohm}\rightarrow\SI{2,2}{\ohm}\;(I_{lim-}=\SI{0,32}{A}).
+\end{align}
+El límite de $+16$~V cubre los 274~mA normales y también los 362~mA que pasan cuando el riel de $+5$~V está en corto (sección~\ref{sec:5v}). Así un corto en $+5$~V no apaga los $\pm16$~V. La disipación en cortocircuito es $0{,}39^2\cdot1{,}8=0{,}27$~W y $0{,}32^2\cdot2{,}2=0{,}23$~W, por lo que se usan resistencias de 1~W.
+
+\textit{Polarización del transistor de paso.} $Q_1$ (TIP32C, PNP) se mantiene saturado con $R_3$ de su base a tierra. Su $h_{FE}$ mínimo es 25 a 1~A~\cite{tip3x}. Para que el límite lo fije $R_{SC}$ y no la ganancia de $Q_1$, se pide $h_{FE(min)}I_B\geq1{,}5\,I_{lim}$. Con $R_3=\SI{820}{\ohm}$, a línea baja:
+\begin{align}
+I_B&=\frac{V_{p(min)}-V_{r(pp)}-I R_{SC}-V_{EB}}{R_3}\nonumber\\&=\frac{21{,}91-1{,}50-0{,}53-0{,}90}{820}=\SI{23,1}{mA},\\
+h_{FE(min)}I_B&=25\cdot\SI{23,1}{mA}=\SI{0,58}{A}\nonumber\\&\geq1{,}5\cdot0{,}39=\SI{0,58}{A}.
+\end{align}
+$Q_1$ trabaja con una ganancia forzada $I_C/I_B\approx12$, saturado, y su caída es de unas décimas de voltio. La potencia máxima de $R_3$ (sin carga y con red alta) es $(29{,}8-0{,}9)^2/820=1{,}02$~W, por lo que se usa una resistencia de 2~W. En el riel negativo, $Q_3$ (TIP31C) y $R_4$ son el espejo exacto.
+
+\textit{Sensor.} $Q_2$ (BC557) tiene su emisor en $V_{RAW+}$ y su base en el emisor de $Q_1$, de modo que $V_{EB2}=I R_{SC1}$. Cuando llega a 0,7~V, $Q_2$ desvía hacia su colector la corriente de $R_3$ (como máximo $29{,}8/820=36$~mA, dentro de los 100~mA del BC557). La base de $Q_1$ sube hacia su emisor y $Q_1$ sale de saturación. El riel negativo usa $Q_4$ (BC547). En un corto franco, el regulador queda en su caída mínima con la salida en 0~V y casi toda la potencia la toma el transistor de paso:
+\begin{equation}
+\begin{split}P_{Q1}&=(V_{DC}-V_{BE}-V_{DO})\,I_{lim}\\&=(23{,}9-0{,}7-1{,}8)\cdot0{,}39\approx\SI{9,1}{W}.\end{split}
+\end{equation}
+Con red alta son 10,2~W, y en $Q_3$, 7,5 y 8,4~W.
+
+\subsection{Rama de +5~V}
+\label{sec:5v}
+$U_3$ (LM317) se alimenta desde $+16$~V a través de $R_9=\SI{100}{\ohm}$:
+\begin{equation}
+V_{IN3}=16-0{,}057\cdot100=\SI{10,3}{V}\geq5{,}23+1{,}7 .
+\end{equation}
+El margen es suficiente: $U_3$ regula hasta $(16-5{,}23-1{,}7)/100=91$~mA, un 60~\% más que la corriente de diseño. Si la salida se pone en corto, $U_3$ queda en su caída mínima ($\approx$1,5~V) y la corriente queda fijada por $R_9$ en $I_{SC}=(16-1{,}5)/100=145$~mA. Es una limitación de tipo \emph{foldback}: la corriente de corto es menor que la que puede pasar con la salida regulando. En el corto, $R_9$ disipa 2,1~W (se usa de 3~W) y $U_3$ solo unos 0,2~W. En operación normal, $U_3$ disipa $(10{,}3-5)\cdot0{,}057=0{,}30$~W y no necesita disipador. $R_9$ y $C_{13}=\SI{100}{\micro F}$ forman un filtro pasa bajos de $f_c=1/(2\pi R_9C_{13})=15{,}9$~Hz, que atenúa 11,8~dB adicionales a 60~Hz.
+
+\subsection{Disipación y disipadores}
+La Tabla~\ref{tab:pot} resume la potencia de cada semiconductor de potencia, con $T_A=40$~°C, $\theta_{JC}=5$~°C/W para el LM317T/LM337T, $\theta_{JC}=3{,}125$~°C/W para el TIP31C/TIP32C~\cite{tip3x} y $\theta_{CS}=1$~°C/W para mica con grasa.
+
+\begin{table}[htbp]
+\caption{Potencia disipada (línea nominal / línea +10~\%)}
+\label{tab:pot}
+\centering
+\footnotesize
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Elemento & Normal & Corto en su salida \\
+\midrule
+U1 LM317 (+16~V) & 2,58 / 3,35~W & $\approx$0,7~W \\
+U2 LM337 ($-16$~V) & 2,08 / 2,68~W & $\approx$0,6~W \\
+U3 LM317 (+5~V) & 0,30~W & $\approx$0,2~W \\
+Q1 TIP32C & $<$0,1~W & 9,1 / 10,2~W \\
+Q3 TIP31C & $<$0,1~W & 7,5 / 8,4~W \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+El caso crítico es $Q_1$ en corto. Para $T_{J}\leq150$~°C:
+\begin{equation}
+\theta_{SA}\leq\frac{150-40}{9{,}9}-3{,}125-1=\SI{6,99}{\celsius/W}.
+\end{equation}
+Se elige un disipador de \textbf{$\leq5$~°C/W por riel}, compartido por el transistor de paso y su regulador ($Q_1+U_1$ en el borde superior de la placa y $Q_3+U_2$ en el inferior), con mica y buje aislante, porque la aleta de cada TO-220 está unida a su pin central. Con red alta y corto sostenido, el disipador recibe unos 11~W y llega a $40+11\cdot5=95$~°C, y la juntura de $Q_1$ a $95+10{,}2\cdot4{,}125=137$~°C $<150$~°C. En operación normal, la juntura de $U_1$ queda en $40+3{,}4\cdot5+3{,}35\cdot6\approx77$~°C. El LM317 tiene además apagado térmico interno, que actúa como respaldo.
+
+\subsection{Resumen de protecciones}
+\begin{itemize}
+\item \textbf{F1} (T315~mA, lento) en el primario. El consumo estimado del primario es de unos 160~mA y el fusible lento tolera la corriente de magnetización al encender.
+\item \textbf{F2} (1~A, rápido) en el secundario, para fallas de diodos o capacitores de filtro.
+\item \textbf{Limitadores} $R_{SC}$--$Q_1$--$Q_2$ y $R_{SC}$--$Q_3$--$Q_4$ de 0,39 y 0,32~A, y $R_9$ para $+5$~V (0,145~A). Los tres soportan un corto sostenido y se recuperan solos.
+\item \textbf{Protección térmica y límite interno} de los LM317/LM337, como respaldo.
+\item \textbf{Diodos} $D_3$, $D_5$, $D_9$ (OUT$\rightarrow$IN) y $D_4$, $D_6$, $D_{10}$ (ADJ$\rightarrow$OUT).
+\item \textbf{Diodos de polaridad inversa} $D_7$, $D_8$, $D_{11}$ en las salidas. Si un riel arranca antes que otro, o si $+16$~V y $-16$~V se ponen en corto entre sí, ninguna salida queda polarizada al revés más de 0,7~V. Esto protege a los TL074 y a los propios reguladores (un LM317 con su salida en negativo puede no arrancar).
+\item \textbf{Un solo punto de tierra.} La fuente no une GND con PGND. La unión se hace solo en el puente \texttt{JP\_GND} de las tarjetas PID, para no formar lazos de tierra con la corriente de las bobinas.
+\end{itemize}
+
+\subsection{Desempeño esperado}
+Con las hojas de datos~\cite{lm317}:
+\begin{itemize}
+\item Regulación de línea: 0,01~\%/V típico y 0,04~\%/V máximo. Con $\Delta V_{in}=5{,}1$~V (red $\pm10$~\%) da $\Delta V_{out}\leq0{,}0004\cdot5{,}1\cdot16=33$~mV (0,2~\%).
+\item Regulación de carga: 0,1~\% típico y 0,5~\% máximo (80~mV).
+\item Rizado de salida con 66~dB de rechazo mínimo: $0{,}433\cdot10^{-66/20}=0{,}22$~mV$_{rms}$ (0,04~mV con 80~dB típicos).
+\end{itemize}
+
+% =========================================================
+\section{Esquemáticos}
+% =========================================================
+Las Figs.~\ref{fig:esq_entrada} a \ref{fig:esq_5v} muestran cada etapa con la referencia y el valor de cada componente. Esa numeración es la misma del archivo EAGLE, de la placa y de la lista de materiales. La Fig.~\ref{fig:esq_salida} muestra la bornera de salida J2, con el mismo orden de pines que \texttt{J\_PWR} de las tarjetas PID, y la regleta de prueba J3. El esquemático completo, en una sola hoja, está en el Apéndice (Fig.~\ref{fig:completo}).
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=0.82\textwidth]{esq_entrada.pdf}
+\caption{Etapa 1: red, fusible F1, interruptor S1 y transformador M509 (fuera de la placa); bornera J1, fusible F2, rectificadores de media onda D1 y D2 y capacitores de filtro C1 y C2.}
+\label{fig:esq_entrada}
+\end{figure*}
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\textwidth]{esq_pos.pdf}
+\caption{Etapa 2: riel de +16~V. Limitador de corriente $R_{SC1}$--$Q_1$--$Q_2$ (Fig.~3-26 de~\cite{monografia}) y regulador U1 LM317 con su red de ajuste $R_5$, $R_7$, $RV_1$ y sus protecciones.}
+\label{fig:esq_pos}
+\end{figure*}
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\textwidth]{esq_neg.pdf}
+\caption{Etapa 3: riel de $-16$~V, imagen especular de la etapa 2 con $Q_3$ TIP31C, $Q_4$ BC547 y U2 LM337. Los capacitores polarizados tienen el positivo hacia GND.}
+\label{fig:esq_neg}
+\end{figure*}
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\textwidth]{esq_5v.pdf}
+\caption{Etapa 4: riel de +5~V tomado de +16~V a través de $R_9$ (limitación de corriente y filtro RC con $C_{13}$) y regulador U3 LM317.}
+\label{fig:esq_5v}
+\end{figure*}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{esq_salida.pdf}
+\caption{Bornera de salida J2 (hacia \texttt{J\_PWR} de las tarjetas PID) y regleta de prueba J3.}
+\label{fig:esq_salida}
+\end{figure}
+
+% =========================================================
+\section{Simulación}
+% =========================================================
+\subsection{Método}
+El circuito completo de la Fig.~\ref{fig:completo} se simuló en ngspice~42~\cite{ngspice} con análisis transitorio (paso de $\SI{20}{\micro s}$). Para los diodos y los BC547/BC557 se usaron modelos con parámetros publicados. Para el LM317 y el LM337 se escribieron \emph{modelos de comportamiento} propios, porque los del fabricante no estaban disponibles sin conexión. Esos modelos reproducen la referencia de 1,25~V, $I_Q$, la caída mínima, la regulación de línea de 0,01~\%/V, el límite interno de 1,5~A y un lazo con respuesta dinámica de primer orden. Para el TIP31C y el TIP32C se usaron modelos genéricos con $h_{FE}\approx60$. El transformador se modeló con 19,8~V$_{rms}$ en vacío, $\SI{1}{\ohm}$ de resistencia de devanado y 0,5~mH de dispersión, valores coherentes con 18~V a 2~A. Las cargas son conductancias que representan 200~mA en cada riel de $\pm16$~V y 40~mA de sensores en $+5$~V. Los archivos están en \texttt{fuente/simulacion/}.
+
+\subsection{Resultados}
+La Tabla~\ref{tab:sim} compara cálculo y simulación. Las Figs.~\ref{fig:sim_reg} a \ref{fig:sim_arr} muestran las formas de onda.
+
+\begin{table}[htbp]
+\caption{Cálculo frente a simulación}
+\label{tab:sim}
+\centering
+\scriptsize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Magnitud & Cálculo & Simulación \\
+\midrule
+$V_{RAW+}$ media / rizado & 23,7~V / 1,50~V$_{pp}$ & 24,0~V / 1,27~V$_{pp}$ \\
+$V_{RAW-}$ media / rizado & $-23{,}9$~V / 1,21~V$_{pp}$ & $-24{,}4$~V / 1,04~V$_{pp}$ \\
+$F_r$ del filtro + & 1,83~\% & 1,66~\% \\
++16~V (plena carga) & 16,00~V & 15,987~V \\
+$-16$~V (plena carga) & $-16{,}00$~V & $-15{,}992$~V \\
++5~V (plena carga) & 5,00~V & 5,000~V \\
+Rizado de +16~V & $<$0,6~mV$_{pp}$ & 0,35~mV$_{pp}$ \\
+Rizado de $-16$~V & $<$0,6~mV$_{pp}$ & 0,29~mV$_{pp}$ \\
+Rizado de +5~V & -- & $<$0,1~$\mu$V$_{pp}$ \\
+\%Reg (\ref{eq:reg}) +16 / $-16$ / +5 & $\leq$0,5~\% & 0,12 / 0,10 / 0,06~\% \\
+$\Delta V_{out}$ por línea $\pm10$~\% & $\leq$33~mV & 8,5~mV \\
++16~V a línea baja, ajuste máx. & regula & 16,93~V \\
+$I$ de corto +16 / $-16$ / +5 & 0,39 / 0,32 / 0,145~A & 0,39 / 0,33 / 0,14~A \\
++16~V con +5~V en corto & 16~V & 15,98~V \\
+$P_{Q1}$ / $P_{Q3}$ en corto & 9,1 / 7,5~W & 8,0 / 6,8~W \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{sim_regimen.pdf}
+\caption{Régimen a plena carga y 115~V. Arriba: $V_{RAW+}$ sobre $C_1$, entrada de U1 y salida de +16~V. Centro: rizado de las tres salidas en mV. Abajo: lo mismo en el riel negativo.}
+\label{fig:sim_reg}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{sim_carga.pdf}
+\caption{Escalones de carga: 0 $\rightarrow$ 50~\% en $t=0{,}4$~s, 50 $\rightarrow$ 100~\% en $t=0{,}6$~s y vuelta al 50~\% en $t=0{,}8$~s. Desviación de cada salida respecto a su valor en vacío.}
+\label{fig:sim_carga}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{sim_corto.pdf}
+\caption{Cortocircuitos sucesivos (zonas grises) de +16~V, $-16$~V y +5~V. La corriente queda limitada en 0,39, 0,33 y 0,14~A, y la salida se recupera sola al quitar el corto.}
+\label{fig:sim_corto}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{sim_arranque.pdf}
+\caption{Arranque desde cero: las salidas suben sin sobreimpulso en unos 50~ms.}
+\label{fig:sim_arr}
+\end{figure}
+
+\subsection{Análisis}
+\textit{Filtro.} La simulación da un rizado algo menor que el cálculo (1,27 frente a 1,50~V$_{pp}$) y una media un poco mayor. El cálculo supone descarga a corriente constante durante todo el periodo y 18~V a 2~A. El modelo del transformador, con la carga real de unos 0,3~A, entrega más tensión, y el capacitor se recarga durante una fracción del ciclo. El cálculo es, por tanto, conservador.
+
+\textit{Salidas.} Las tres salidas quedan dentro de 13~mV de su valor nominal, con los trimmers en la posición calculada. El rizado de $\pm16$~V (0,3~mV$_{pp}$) corresponde a un rechazo de $20\log(1{,}27/0{,}00035)\approx71$~dB, entre el mínimo y el típico de la hoja de datos. En $+5$~V el rizado es despreciable gracias a las dos etapas de regulación en cascada y al filtro $R_9C_{13}$, que era el objetivo para $V_{ref}$.
+
+\textit{Regulación.} La regulación de carga simulada (0,12 y 0,10~\%) coincide con el valor típico del LM317 (0,1~\%). La de línea, 8,5~mV para $\pm10$~\% de red, también coincide con el típico de 0,01~\%/V. En los escalones de carga la desviación se estabiliza en unos 20~ms sin sobreimpulso. La parte lenta la fija el capacitor del pin ADJ, que hace que el lazo vea la salida con ganancia unitaria en alta frecuencia. Con red baja y los trimmers al máximo, la salida se mantiene en 16,93~V con más de 3~V de margen sobre la caída mínima.
+
+\textit{Cortocircuito.} Las corrientes de corto (0,39, 0,33 y 0,14~A) coinciden con (\ref{eq:rsc}) y con el cálculo de $R_9$. Con $+5$~V en corto, el riel de $+16$~V no se ve afectado (15,98~V). El pico inicial de varios amperios de la Fig.~\ref{fig:sim_corto} es la descarga de los capacitores de salida a través del corto ideal, no corriente del regulador. La potencia de $Q_1$ en corto (8,0~W) es menor que la calculada (9,1~W), porque el cálculo usó una caída del regulador conservadora. Al retirar el corto, las salidas vuelven solas a su valor.
+
+% =========================================================
+\section{Circuito impreso}
+% =========================================================
+La placa es de una sola cara, de $165{,}1\times109{,}2$~mm, para una baquela de $20\times15$~cm (Figs.~\ref{fig:pcb_ens} y \ref{fig:pcb_cu}). Se generó con un programa propio en Python (colocación por recocido simulado dentro de regiones por etapa y ruteo negociado), el mismo usado para las tarjetas PID~\cite{informepid}. Las reglas de diseño son:
+\begin{itemize}
+\item Pistas de 0,8~mm, y de 1,6~mm para las redes de corriente alta (secundario, $V_{RAW\pm}$ y GND).
+\item Pads de 2,0 a 2,4~mm.
+\item Separación mínima entre redes de 0,40~mm, verificada sobre la geometría final.
+\end{itemize}
+Las 24 redes quedan completas, sin cortos, y el esquemático y la placa son consistentes. Hay cinco puentes de alambre del lado de componentes, ninguno en las redes de potencia. $Q_1$ y $U_1$ quedan en el borde superior y $Q_3$ y $U_2$ en el inferior, con las aletas hacia afuera para atornillar cada par a su disipador. En las esquinas hay cuatro agujeros de montaje de 3,2~mm.
+
+En la carpeta \texttt{fuente/hardware/pcb/} están:
+\begin{itemize}
+\item \texttt{fuente.sch} y \texttt{fuente.brd}, en formato EAGLE, que Fusion Electronics abre.
+\item \texttt{cobre\_espejado\_1a1.pdf}: el cobre espejado a escala 1:1, con una regla de 50~mm para comprobar la escala.
+\item \texttt{ensamble\_1a1.pdf}: vista de componentes a 1:1 y una vista ampliada con valores.
+\item \texttt{puentes.md}: la lista de los cinco puentes.
+\end{itemize}
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=0.85\textwidth]{pcb_ensamble.png}
+\caption{Vista de ensamble (lado de componentes). Rojo: puentes de alambre. Línea gruesa de cada TO-220: aleta, que va al disipador. Círculo azul: pin~1.}
+\label{fig:pcb_ens}
+\end{figure*}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{pcb_cobre_espejado.png}
+\caption{Cara de cobre espejada (reducida; la hoja para imprimir es la de 1:1).}
+\label{fig:pcb_cu}
+\end{figure}
+
+\subsection{Guía de conexión}
+La Tabla~\ref{tab:conex} indica cómo se conecta la fuente. Las salidas de J2 llevan el mismo orden que \texttt{J\_PWR} de las tarjetas PID, así que basta un cable de cuatro hilos a una tarjeta, y de ella a la otra. La fuente de las bobinas va por separado a \texttt{J\_VBOB}, y GND con PGND se unen solo en un \texttt{JP\_GND}.
+
+\begin{table}[htbp]
+\caption{Guía de conexión}
+\label{tab:conex}
+\centering
+\footnotesize
+\begin{tabular}{@{}p{0.42\linewidth}p{0.48\linewidth}@{}}
+\toprule
+Desde & Hacia \\
+\midrule
+Red L $\rightarrow$ F1 T315~mA $\rightarrow$ S1 & Primario del M509 \\
+Red N & Otro extremo del primario \\
+Extremo de 9~V del secundario & J1-1 (GND) \\
+Otro extremo de 9~V & J1-2 (AC). Tomas 0 y 6~V aisladas \\
+J2-1/2/3/4 (+16, $-16$, GND, +5) & \texttt{J\_PWR} 1/2/3/4 de la tarjeta PID A; de A a B por su \texttt{J\_PWR} \\
+J3 ($V_{RAW+}$, GND, $V_{RAW-}$) & Osciloscopio (rizado) \\
+Disipador superior & $Q_1$ y $U_1$ con mica y buje \\
+Disipador inferior & $Q_3$ y $U_2$ con mica y buje \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% =========================================================
+\section{Lista de materiales}
+% =========================================================
+La Tabla~\ref{tab:bom} es la lista de materiales. Todos son valores comerciales comunes en el mercado colombiano. La versión con sustitutos está en \texttt{fuente/hardware/lista\_de\_materiales.csv}. El transformador M509 ya estaba disponible.
+
+\begin{table}[htbp]
+\caption{Lista de materiales}
+\label{tab:bom}
+\centering
+\scriptsize
+\begin{tabular}{@{}p{0.30\linewidth}p{0.46\linewidth}c@{}}
+\toprule
+Referencia & Componente & Cant. \\
+\midrule
+T1 & Transformador M509 9-6-0-6-9~V / 2~A & 1 \\
+F1 / F2 & Fusible 5$\times$20 T315~mA lento / 1~A rápido, con portafusibles & 1 / 1 \\
+S1 & Interruptor 250~VAC & 1 \\
+D1--D3, D5, D7--D9, D11 & 1N4007 & 8 \\
+D4, D6, D10 & 1N4148 & 3 \\
+C1, C2 & $\SI{3300}{\micro F}$/50~V radial & 2 \\
+C5, C6, C10, C12, C14, C17 & 100~nF cerámico & 6 \\
+C7, C8, C15 & $\SI{10}{\micro F}$/25~V electrolítico & 3 \\
+C9, C11, C16 & $\SI{10}{\micro F}$/25~V tántalo & 3 \\
+C13 & $\SI{100}{\micro F}$/25~V electrolítico & 1 \\
+$R_{SC1}$ / $R_{SC2}$ & $\SI{1,8}{\ohm}$ / $\SI{2,2}{\ohm}$, 1~W & 1 / 1 \\
+R3, R4 & $\SI{820}{\ohm}$, 2~W & 2 \\
+R9 & $\SI{100}{\ohm}$, 3~W & 1 \\
+R5, R6, R10 & $\SI{120}{\ohm}$, 1~\% & 3 \\
+R7, R8 / R11 & $\SI{1,3}{k\ohm}$ / $\SI{330}{\ohm}$, 1~\% & 2 / 1 \\
+R12, R13 / R14 & $\SI{2,2}{k\ohm}$ / $\SI{470}{\ohm}$ & 2 / 1 \\
+RV1, RV2 / RV3 & Trimmer 3296W $\SI{200}{\ohm}$ / $\SI{50}{\ohm}$ & 2 / 1 \\
+Q1 / Q3 & TIP32C / TIP31C & 1 / 1 \\
+Q2 / Q4 & BC557 / BC547 & 1 / 1 \\
+U1, U3 / U2 & LM317T / LM337T & 2 / 1 \\
+LED1--LED3 & LED verde 5~mm & 3 \\
+J1 / J2 / J3 & Bornera 2 vías / 4 vías / regleta 1$\times$3 & 1 / 1 / 1 \\
+-- & Disipador $\leq$5~°C/W para 2 TO-220 & 2 \\
+-- & Mica, buje y tornillo M3 para TO-220 & 4 \\
+-- & Baquela una cara 20$\times$15~cm & 1 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% =========================================================
+\section{Plan de pruebas}
+% =========================================================
+Las pruebas siguen el orden de menor a mayor riesgo. Los detalles están en \texttt{fuente/pruebas/plan\_de\_pruebas.md}.
+\begin{enumerate}
+\item[P0] \textit{Sin energía:} polaridad de capacitores y diodos; ausencia de corto entre cada riel y GND y entre $+16$ y $-16$~V; aislamiento aleta--disipador.
+\item[P1] \textit{Primer encendido sin carga:} V~AC en J1, $V_{RAW\pm}$ en J3 y los tres LED.
+\item[P2] \textit{Ajuste:} $RV_1$, $RV_2$ y $RV_3$ a 16,00, $-16{,}00$ y 5,00~V, y rango de cada trimmer.
+\item[P3] \textit{Regulación de carga} con (\ref{eq:reg}): en vacío y con $\SI{82}{\ohm}/5$~W en $\pm16$~V ($\approx$195~mA) y $\SI{120}{\ohm}$ en $+5$~V.
+\item[P4] \textit{Rizado} con el osciloscopio en acople AC: sobre $C_1$ y $C_2$ (J3) y en las salidas; cálculo de $F_r$.
+\item[P5] \textit{Regulación de línea} con variac ($\pm10$~\%), si se dispone de uno.
+\item[P6] \textit{Cortocircuito:} amperímetro (escala 10~A) directo entre cada salida y GND durante 5~s; corriente, recuperación y temperatura del disipador tras 60~s.
+\item[P7] \textit{Temperatura} tras 30~min a plena carga.
+\item[P8] \textit{Con las tarjetas PID} (sin bobinas): tensiones en los pines 4 y 11 de cada TL074 y en $R_{13}$, y corriente de cada riel.
+\end{enumerate}
+La Tabla~\ref{tab:med} es la tabla de mediciones para llenar en el laboratorio. La versión completa, con 39 filas, está en \texttt{mediciones.csv}.
+
+\begin{table}[htbp]
+\caption{Tabla de mediciones prácticas (para llenar)}
+\label{tab:med}
+\centering
+\scriptsize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}p{0.08\linewidth}p{0.33\linewidth}p{0.27\linewidth}p{0.11\linewidth}p{0.07\linewidth}@{}}
+\toprule
+Prueba & Magnitud & Esperado & Medido & Error \\
+\midrule
+P1 & V~AC en J1 & 18--20~V$_{rms}$ & & \\
+P1 & $V_{RAW+}$ / $V_{RAW-}$ en vacío & $\pm$25 a $\pm$28~V & & \\
+P2 & Rango de $RV_1$ & 14,86--16,95~V & & \\
+P2 & Rango de $RV_2$ & $-14{,}88$ a $-16{,}97$~V & & \\
+P2 & Rango de $RV_3$ & 4,70--5,23~V & & \\
+P3 & +16~V vacío / plena carga & 16,00 / $\geq$15,92~V & & \\
+P3 & $-16$~V vacío / plena carga & $-16{,}00$ / $\leq-15{,}92$~V & & \\
+P3 & +5~V vacío / plena carga & 5,00 / $\geq$4,975~V & & \\
+P3 & \%Reg +16 / $-16$ / +5 & $\leq$0,5~\% & & \\
+P4 & Rizado sobre C1 / C2 & 1,27 / 1,04~V$_{pp}$ & & \\
+P4 & Rizado de +16 / $-16$~V & $<$1~mV$_{pp}$ & & \\
+P4 & $F_r$ del filtro + & 1,7--1,8~\% & & \\
+P5 & $\Delta V_{out}$ con red $\pm10$~\% & $<$33~mV & & \\
+P6 & $I$ de corto +16 / $-16$ / +5 & 0,39 / 0,32 / 0,14~A & & \\
+P6 & +16~V con +5~V en corto & 16,0~V & & \\
+P6 & $T$ disipador tras 60~s de corto & $<$80~°C & & \\
+P7 & $T$ disipadores, 30~min & $<$60~°C & & \\
+P8 & Rieles en los TL074 & $\pm$16,0~V & & \\
+P8 & $I$ de cada riel (4 PID) & $<$200~mA & & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% =========================================================
+\section{Conclusiones}
+% =========================================================
+\subsection{Sobre el transformador}
+El M509 no permite una fuente simétrica de $\pm16$~V por el camino habitual (derivación central como tierra y puente rectificador), porque solo daría $\pm12$~V de pico. Usar el devanado completo de 18~V con dos rectificadores de media onda de polaridad opuesta resuelve el problema sin cambiar el transformador. El costo es un rizado de 60~Hz (el doble que con onda completa), que se compensa con capacitores de $\SI{3300}{\micro F}$. Las componentes continuas de las dos medias ondas casi se cancelan en el núcleo.
+
+\subsection{Sobre la protección}
+Con el LM317, limitar la corriente actuando sobre el pin ADJ no protege en un corto franco, porque el integrado mantiene 1,25~V entre OUT y ADJ. Por eso el limitador se colocó antes del regulador, con la topología PNP de la Fig.~3-26 y la ecuación~(3.27) de la monografía. La simulación confirma corrientes de corto de 0,39 y 0,33~A, cercanas a la corriente de trabajo, y recuperación automática. El precio es que el transistor de paso disipa hasta unos 10~W durante un corto sostenido, y eso define el disipador de 5~°C/W. Un \emph{foldback} (Fig.~3-27) reduciría esa potencia, a cambio de un ajuste más delicado y de una corriente límite que dependería de la tensión de red.
+
+\subsection{Sobre la calidad de los rieles}
+Las simulaciones muestran que la fuente cumple las especificaciones con margen: regulación de carga del 0,1~\%, 8,5~mV de variación por línea y rizado de salida de 0,3~mV$_{pp}$. El riel de $+5$~V, del que depende $V_{ref}$ y por tanto el punto de equilibrio del levitador, resulta el más limpio por la regulación en cascada y el filtro $R_9C_{13}$. Los modelos del LM317, del LM337 y de los TIP son de comportamiento, así que los valores dinámicos deben confirmarse con las mediciones del plan de pruebas.
+
+\subsection{Trabajo pendiente}
+Fabricar y montar la placa, aplicar el plan de pruebas y llenar la Tabla~\ref{tab:med}. Después, conectar las tarjetas PID y verificar que el desacople de 100~nF en los pines 4 y 11 de cada TL074 sea suficiente con el cableado real.
+
+\begin{thebibliography}{00}
+\bibitem{monografia} A. Zambrano Zabaleta, \emph{Monografía ``Electrónica Tomo II''}, trabajo de grado, dir. R. J. Gutiérrez González, Programa de Ingeniería Electrónica, Universidad de Ibagué, Ibagué, Colombia, 2020, tema 3: ``Reguladores de voltaje para fuentes DC''.
+\bibitem{informepid} B. A. Campiño Romero, ``Diseño e implementación de un controlador PID analógico con amplificadores operacionales para un sistema de levitación electromagnética,'' Universidad de Ibagué, 2026. Repositorio: github.com/Brahiam18/controlador-pid-analogico-levitador.
+\bibitem{lm317} Texas Instruments, ``LM317 3-Terminal Adjustable Regulator,'' hoja de datos SLVS044.
+\bibitem{lm337} Texas Instruments, ``LM337 3-Terminal Adjustable Negative Regulator,'' hoja de datos.
+\bibitem{tip3x} STMicroelectronics, ``TIP31C / TIP32C Complementary power transistors,'' hoja de datos.
+\bibitem{bc547} onsemi, ``BC546B, BC547A/B/C, BC548B/C --- Amplifier Transistors (NPN)'' y ``BC556B, BC557A/B/C (PNP),'' hojas de datos.
+\bibitem{tl074} Texas Instruments, ``TL07xx Low-Noise FET-Input Operational Amplifiers,'' hoja de datos.
+\bibitem{ss495a} Honeywell, ``SS490 Series / SS495A Linear Hall-Effect Sensor,'' hoja de datos.
+\bibitem{d1n4007} Vishay, ``1N4001 thru 1N4007 General Purpose Plastic Rectifier,'' hoja de datos.
+\bibitem{ngspice} H. Vogt, G. Atkinson y P. Nenzi, \emph{Ngspice User's Manual}, versión 42, 2024.
+\bibitem{boylestad} R. L. Boylestad y L. Nashelsky, \emph{Electrónica: teoría de circuitos y dispositivos electrónicos}, 10.ª ed. México: Pearson, 2009.
+\end{thebibliography}
+
+\section*{Apéndice}
+\begin{figure*}[p]
+\centering
+\includegraphics[width=\textwidth,height=0.92\textheight,keepaspectratio]{esq_completo.pdf}
+\caption{Esquemático completo de la fuente $\pm$16~V / +5~V.}
+\label{fig:completo}
+\end{figure*}
+
+\end{document}

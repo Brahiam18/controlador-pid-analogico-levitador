@@ -1,0 +1,12 @@
+% ---------- Bornera de salida J2 y puntos de prueba ----------
+\draw[thick] (0,0) rectangle (2.2,-4.2); \node[font=\footnotesize\bfseries] at (1.1,0.35) {J2 (bornera 4 vías, 5,08 mm)};
+\foreach \y/\n/\t in {-0.6/1/+16 V, -1.6/2/$-$16 V, -2.6/3/GND, -3.6/4/+5 V} {
+  \draw (-1.6,\y) node[left, net]{\t} -- (0,\y); \node[font=\scriptsize] at (0.4,\y) {\n};
+  \draw (2.2,\y) -- (3.6,\y) node[ocirc]{};
+}
+\node[font=\scriptsize, align=left, anchor=west] at (3.8,-2.1) {hacia J\_PWR de las tarjetas PID\\(pin 1 +16 V, 2 $-$16 V,\\3 GND, 4 +5 V: mismo orden)};
+\draw[thick] (8.6,0) rectangle (10.6,-3.2); \node[font=\footnotesize\bfseries] at (9.6,0.35) {J3 (regleta 1$\times$3)};
+\foreach \y/\n/\t in {-0.6/1/$V_{RAW+}$ (TP1), -1.6/2/GND, -2.6/3/$V_{RAW-}$ (TP2)} {
+  \draw (10.6,\y) -- (11.2,\y) node[right, font=\scriptsize]{\t}; \node[font=\scriptsize] at (8.9,\y) {\n};
+}
+\node[font=\scriptsize, align=left, anchor=north west] at (8.6,-3.4) {puntas del osciloscopio para medir\\el rizado de $C_1$ y $C_2$};
