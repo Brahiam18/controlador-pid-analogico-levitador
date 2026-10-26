@@ -219,6 +219,51 @@ Lo que necesita el regulador es 18,83~V para 16,00~V y 19,78~V para 16,95~V: que
 F_{r+}=\frac{0{,}210}{24{,}09}=0{,}87\,\% ,\qquad F_{r-}=\frac{0{,}170}{24{,}16}=0{,}70\,\% .
 \end{equation}
 
+\subsection{Justificación del cambio de $\SI{3300}{\micro F}$ a $\SI{6800}{\micro F}$}
+\label{sec:cambio_c}
+El diseño original usaba $C_1=C_2=\SI{3300}{\micro F}$, el valor comercial inmediatamente superior a $C_{min}=\SI{2330}{\micro F}$. Para el montaje se cambiaron por capacitores de $\SI{6800}{\micro F}/50$~V. Se justifica por cuatro razones:
+\begin{itemize}
+\item \textbf{Disponibilidad.} Ya se tenían tres capacitores de $\SI{6800}{\micro F}$ y uno de $\SI{15000}{\micro F}$. Reutilizarlos evita comprar piezas y no retrasa el montaje.
+\item \textbf{Cumplen el criterio de diseño.} La única condición del filtro es $C\geq C_{min}$, y $\SI{6800}{\micro F}$ es 2,9 veces $C_{min}$. Su tensión nominal, 50~V, supera los 29,8~V del peor caso; con 25~V no servirían.
+\item \textbf{Mejoran el desempeño.} El rizado es inversamente proporcional a $C$ ($V_{r(pp)}=I/fC$), así que se reduce a menos de la mitad y el margen sobre la caída mínima del regulador aumenta (Tabla~\ref{tab:cambio_c}).
+\item \textbf{Simetría.} Se usa el mismo valor en los dos rieles para que su comportamiento sea igual. El de $\SI{15000}{\micro F}$ no se usó: el regulador ya deja el rizado de salida por debajo de 1~mV con $\SI{6800}{\micro F}$. Un valor mayor solo aumentaría el pico de corriente al encender y el tamaño (no cabe en la placa), y un valor distinto en cada riel rompería la simetría. El tercer $\SI{6800}{\micro F}$ queda de repuesto.
+\end{itemize}
+
+\begin{table}[htbp]
+\caption{Efecto del cambio de $C_1=C_2$ (red al $-10$~\% salvo indicación)}
+\label{tab:cambio_c}
+\centering
+\scriptsize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Magnitud & $\SI{3300}{\micro F}$ & $\SI{6800}{\micro F}$ \\
+\midrule
+Rizado sobre $C_1$ / $C_2$ (cálculo) & 1,50 / 1,21~V$_{pp}$ & 0,73 / 0,59~V$_{pp}$ \\
+Rizado sobre $C_1$ / $C_2$ (simulación, 115~V) & 1,27 / 1,04~V$_{pp}$ & 0,61 / 0,50~V$_{pp}$ \\
+Valle de $V_{RAW+}$ & 20,41~V & 21,18~V \\
+Margen para +16,00~V / +16,95~V & 1,57 / 0,62~V & 2,35 / 1,40~V \\
+Factor de rizado $F_{r+}$ / $F_{r-}$ (115~V) & 1,83 / 1,47~\% & 0,87 / 0,70~\% \\
+Rizado de salida $\pm16$~V (simulación) & 0,35 / 0,29~mV$_{pp}$ & 0,17 / 0,14~mV$_{pp}$ \\
+$P$ del LM317 (+16~V), red nominal / alta & 2,58 / 3,35~W & 2,69 / 3,45~W \\
+$P_{Q1}$ en corto, red nominal / alta & 9,1 / 10,2~W & 9,3 / 10,4~W \\
+Energía almacenada a 25~V ($\frac{1}{2}CV^2$) & 1,0~J & 2,1~J \\
+$I^2t$ de carga al encender ($V^2C/2R$) & $\approx$1,0~A$^2$s & $\approx$2,1~A$^2$s \\
+Diámetro / taladro en la PCB & 25 / 1,1~mm & 28 / 1,3~mm \\
+Fusible F2 & 1~A rápido & T1~A lento \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+El cambio no es gratuito; obligó a hacer los siguientes ajustes, ya incluidos en este informe, en la placa y en la lista de materiales:
+\begin{enumerate}
+\item \textbf{Fusible F2 lento.} Al encender, los capacitores descargados se cargan a través de la resistencia del devanado ($R\approx\SI{1}{\ohm}$). La energía del pulso, $I^2t\approx V^2C/(2R)$, se duplica de unos 1,0 a unos 2,1~A$^2$s. Un fusible rápido de 1~A se funde con valores del orden de 1~A$^2$s, así que podría abrirse en cada encendido. Uno lento (T1~A) tolera el pulso y sigue protegiendo ante una falla sostenida. Los 1N4007 soportan picos de 30~A y un $I^2t$ de 3,7~A$^2$s~\cite{d1n4007}, de modo que no se ven afectados.
+\item \textbf{Huella en la PCB.} El cuerpo pasa de 25 a 28~mm de diámetro y el taladro de 1,1 a 1,3~mm. La separación entre patas, 10~mm, coincide con la huella anterior. El cuerpo más grande cabe sin tocar otras piezas, así que el ruteo no cambió.
+\item \textbf{Disipación ligeramente mayor.} Con menos rizado, la tensión media sobre el filtro sube unos 0,4~V. Por eso el regulador disipa unos 0,1~W más en operación normal, y el transistor de paso unos 0,2~W más en cortocircuito. La juntura de $Q_1$ sube de 137 a 138~°C en el peor caso, todavía por debajo de 150~°C: el disipador de 5~°C/W sigue siendo suficiente.
+\item \textbf{Corriente de pico en el devanado.} Con más capacitancia, la recarga en cada ciclo ocurre en un intervalo más corto y con picos más altos, y la corriente eficaz del secundario aumenta algo. Con unos 0,3~A de carga en cada rama, sigue muy por debajo de los 2~A del M509.
+\item \textbf{Descarga más lenta al apagar.} Los capacitores conservan carga más tiempo. Antes de manipular la placa se debe esperar a que se apaguen los LED.
+\end{enumerate}
+El rizado de salida y la regulación casi no cambian, porque ya los fijaba el LM317. La ganancia real del cambio está en el margen frente a caídas de la red: con red al $-10$~\% y los trimmers al máximo, el regulador conserva 1,40~V de margen en lugar de 0,62~V.
+
 \subsection{Reguladores y red de ajuste}
 \label{sec:reg}
 \textit{Elección de $R_1$.} La monografía pide $I_Q\ll I_1\ll I_L$. El LM317 y el LM337 además necesitan una carga mínima de hasta 10~mA para regular~\cite{lm317,lm337}. Con $R_1=\SI{120}{\ohm}$ al 1~\% ($R_5$, $R_6$, $R_{10}$ en el esquemático):
@@ -585,7 +630,7 @@ P8 & $I$ de cada riel (4 PID) & $<$200~mA & & \\
 \section{Conclusiones}
 % =========================================================
 \subsection{Sobre el transformador}
-El M509 no permite una fuente simétrica de $\pm16$~V por el camino habitual (derivación central como tierra y puente rectificador), porque solo daría $\pm12$~V de pico. Usar el devanado completo de 18~V con dos rectificadores de media onda de polaridad opuesta resuelve el problema sin cambiar el transformador. El costo es un rizado de 60~Hz (el doble que con onda completa), que se compensa con capacitores de $\SI{6800}{\micro F}$. Las componentes continuas de las dos medias ondas casi se cancelan en el núcleo.
+El M509 no permite una fuente simétrica de $\pm16$~V por el camino habitual (derivación central como tierra y puente rectificador), porque solo daría $\pm12$~V de pico. Usar el devanado completo de 18~V con dos rectificadores de media onda de polaridad opuesta resuelve el problema sin cambiar el transformador. El costo es un rizado de 60~Hz (el doble que con onda completa), que se compensa con capacitores de $\SI{6800}{\micro F}$. Esos capacitores ya estaban disponibles y, con el doble de la capacitancia original, reducen el rizado del filtro a la mitad. A cambio, obligaron a usar un fusible lento en el secundario (sección~\ref{sec:cambio_c}). Las componentes continuas de las dos medias ondas casi se cancelan en el núcleo.
 
 \subsection{Sobre la protección}
 Con el LM317, limitar la corriente actuando sobre el pin ADJ no protege en un corto franco, porque el integrado mantiene 1,25~V entre OUT y ADJ. Por eso el limitador se colocó antes del regulador, con la topología PNP de la Fig.~3-26 y la ecuación~(3.27) de la monografía. La simulación confirma corrientes de corto de 0,39 y 0,33~A, cercanas a la corriente de trabajo, y recuperación automática. El precio es que el transistor de paso disipa hasta unos 10~W durante un corto sostenido, y eso define el disipador de 5~°C/W. Un \emph{foldback} (Fig.~3-27) reduciría esa potencia, a cambio de un ajuste más delicado y de una corriente límite que dependería de la tensión de red.
