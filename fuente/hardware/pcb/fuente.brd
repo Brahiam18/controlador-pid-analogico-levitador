@@ -130,13 +130,13 @@
 <text x="3.81" y="-2.94" size="1" layer="27" align="top-center">&gt;VALUE</text>
 </package>
 <package name="CPOL25">
-<description>Electrolítico radial D25 mm, paso 10.16 mm (3300 uF/50 V); pad 1 = +</description>
-<pad name="1" x="0" y="0" drill="1.1" diameter="2.4" shape="square"/>
-<pad name="2" x="10.16" y="0" drill="1.1" diameter="2.4" shape="round"/>
-<circle x="5.08" y="0" radius="12.8" width="0.2" layer="21"/>
+<description>Electrolítico radial D28 mm, paso 10 mm (6800 uF/50 V); pad 1 = +</description>
+<pad name="1" x="0" y="0" drill="1.3" diameter="2.4" shape="square"/>
+<pad name="2" x="10.16" y="0" drill="1.3" diameter="2.4" shape="round"/>
+<circle x="5.08" y="0" radius="13.8" width="0.2" layer="21"/>
 <text x="-1.6" y="1.4" size="1.2" layer="21" align="center">+</text>
-<text x="5.08" y="13.4" size="1.27" layer="25" align="bottom-center">&gt;NAME</text>
-<text x="5.08" y="-13.4" size="1" layer="27" align="top-center">&gt;VALUE</text>
+<text x="5.08" y="14.4" size="1.27" layer="25" align="bottom-center">&gt;NAME</text>
+<text x="5.08" y="-14.4" size="1" layer="27" align="top-center">&gt;VALUE</text>
 </package>
 <package name="CPOL6">
 <description>Electrolítico radial D6.3 mm, paso 2.54 mm; pad 1 = +</description>
@@ -305,11 +305,11 @@
 </designrules>
 <elements>
 <element name="J1" library="fuente16" package="TERM2" value="SEC 18V" x="7.62" y="50.8" rot="R90"/>
-<element name="F2" library="fuente16" package="FUSE" value="1A 5x20" x="12.7" y="58.42"/>
+<element name="F2" library="fuente16" package="FUSE" value="T1A 5x20" x="12.7" y="58.42"/>
 <element name="D1" library="fuente16" package="DO41" value="1N4007" x="40.64" y="63.5" rot="R90"/>
 <element name="D2" library="fuente16" package="DO41" value="1N4007" x="40.64" y="40.64" rot="R90"/>
-<element name="C1" library="fuente16" package="CPOL25" value="3300u/50V" x="15.24" y="83.82"/>
-<element name="C2" library="fuente16" package="CPOL25" value="3300u/50V" x="15.24" y="25.4"/>
+<element name="C1" library="fuente16" package="CPOL25" value="6800u/50V" x="15.24" y="83.82"/>
+<element name="C2" library="fuente16" package="CPOL25" value="6800u/50V" x="15.24" y="25.4"/>
 <element name="RSC1" library="fuente16" package="RES1W" value="1R8 1W" x="40.64" y="88.9"/>
 <element name="RSC2" library="fuente16" package="RES1W" value="2R2 1W" x="50.8" y="27.94" rot="R270"/>
 <element name="Q1" library="fuente16" package="TO220" value="TIP32C" x="60.96" y="101.6"/>

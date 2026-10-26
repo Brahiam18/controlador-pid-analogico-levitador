@@ -47,7 +47,7 @@ def fp_pads(kind):
     raise KeyError(kind)
 
 # taladro por tipo de huella (mm); el resto usa DRILL
-DRILL_OF={'TO220':1.0,'DIODE':1.3,'TERM2':1.3,'RSBANK':1.1,'TERM4':1.3,'FUSE':1.3,'DO41':1.0,'CPOL25':1.1,'RES1W':1.0,'RES2W':1.0,'RES3W':1.1}
+DRILL_OF={'TO220':1.0,'DIODE':1.3,'TERM2':1.3,'RSBANK':1.1,'TERM4':1.3,'FUSE':1.3,'DO41':1.0,'CPOL25':1.3,'RES1W':1.0,'RES2W':1.0,'RES3W':1.1}
 def drill_of(kind): return DRILL_OF.get(kind,DRILL)
 
 # cajas de cuerpo especiales (xmin,ymin,xmax,ymax) locales, en mm
@@ -56,7 +56,7 @@ BOX_OF={
  'TERM2':(-3.6,-5.2,8.7,5.6),
  'RSBANK':(-5.5,-3.2,(RSB_COLS-1)*RSB_DX*G+5.5,RSB_YI*G+3.2),
  'TERM4':(-3.6,-5.2,18.84,5.6),
- 'CPOL25':(5.08-13.0,-13.0,5.08+13.0,13.0),
+ 'CPOL25':(5.08-14.0,-14.0,5.08+14.0,14.0),
  'CPOL6':(1.27-3.5,-3.5,1.27+3.5,3.5),
  'CPOL5':(1.27-3.0,-3.0,1.27+3.0,3.0),
  'CTANT':(-1.6,-2.4,4.14,2.4),

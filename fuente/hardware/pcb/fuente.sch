@@ -119,13 +119,13 @@
 <text x="3.81" y="-2.94" size="1" layer="27" align="top-center">&gt;VALUE</text>
 </package>
 <package name="CPOL25">
-<description>Electrolítico radial D25 mm, paso 10.16 mm (3300 uF/50 V); pad 1 = +</description>
-<pad name="1" x="0" y="0" drill="1.1" diameter="2.4" shape="square"/>
-<pad name="2" x="10.16" y="0" drill="1.1" diameter="2.4" shape="round"/>
-<circle x="5.08" y="0" radius="12.8" width="0.2" layer="21"/>
+<description>Electrolítico radial D28 mm, paso 10 mm (6800 uF/50 V); pad 1 = +</description>
+<pad name="1" x="0" y="0" drill="1.3" diameter="2.4" shape="square"/>
+<pad name="2" x="10.16" y="0" drill="1.3" diameter="2.4" shape="round"/>
+<circle x="5.08" y="0" radius="13.8" width="0.2" layer="21"/>
 <text x="-1.6" y="1.4" size="1.2" layer="21" align="center">+</text>
-<text x="5.08" y="13.4" size="1.27" layer="25" align="bottom-center">&gt;NAME</text>
-<text x="5.08" y="-13.4" size="1" layer="27" align="top-center">&gt;VALUE</text>
+<text x="5.08" y="14.4" size="1.27" layer="25" align="bottom-center">&gt;NAME</text>
+<text x="5.08" y="-14.4" size="1" layer="27" align="top-center">&gt;VALUE</text>
 </package>
 <package name="CPOL6">
 <description>Electrolítico radial D6.3 mm, paso 2.54 mm; pad 1 = +</description>
@@ -800,11 +800,11 @@
 </classes>
 <parts>
 <part name="J1" library="fuente16" deviceset="TERM2" device="" value="SEC 18V"/>
-<part name="F2" library="fuente16" deviceset="FUSE" device="" value="1A 5x20"/>
+<part name="F2" library="fuente16" deviceset="FUSE" device="" value="T1A 5x20"/>
 <part name="D1" library="fuente16" deviceset="D41" device="" value="1N4007"/>
 <part name="D2" library="fuente16" deviceset="D41" device="" value="1N4007"/>
-<part name="C1" library="fuente16" deviceset="CPOL25" device="" value="3300u/50V"/>
-<part name="C2" library="fuente16" deviceset="CPOL25" device="" value="3300u/50V"/>
+<part name="C1" library="fuente16" deviceset="CPOL25" device="" value="6800u/50V"/>
+<part name="C2" library="fuente16" deviceset="CPOL25" device="" value="6800u/50V"/>
 <part name="RSC1" library="fuente16" deviceset="R1W" device="" value="1R8 1W"/>
 <part name="RSC2" library="fuente16" deviceset="R1W" device="" value="2R2 1W"/>
 <part name="Q1" library="fuente16" deviceset="TIP32C" device="" value="TIP32C"/>

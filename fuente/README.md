@@ -11,14 +11,14 @@ Proyecto de fuente (monografía *Electrónica Tomo II*, tema 3: reguladores de v
 |---|---|
 | Transformador | M509 115 V : 9‑6‑0‑6‑9 V / 2 A. Se usa el devanado completo de **18 V** (extremos de 9 V); las tomas 0 y 6 V quedan aisladas |
 | Rectificador | Media onda doble: D1 para +, D2 para − (1N4007) |
-| Filtro | C1 = C2 = 3300 µF / 50 V (rizado de 1,5 V_pp como máximo, valle ≥ 20,4 V con la red al −10 %) |
+| Filtro | C1 = C2 = 6800 µF / 50 V, de 28 mm de diámetro y 10 mm entre patas (rizado de 0,73 V_pp como máximo, valle ≥ 21,2 V con la red al −10 %) |
 | Limitador | Antes de cada regulador, transistor de paso + sensor (Fig. 3‑26 y ec. 3.27 de la monografía): R_SC1 = 1,8 Ω → **0,39 A** en +16 V; R_SC2 = 2,2 Ω → **0,32 A** en −16 V |
 | Reguladores | U1 LM317 (+16 V) y U2 LM337 (−16 V) con R1 = 120 Ω, R2 = 1,3 kΩ + trimmer de 200 Ω (ajuste de 14,9 a 17,0 V) |
 | +5 V | U3 LM317 alimentado desde +16 V por R9 = 100 Ω / 3 W (corto: 0,145 A; filtro RC de 15,9 Hz). Ajuste de 4,70 a 5,23 V |
-| Protecciones | F1 T315 mA (primario), F2 1 A (secundario), limitadores, protección térmica interna, diodos OUT→IN, ADJ→OUT y de polaridad inversa en las salidas |
+| Protecciones | F1 T315 mA (primario), F2 T1 A lento (secundario), limitadores, protección térmica interna, diodos OUT→IN, ADJ→OUT y de polaridad inversa en las salidas |
 | Disipadores | Q1+U1 y Q3+U2: un disipador de ≤ 5 °C/W por par, con mica. U3 no necesita disipador |
 
-Simulación (ngspice): 16,00 / −16,00 / 5,00 V; rizado < 0,4 mV_pp; regulación de carga de 0,12 %; 8,5 mV de variación con la red al ±10 %; corrientes de corto de 0,39 / 0,33 / 0,14 A, con recuperación automática.
+Simulación (ngspice): 16,00 / −16,00 / 5,00 V; rizado < 0,2 mV_pp; regulación de carga de 0,12 %; 8,4 mV de variación con la red al ±10 %; corrientes de corto de 0,39 / 0,33 / 0,14 A, con recuperación automática.
 
 ## Carpetas
 | Carpeta | Contenido |

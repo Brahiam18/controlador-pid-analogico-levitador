@@ -34,7 +34,7 @@ Los valores "esperados" salen del cálculo (`calculos/`) y de la simulación (`s
 2. Calcular %Reg = (|V_ro| − |V_r|)/|V_r| × 100 (ec. de la monografía). Esperado ≤ 0,5 % (≈ 0,1 % típico).
 
 ## P4. Rizado
-1. Osciloscopio en acople AC: medir V_pp sobre C1 (J3‑1) y sobre C2 (J3‑3) a plena carga. Esperado ≈ 1,3–1,5 V_pp en +, 1,0–1,2 V_pp en −, con frecuencia de **60 Hz** (media onda).
+1. Osciloscopio en acople AC: medir V_pp sobre C1 (J3‑1) y sobre C2 (J3‑3) a plena carga. Esperado ≈ 0,6–0,75 V_pp en + y 0,5–0,6 V_pp en −, con frecuencia de **60 Hz** (media onda).
 2. Medir V_pp en las salidas (escala de 1–2 mV/div, punta ×1). Esperado < 1 mV_pp. Si se ve más, revisar el lazo de la punta de masa.
 3. Calcular el factor de rizado F_r = V_r,rms/V_DC de la salida del filtro.
 

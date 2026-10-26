@@ -49,7 +49,7 @@ out('Ilim(-16) = 0.7/2.2', VBE/RSC_N, 'A')
 RB = 820.0; VEB_Q1 = 0.9; HFE_MIN = 25
 
 # ---------------- 4. Capacitor de filtro (media onda: f_rizado = 60 Hz) ----------------
-C = 3300e-6
+C = 6800e-6
 def filtro(I, Rsc, nombre):
     Vpk = Vp(0.9*VS)
     IB = (Vpk - 1.5 - I*Rsc - VEB_Q1)/RB         # corriente por RB (pasa por Rsc), línea baja

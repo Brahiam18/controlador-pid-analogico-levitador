@@ -15,7 +15,7 @@ Placa de **una sola cara** (cobre inferior) de **165,1 × 109,2 mm**, con márge
 ## Reglas de diseño (verificadas por `verify.py` y `xmlcheck.py`)
 - Pistas de 0,8 mm. Las redes de corriente alta (`ACIN`, `AC`, `VRAWP`, `VRAWN`, `GND`) van en 1,6 mm.
 - Pads de 2,0 mm, y de 2,4 mm en las borneras, el portafusible y los condensadores grandes.
-- Taladros: 0,9 mm en general; 1,0 mm para TO‑220, 1N4007 y resistencias de potencia; 1,1 mm para C1, C2 y R9; 1,3 mm para borneras y portafusible; 3,2 mm para los 4 agujeros de montaje.
+- Taladros: 0,9 mm en general; 1,0 mm para TO‑220, 1N4007 y resistencias de potencia; 1,1 mm para R9; 1,3 mm para C1, C2 (6800 µF, Ø 28 mm, 10 mm entre patas), borneras y portafusible; 3,2 mm para los 4 agujeros de montaje.
 - Separación mínima entre cobres de redes distintas: **0,40 mm**, medida sobre la geometría final.
 - Las 24 redes están completas, sin cortos, y el `.sch` y el `.brd` son consistentes.
 

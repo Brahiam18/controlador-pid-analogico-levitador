@@ -12,16 +12,16 @@
 \node[font=\scriptsize] at (-0.8,1.95) {115 V : 9-6-0-6-9 V, 2 A};
 \draw (0,0) -- (0.3,0); \node[font=\tiny, align=center] at (-0.4,-2.15) {tomas 0 y 6 V\\aisladas, sin conexión};
 % secundario: extremo superior (9 V) -> F2 -> AC ; extremo inferior (9 V) -> GND
-\draw (0,1.5) -- (1.4,1.5) node[ocirc]{} node[above, font=\tiny]{J1-2} to[fuse, l=$F_2$ 1 A] (3.6,1.5) node[circ](ac){} node[below right, net]{AC};
+\draw (0,1.5) -- (1.4,1.5) node[ocirc]{} node[above, font=\tiny]{J1-2} to[fuse, l=$F_2$ T1 A] (3.6,1.5) node[circ](ac){} node[below right, net]{AC};
 \draw (0,-1.5) -- (1.4,-1.5) node[ocirc]{} node[below, font=\tiny]{J1-1} -- (2.2,-1.5) node[ground]{};
 \node[font=\scriptsize, align=left, anchor=west] at (1.5,0) {18 V$_\mathrm{rms}$ entre\\los extremos};
 % rama positiva: D1 + C1
 \draw (ac) -- (3.6,3.0) to[D*, l=$D_1$ 1N4007] (6.2,3.0) node[circ](vp){};
-\draw (vp) to[eC, l_=$C_1$, a^={\SI{3300}{\micro\farad}/50 V}] (6.2,0.9) node[ground]{};
+\draw (vp) to[eC, l_=$C_1$, a^={\SI{6800}{\micro\farad}/50 V}] (6.2,0.9) node[ground]{};
 \draw (vp) -- (8.6,3.0) node[ocirc]{} node[right, net]{$V_{RAW+}$ (TP1)};
 % rama negativa: D2 + C2
 \draw (ac) -- (3.6,-0.4);
 \draw (6.2,-0.4) to[D*, l_=$D_2$ 1N4007] (3.6,-0.4);
 \draw (6.2,-0.4) node[circ](vn){};
-\draw (vn) to[eC, invert, l=$C_2$, a_={\SI{3300}{\micro\farad}/50 V}] (6.2,-2.5) node[ground]{};
+\draw (vn) to[eC, invert, l=$C_2$, a_={\SI{6800}{\micro\farad}/50 V}] (6.2,-2.5) node[ground]{};
 \draw (vn) -- (8.6,-0.4) node[ocirc]{} node[right, net]{$V_{RAW-}$ (TP2)};

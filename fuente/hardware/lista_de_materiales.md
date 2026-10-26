@@ -9,10 +9,10 @@ Valores comerciales comunes en tiendas de electrónica de Colombia. Las referenc
 | S1 | Interruptor | — | 250 VAC 3 A (balancín) | 1 | Encendido | — | Fuera de la placa |
 | — | Cable de poder con clavija | — | 2 x 18 AWG | 1 | Entrada 115 VAC | — | Aislar con termoencogible los empalmes del primario |
 | J1 | Bornera de tornillo | 2 vías | paso 5.08 mm | 1 | Entrada del secundario (pin 1 = GND) | — |  |
-| F2 | Portafusible de PCB + fusible rápido | 1 A | 5x20 mm | 1 | Protección del secundario | — | Verificar la distancia entre clips (22.86 mm en la huella) |
+| F2 | Portafusible de PCB + fusible lento | T1A (lento) | 5x20 mm | 1 | Protección del secundario | — | Verificar la distancia entre clips (22.86 mm en la huella) |
 | D1-D3 D5 D7-D9 D11 | Diodo rectificador | 1N4007 | 1 A 1000 V DO-41 | 8 | Rectificación y protecciones | 1N4004 (400 V) |  |
 | D4 D6 D10 | Diodo de señal | 1N4148 | DO-35 | 3 | Protección del pin ADJ | 1N914 |  |
-| C1 C2 | Electrolítico | 3300 µF | 50 V radial D22-25 mm paso 10 mm | 2 | Filtro | 3300 µF/63 V | Ripple ≥ 1.5 A |
+| C1 C2 | Electrolítico | 6800 µF | 50 V radial D28 mm paso 10 mm | 2 | Filtro | 6800 µF/63 V (máx. D28 mm) | Mínimo 35 V; la huella es para D28 mm y paso 10 mm |
 | C5 C6 C10 C12 C14 C17 | Cerámico multicapa | 100 nF | 50 V paso 5.08 mm | 6 | Desacople de entradas y salidas | poliéster 100 nF |  |
 | C7 C8 C15 | Electrolítico | 10 µF | 25 V radial D5 mm paso 2.5 mm | 3 | Pin ADJ (rechazo de rizado) | 10 µF/35 V |  |
 | C9 C11 C16 | Tántalo | 10 µF | 25 V gota paso 2.54 mm | 3 | Estabilidad de la salida | electrolítico 47 µF/25 V | Respetar la polaridad |

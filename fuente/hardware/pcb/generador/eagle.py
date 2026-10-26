@@ -33,7 +33,7 @@ def txt(x, y, s, size=1.27, layer=25, align='center', rot=''):
 
 DESC = {'TERM2':'Bornera de tornillo 2 vías, paso 5.08 mm','TERM4':'Bornera de tornillo 4 vías (2 x 2 vías), paso 5.08 mm',
  'FUSE':'Portafusible de PCB para fusible 5x20 mm, 22.86 mm entre clips','DO41':'Diodo DO-41 (1N4007), 10.16 mm; pad 2 = cátodo',
- 'DO35':'Diodo DO-35 (1N4148), 7.62 mm; pad 2 = cátodo','CPOL25':'Electrolítico radial D25 mm, paso 10.16 mm (3300 uF/50 V); pad 1 = +',
+ 'DO35':'Diodo DO-35 (1N4148), 7.62 mm; pad 2 = cátodo','CPOL25':'Electrolítico radial D28 mm, paso 10 mm (6800 uF/50 V); pad 1 = +',
  'CPOL6':'Electrolítico radial D6.3 mm, paso 2.54 mm; pad 1 = +','CPOL5':'Electrolítico radial D5 mm, paso 2.54 mm; pad 1 = +',
  'CTANT':'Tántalo de gota, paso 2.54 mm; pad 1 = +','CAP':'Cerámico/poliéster, paso 5.08 mm','RES10':'Resistencia 1/4 W, 10.16 mm',
  'RES1W':'Resistencia 1 W, 15.24 mm','RES2W':'Resistencia 2 W, 20.32 mm','RES3W':'Resistencia 3 W, 25.4 mm',

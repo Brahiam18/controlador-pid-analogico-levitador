@@ -5,9 +5,9 @@ Pines: TO-220  TIP31C/TIP32C 1=B 2=C 3=E | LM317T 1=ADJ 2=OUT 3=IN | LM337T 1=AD
        trimmer 3296W 1, 2=cursor, 3
 """
 PARTS = {
- 'J1':('TERM2','SEC 18V'), 'F2':('FUSE','1A 5x20'),
+ 'J1':('TERM2','SEC 18V'), 'F2':('FUSE','T1A 5x20'),
  'D1':('DO41','1N4007'), 'D2':('DO41','1N4007'),
- 'C1':('CPOL25','3300u/50V'), 'C2':('CPOL25','3300u/50V'),
+ 'C1':('CPOL25','6800u/50V'), 'C2':('CPOL25','6800u/50V'),
  'RSC1':('RES1W','1R8 1W'), 'RSC2':('RES1W','2R2 1W'),
  'Q1':('TO220','TIP32C'), 'Q2':('TO92','BC557'), 'R3':('RES2W','820 2W'),
  'Q3':('TO220','TIP31C'), 'Q4':('TO92','BC547'), 'R4':('RES2W','820 2W'),
