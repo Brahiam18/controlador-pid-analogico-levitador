@@ -1,20 +1,20 @@
-% ---------- Etapa 4: regulador LM317 de +5 V alimentado desde +16 V, y bornera de salida ----------
-\draw (0,0) node[ocirc]{} node[left, net]{+16 V} -- (0.6,0) to[R, l={\lab{$R_9$}{\SI{100}{\ohm} 3 W}}] (2.4,0) node[circ](vin){} node[below right, font=\tiny]{$V_{IN3}$} -- (7.0,0);
-\draw (3.0,0) node[circ]{} to[eC, l={\lab{$C_{13}$}{\SI{100}{\micro\farad}/25 V}}] (3.0,-4);
-\draw (5.5,0) node[circ]{} to[C, l={\lab{$C_{14}$}{\SI{100}{\nano\farad}}}] (5.5,-4);
+% ---------- Etapa 4 (v2): regulador LM317 de +5 V alimentado desde +16 V, y bornera de salida ----------
+\draw (0,0) node[ocirc]{} node[left, net]{+16 V} -- (0.6,0) to[R, l={\lab{$R_{19}$}{\SI{100}{\ohm} 3 W}}] (2.4,0) node[circ](vin){} node[below right, font=\tiny]{$V_{IN3}$} -- (7.0,0);
+\draw (3.0,0) node[circ]{} to[eC, l={\lab{$C_{15}$}{\SI{100}{\micro\farad}/25 V}}] (3.0,-4);
+\draw (5.5,0) node[circ]{} to[C, l={\lab{$C_{16}$}{\SI{100}{\nano\farad}}}] (5.5,-4);
 \reg{(7.0,0)}{U3 LM317T}{3}{2}{1}
 \draw (9.6,0) -- (10.4,0) node[circ](out){};
-\draw (out) -- (10.4,1.4) to[D*, l_=$D_9$ 1N4007] (6.6,1.4) -- (6.6,0) node[circ]{};
+\draw (out) -- (10.4,1.4) to[D*, l_=$D_{11}$ 1N4007] (6.6,1.4) -- (6.6,0) node[circ]{};
 \draw (8.3,-0.7) -- (8.3,-1.6) node[circ](adj){} node[above left, font=\tiny]{ADJ3};
-\draw (adj) to[R, l_={\lab{$R_{11}$}{\SI{330}{\ohm} 1 \%}}] (8.3,-2.8) to[vR, l_={\lab{$RV_3$}{\SI{50}{\ohm} 3296}}] (8.3,-4);
-\draw (adj) -- (9.6,-1.6) node[circ]{} to[eC, l={\lab{$C_{15}$}{\SI{10}{\micro\farad}/25 V}}] (9.6,-4);
-\draw (out) -- (11.2,0) node[circ]{} to[R, l={\lab{$R_{10}$}{\SI{120}{\ohm} 1 \%}}] (11.2,-1.6) -- (9.6,-1.6);
-\draw (11.2,-1.6) node[circ]{} -- (13.2,-1.6) to[D*, l_={\lab{$D_{10}$}{1N4148}}] (13.2,0) node[circ]{};
+\draw (adj) to[R, l_={\lab{$R_{21}$}{\SI{330}{\ohm} 1 \%}}] (8.3,-2.8) to[vR, l_={\lab{$RV_3$}{\SI{50}{\ohm} 3296}}] (8.3,-4);
+\draw (adj) -- (9.6,-1.6) node[circ]{} to[eC, l={\lab{$C_{17}$}{\SI{10}{\micro\farad}/25 V}}] (9.6,-4);
+\draw (out) -- (11.2,0) node[circ]{} to[R, l={\lab{$R_{20}$}{\SI{120}{\ohm} 1 \%}}] (11.2,-1.6) -- (9.6,-1.6);
+\draw (11.2,-1.6) node[circ]{} -- (13.2,-1.6) to[D*, l_={\lab{$D_{12}$}{1N4148}}] (13.2,0) node[circ]{};
 \draw (out) -- (21.0,0) node[ocirc]{} node[right, net]{+5 V};
-\draw (15.0,0) node[circ]{} to[eC, l={\lab{$C_{16}$}{\SI{10}{\micro\farad} tánt.}}] (15.0,-4);
-\draw (16.7,0) node[circ]{} to[C, l={\lab{$C_{17}$}{\SI{100}{\nano\farad}}}] (16.7,-4);
-\draw (18.3,-4) to[D*, l_={\lab{$D_{11}$}{1N4007}}] (18.3,0) node[circ]{};
-\draw (19.9,0) node[circ]{} to[R, l={\lab{$R_{14}$}{\SI{470}{\ohm}}}] (19.9,-2.2) to[leDo, l={\lab{LED3}{verde}}] (19.9,-4);
+\draw (15.0,0) node[circ]{} to[eC, l={\lab{$C_{18}$}{\SI{10}{\micro\farad} tánt.}}] (15.0,-4);
+\draw (16.7,0) node[circ]{} to[C, l={\lab{$C_{19}$}{\SI{100}{\nano\farad}}}] (16.7,-4);
+\draw (18.3,-4) to[D*, l_={\lab{$D_{13}$}{1N4007}}] (18.3,0) node[circ]{};
+\draw (19.9,0) node[circ]{} to[R, l={\lab{$R_{22}$}{\SI{470}{\ohm}}}] (19.9,-2.2) to[leDo, l={\lab{LED3}{verde}}] (19.9,-4);
 \draw (0.6,-4) -- (21.0,-4) node[ocirc]{} node[right, net]{GND};
 \foreach \x in {3.0,5.5,8.3,9.6,15.0,16.7,18.3,19.9} \draw (\x,-4) node[circ]{};
 \draw (0.6,-4) node[ground]{};

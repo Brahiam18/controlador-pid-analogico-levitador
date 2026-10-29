@@ -1,31 +1,56 @@
-% ---------- Etapa 2: limitador de corriente + regulador LM317 de +16 V ----------
-% y = 0: riel; y = -4: GND
-\draw (0,0) node[ocirc]{} node[left, net]{$V_{RAW+}$} -- (1.0,0) node[circ](a){} to[R, l=$R_{SC1}$, a_={\SI{1.8}{\ohm} 1 W}] (3.4,0) node[circ](ve){} node[above, font=\tiny]{$V_{E1}$} -- (3.9,0);
-\draw (3.9,0) node[pnp, rotate=90, anchor=E](Q1){};
-\node[lbl, anchor=south] at ($(Q1.B)+(0,1.0)$) {$Q_1$ TIP32C};
-\draw (Q1.C) -- (6.0,0) node[circ](vin){} node[above, font=\tiny]{$V_{IN1}$} -- (7.0,0);
-\draw (1.6,-1.6) node[pnp, xscale=-1, anchor=B](Q2){};
-\draw (Q2.B) -- (2.6,-1.6) -- (2.6,-0.8) -| (ve);
-\draw (Q2.E) |- (a);
-\node[lbl, anchor=east] at ($(Q2.B)+(-1.0,0)$) {\lab{$Q_2$}{BC557}};
-\draw (Q2.C) |- (Q1.B |- 0,-2.5) node[circ](vb){};
-\draw (Q1.B) -- (vb) node[right, font=\tiny]{$V_{B1}$};
-\draw (vb) to[R, l_={\lab{$R_3$}{\SI{820}{\ohm} 2 W}}] (Q1.B |- 0,-4);
-\draw (vin) to[C, l_={\lab{$C_5$}{\SI{100}{\nano\farad}}}] (6.0,-4);
-\reg{(7.0,0)}{U1 LM317T}{3}{2}{1}
-\draw (9.6,0) -- (10.4,0) node[circ](out){};
-\draw (out) -- (10.4,1.4) to[D*, l_=$D_3$ 1N4007] (6.6,1.4) -- (6.6,0) node[circ]{};
-\draw (8.3,-0.7) -- (8.3,-1.6) node[circ](adj){} node[above left, font=\tiny]{ADJ1};
-\draw (adj) to[R, l_={\lab{$R_7$}{\SI{1.3}{\kilo\ohm} 1 \%}}] (8.3,-2.8) to[vR, l_={\lab{$RV_1$}{\SI{200}{\ohm} 3296}}] (8.3,-4);
-\draw (adj) -- (9.6,-1.6) node[circ]{} to[eC, l={\lab{$C_7$}{\SI{10}{\micro\farad}/25 V}}] (9.6,-4);
-\draw (out) -- (11.2,0) node[circ]{} to[R, l={\lab{$R_5$}{\SI{120}{\ohm} 1 \%}}] (11.2,-1.6) -- (9.6,-1.6);
-\draw (11.2,-1.6) node[circ]{} -- (13.2,-1.6) to[D*, l_={\lab{$D_4$}{1N4148}}] (13.2,0) node[circ]{};
-\draw (out) -- (21.0,0) node[ocirc]{} node[right, net]{+16 V};
-\draw (15.0,0) node[circ]{} to[eC, l={\lab{$C_9$}{\SI{10}{\micro\farad} tánt.}}] (15.0,-4);
-\draw (16.7,0) node[circ]{} to[C, l={\lab{$C_{10}$}{\SI{100}{\nano\farad}}}] (16.7,-4);
-\draw (18.3,-4) to[D*, l_={\lab{$D_7$}{1N4007}}] (18.3,0) node[circ]{};
-\draw (19.9,0) node[circ]{} to[R, l={\lab{$R_{12}$}{\SI{2.2}{\kilo\ohm}}}] (19.9,-2.2) to[leDo, l={\lab{LED1}{verde}}] (19.9,-4);
-\draw (1.0,-4) -- (21.0,-4) node[ocirc]{} node[right, net]{GND};
-\foreach \x in {6.0,8.3,9.6,15.0,16.7,18.3,19.9} \draw (\x,-4) node[circ]{};
-\draw (Q1.B |- 0,-4) node[circ]{};
-\draw (1.0,-4) node[ground]{};
+% ---------- Etapa 2 (v2): riel +16 V / 1,5 A ----------
+% limitador con foldback: R_SC1, Darlington Q1 (TIP42C) + Q2 (BD140), sensor Q3 (BC557), R3-R6
+% ampliación de corriente: R7 + Q4 (TIP42C); regulador U1 LM317 (Figs. 3-21, 3-26 y 3-27 de la monografía)
+\draw (0,0) node[ocirc]{} node[left, net]{$V_{RAW+}$} -- (1.0,0) node[circ](a){} to[R, l={\lab{$R_{SC1}$}{\SI{0.27}{\ohm} 5 W}}] (2.8,0) node[circ](e1){} node[above right, font=\tiny]{$E_1$} -- (4.2,0);
+\draw (4.2,0) node[pnp, rotate=90, anchor=E](Q1){};
+\node[lbl, anchor=south] at ($(Q1.B)+(0,1.05)$) {$Q_1$ TIP42C};
+\draw (Q1.C) -- (7.0,0) node[circ](va){} node[above, font=\tiny]{$V_{A1}$};
+% driver Q2 (BD140)
+\coordinate (b1) at ($(Q1.B)+(0,-0.7)$);
+\draw (Q1.B) -- (b1) node[circ]{};
+\draw ($(b1)+(0,-0.5)$) node[pnp, anchor=E](Q2){};
+\draw (b1) -- (Q2.E);
+\node[lbl, anchor=west] at ($(Q2.C)+(0.15,0.35)$) {\lab{$Q_2$}{BD140}};
+\draw (Q2.C) -- ++(0,-0.3) -| (7.0,-2.0); \draw (7.0,-2.0) node[circ]{};
+\draw (3.6,0) node[circ]{} to[R, l={\lab{$R_4$}{\SI{1}{\kilo\ohm}}}] (3.6,-1.4) |- (b1);
+\coordinate (bd) at ($(Q2.B)+(-0.4,0)$);
+\draw (Q2.B) -- (bd) node[circ]{} node[above left, font=\tiny]{$BD_1$};
+\draw (bd) -- (bd |- 0,-3.9) node[circ](bd2){};
+\draw (bd2) to[R, l={\lab{$R_3$}{\SI{2.7}{\kilo\ohm} 1 W}}] (bd2 |- 0,-5.0) -- (bd2 |- 0,-6.2);
+% sensor Q3 (BC557) y divisor de foldback R5-R6
+\draw (1.0,-2.5) node[pnp, xscale=-1, anchor=E](Q3){};
+\draw (a) -- (Q3.E);
+\node[lbl, anchor=east] at ($(Q3.B)+(-0.95,0)$) {\lab{$Q_3$}{BC557}};
+\draw (Q3.C) |- (bd2);
+\draw (Q3.B) -- ++(0.4,0) node[circ](bs){} node[above right, font=\tiny]{$BS_1$};
+\draw (bs) -- (bs |- 0,-1.0) to[R, l_={\lab{$R_5$}{\SI{270}{\ohm}}}] (2.8,-1.0) -- (e1);
+\draw (bs) -- (bs |- 0,-5.4) -- (4.4,-5.4) to[R, l_={\lab{$R_6$}{\SI{12}{\kilo\ohm}}}] (6.6,-5.4) -- (7.0,-5.4) -- (va);
+% ampliación de corriente
+\draw (va) to[R, l_={\lab{$R_7$}{\SI{2.7}{\ohm} 1 W}}] (8.8,0) node[circ](in){} node[below right, font=\tiny]{$IN_1$} -- (10.2,0);
+\draw (8.8,1.2) node[pnp, rotate=90, anchor=B](Q4){};
+\draw (in) -- (Q4.B);
+\draw (Q4.E) -| (va);
+\node[lbl, anchor=south] at ($(Q4.B)+(0,1.05)$) {$Q_4$ TIP42C};
+\draw (9.6,0) node[circ]{} to[C, l_={\lab{$C_5$}{\SI{100}{\nano\farad}}}] (9.6,-6.2);
+\reg{(10.2,0)}{U1 LM317T}{3}{2}{1}
+\draw (12.8,0) -- (14.0,0) node[circ](out){};
+\draw (Q4.C) -| (out);
+\draw (out) |- (14.0,3.4) to[D*, l_=$D_5$ 1N4007] (10.0,3.4) -- (10.0,0) node[circ]{};
+\draw (11.5,-0.7) -- (11.5,-1.8) node[circ](adj){} node[above left, font=\tiny]{ADJ1};
+\draw (adj) to[R, l_={\lab{$R_9$}{\SI{1.3}{\kilo\ohm} 1 \%}}] (11.5,-3.6) to[vR, l_={\lab{$RV_1$}{\SI{200}{\ohm} 3296}}] (11.5,-6.2);
+\draw (adj) -- (12.9,-1.8) node[circ]{} to[eC, l={\lab{$C_6$}{\SI{10}{\micro\farad}/25 V}}] (12.9,-6.2);
+\draw (14.6,0) node[circ]{} to[R, l={\lab{$R_8$}{\SI{120}{\ohm} 1 \%}}] (14.6,-1.8) -- (12.9,-1.8);
+\draw (14.6,-1.8) node[circ]{} -- (16.4,-1.8) to[D*, l_={\lab{$D_6$}{1N4148}}] (16.4,0) node[circ]{};
+\draw (out) -- (27.2,0) node[ocirc]{} node[right, net]{+16 V};
+\draw (18.0,0) node[circ]{} to[eC, l={\lab{$C_7$}{\SI{10}{\micro\farad} tánt.}}] (18.0,-6.2);
+\draw (20.0,0) node[circ]{} to[C, l={\lab{$C_8$}{\SI{100}{\nano\farad}}}] (20.0,-6.2);
+\draw (21.6,0) node[circ]{} to[eC, l={\lab{$C_9$}{\SI{220}{\micro\farad}/25 V}}] (21.6,-6.2);
+\draw (23.8,-6.2) to[D*, l_={\lab{$D_7$}{1N5408}}] (23.8,0) node[circ]{};
+\draw (25.2,0) node[circ]{} to[R, l={\lab{$R_{10}$}{\SI{2.2}{\kilo\ohm}}}] (25.2,-2.8) to[leDo, l={\lab{LED1}{verde}}] (25.2,-6.2);
+\draw (26.6,0) node[circ]{} -- (26.6,1.6) node[ocirc]{} node[left, font=\tiny]{J4-1};
+\draw (26.6,-6.2) node[circ]{} -- (26.6,-7.2) node[ocirc]{} node[left, font=\tiny]{J4-2};
+\draw[dashed] (26.6,1.6) -- (28.2,1.6) to[R, l={\lab{$R_L$ = 10 $\Omega$}{$\geq$30 W, externa}}] (28.2,-7.2) -- (26.6,-7.2);
+\draw (0.4,-6.2) -- (27.2,-6.2) node[ocirc]{} node[right, net]{GND};
+\foreach \x in {9.6,11.5,12.9,18.0,20.0,21.6,23.8,25.2} \draw (\x,-6.2) node[circ]{};
+\draw (bd2 |- 0,-6.2) node[circ]{};
+\draw (0.4,-6.2) node[ground]{};

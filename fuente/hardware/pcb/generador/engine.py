@@ -39,16 +39,19 @@ def fp_pads(kind):
             p.append(('%d'%(k+1+RSB_COLS),x,RSB_YI*G))       # arriba: ISENSE (emisor del TIP122)
         return sorted(p,key=lambda t:int(t[0]))
     # ---- huellas agregadas para la fuente ----
-    SIMPLE2={'RES10':10.16,'RES1W':15.24,'RES2W':20.32,'RES3W':25.4,'DO41':10.16,'DO35':7.62,
-             'CPOL25':10.16,'CPOL6':2.54,'CPOL5':2.54,'CTANT':2.54,'LED5':2.54,'FUSE':22.86}
+    SIMPLE2={'RES10':10.16,'RES1W':15.24,'RES2W':20.32,'RES3W':25.4,'RES5W':27.94,'DO41':10.16,'DO35':7.62,
+             'CPOL25':10.16,'CPOL35':10.16,'CPOL8':3.81,'CPOL6':2.54,'CPOL5':2.54,'CTANT':2.54,'LED5':2.54,'FUSE':22.86}
     if kind in SIMPLE2: return [('1',0,0),('2',SIMPLE2[kind],0)]
-    if kind in ('TO92','TRIM','HDR3'): return [('1',0,0),('2',PITCH,0),('3',2*PITCH,0)]
+    if kind=='TERM3': return [('%d'%i,(i-1)*5.08,0) for i in range(1,4)]
+    if kind in ('TO92','TRIM','HDR3','TO126'): return [('1',0,0),('2',PITCH,0),('3',2*PITCH,0)]
     if kind=='TERM4': return [('%d'%i,(i-1)*5.08,0) for i in range(1,5)]
     raise KeyError(kind)
 
 # taladro por tipo de huella (mm); el resto usa DRILL
-DRILL_OF={'TO220':1.0,'DIODE':1.3,'TERM2':1.3,'RSBANK':1.1,'TERM4':1.3,'FUSE':1.3,'DO41':1.0,'CPOL25':1.3,'RES1W':1.0,'RES2W':1.0,'RES3W':1.1}
+DRILL_OF={'TERM3':1.3,'RES5W':1.1,'CPOL35':1.3,'TO126':1.0,'TO220':1.0,'DIODE':1.3,'TERM2':1.3,'RSBANK':1.1,'TERM4':1.3,'FUSE':1.3,'DO41':1.0,'CPOL25':1.3,'RES1W':1.0,'RES2W':1.0,'RES3W':1.1}
 def drill_of(kind): return DRILL_OF.get(kind,DRILL)
+BIG_PADS=('TERM2','TERM3','TERM4','FUSE','CPOL25','CPOL35','DIODE','RES5W')
+def pad_d(kind): return 2.6 if kind in BIG_PADS else PAD_D
 
 # cajas de cuerpo especiales (xmin,ymin,xmax,ymax) locales, en mm
 BOX_OF={
@@ -56,6 +59,11 @@ BOX_OF={
  'TERM2':(-3.6,-5.2,8.7,5.6),
  'RSBANK':(-5.5,-3.2,(RSB_COLS-1)*RSB_DX*G+5.5,RSB_YI*G+3.2),
  'TERM4':(-3.6,-5.2,18.84,5.6),
+ 'TERM3':(-3.6,-5.2,13.76,5.6),
+ 'CPOL35':(5.08-18.0,-18.0,5.08+18.0,18.0),
+ 'CPOL8':(1.905-4.4,-4.4,1.905+4.4,4.4),
+ 'RES5W':(-1.5,-5.2,29.44,5.2),
+ 'TO126':(-2.6,-1.6,7.68,3.4),
  'CPOL25':(5.08-14.0,-14.0,5.08+14.0,14.0),
  'CPOL6':(1.27-3.5,-3.5,1.27+3.5,3.5),
  'CPOL5':(1.27-3.0,-3.0,1.27+3.0,3.0),

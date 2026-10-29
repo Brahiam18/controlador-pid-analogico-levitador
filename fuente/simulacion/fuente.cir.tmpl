@@ -1,69 +1,90 @@
-* Fuente ±16 V / +5 V para los 4 PID del levitador  -- circuito completo
+* Fuente ±16 V / 1,5 A y +5 V (versión 2) -- circuito completo
 .include modelos.lib
-.param kl={KLINEA}
-* ---- transformador M509: devanado 9-0-9 completo (18 Vrms a 2 A) ----
-* fuente de Thevenin: 19.8 Vrms en vacío, R = 1 ohm, L de dispersión 0.5 mH
-VAC t0 0 SIN(0 {19.8*1.41421*kl} 60)
-RW t0 t1 1
-LW t1 t2 0.5m
-RF2 t2 ac 0.01
-* T1 (extremo de 9 V) = GND ;  t2 = extremo opuesto
-* ---- rectificadores de media onda y filtros ----
-D1 ac vrawp D1N4007
-D2 vrawn ac D1N4007
-C1 vrawp 0 6800u
-C2 0 vrawn 6800u
+* ---- transformador 18-0-18 V / 3 A: cada mitad 19,4 Vrms en vacío, 0,45 ohm, 0,3 mH ----
+VA1 ta 0 SIN(0 {19.4*1.41421*{KL}} 60)
+VB1 0 tb SIN(0 {19.4*1.41421*{KL}} 60)
+RWA ta ta1 0.45
+LWA ta1 ta2 0.3m
+RWB tb tb1 0.45
+LWB tb1 tb2 0.3m
+RF2 ta2 aca 0.02
+RF3 tb2 acb 0.02
+* puente: D1/D2 al riel +, D3/D4 al riel -
+D1 aca vrawp D1N5408
+D2 acb vrawp D1N5408
+D3 vrawn aca D1N5408
+D4 vrawn acb D1N5408
+C1 vrawp 0 15000u
+C3 vrawp 0 100n
+C2A 0 vrawn 6800u
+C2B 0 vrawn 6800u
+C4 0 vrawn 100n
 * ======================= riel +16 V =======================
-RSC1 vrawp ve1 1.8
-Q1 vin1 vb1 ve1 TIP32C
-Q2 vb1 ve1 vrawp BC557B
-R3 vb1 0 820
-C5 vin1 0 100n
-XU1 vin1 p16 adj1 LM317
-R5 p16 adj1 120
-R7 adj1 rv1 1.3k
+RSC1 vrawp e1 0.27
+Q1 va1 b1 e1 TIP42C
+Q2 va1 bd1 b1 BD140
+R4 b1 e1 1k
+R3 bd1 0 2.7k
+Q3 bd1 bs1 vrawp BC557B
+R5 bs1 e1 270
+R6 bs1 va1 12k
+R7 va1 in1 2.7
+Q4 cq in1 va1 TIP42C
+VQ cq p16 0
+C5 in1 0 100n
+XU1 in1 p16 adj1 LM317
+R8 p16 adj1 120
+R9 adj1 rv1 1.3k
 RV1 rv1 0 {RV1VAL}
-C7 adj1 0 10u
-D3 p16 vin1 D1N4007
-D4 adj1 p16 D1N4148
-C9 p16 0 10u
-C10 p16 0 100n
-D7 0 p16 D1N4007
-R12 p16 led1 2.2k
+C6 adj1 0 10u
+D5 p16 in1 D1N4007
+D6 adj1 p16 D1N4148
+C7 p16 0 10u
+C8 p16 0 100n
+C9 p16 0 220u
+D7 0 p16 D1N5408
+R10 p16 led1 2.2k
 DL1 led1 0 LEDV
 * ======================= riel -16 V =======================
-RSC2 vrawn ve3 2.2
-Q3 vin2 vb3 ve3 TIP31C
-Q4 vb3 ve3 vrawn BC547B
-R4 vb3 0 820
-C6 vin2 0 100n
-XU2 vin2 n16 adj2 LM337
-R6 n16 adj2 120
-R8 adj2 rv2 1.3k
+RSC2 vrawn e2 0.27
+Q5 va2 b2 e2 TIP41C
+Q6 va2 bd2 b2 BD139
+R12 b2 e2 1k
+R11 bd2 0 2.7k
+Q7 bd2 bs2 vrawn BC547B
+R13 bs2 e2 270
+R14 bs2 va2 12k
+R15 va2 in2 2.7
+Q8 n16 in2 va2 TIP41C
+C10 in2 0 100n
+XU2 in2 n16 adj2 LM337
+R16 n16 adj2 120
+R17 adj2 rv2 1.3k
 RV2 rv2 0 {RV2VAL}
-C8 0 adj2 10u
-D5 vin2 n16 D1N4007
-D6 n16 adj2 D1N4148
-C11 0 n16 10u
-C12 0 n16 100n
-D8 n16 0 D1N4007
-R13 0 led2 2.2k
+C11 0 adj2 10u
+D8 in2 n16 D1N4007
+D9 n16 adj2 D1N4148
+C12 0 n16 10u
+C13 0 n16 100n
+C14 0 n16 220u
+D10 n16 0 D1N5408
+R18 0 led2 2.2k
 DL2 led2 n16 LEDV
 * ======================= riel +5 V =======================
-R9 p16 vin3 100
-C13 vin3 0 100u
-C14 vin3 0 100n
+R19 p16 vin3 100
+C15 vin3 0 100u
+C16 vin3 0 100n
 XU3 vin3 p5 adj3 LM317
-R10 p5 adj3 120
-R11 adj3 rv3 330
+R20 p5 adj3 120
+R21 adj3 rv3 330
 RV3 rv3 0 {RV3VAL}
-C15 adj3 0 10u
-D9 p5 vin3 D1N4007
-D10 adj3 p5 D1N4148
-C16 p5 0 10u
-C17 p5 0 100n
-D11 0 p5 D1N4007
-R14 p5 led3 470
+C17 adj3 0 10u
+D11 p5 vin3 D1N4007
+D12 adj3 p5 D1N4148
+C18 p5 0 10u
+C19 p5 0 100n
+D13 0 p5 D1N4007
+R22 p5 led3 470
 DL3 led3 0 LEDV
 * ======================= cargas =======================
 {CARGAS}
@@ -71,7 +92,7 @@ DL3 led3 0 LEDV
 .tran 20u {TSTOP} 0 50u
 .control
 run
-wrdata {OUT} v(vrawp) v(vrawn) v(p16) v(n16) v(p5) i(VMP) i(VMN) i(VM5) v(vin1) v(vin2) v(vin3)
+wrdata {OUT} v(vrawp) v(vrawn) v(p16) v(n16) v(p5) i(VMP) i(VMN) i(VM5) v(va1) v(va2) v(e1) v(e2) i(VA1) i(VB1) i(VQ) v(in1)
 quit
 .endc
 .end

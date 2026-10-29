@@ -25,7 +25,7 @@ def analyze(r):
     return len(comps), bot, top, sorted(comps)
 
 def job(sd):
-    parts, b = P.anneal(sd, 40000)
+    parts, b = P.anneal(sd, 60000)
     out = None
     for rs in (1, 2):
         r = PF(P.W, P.H, parts, N.NETS, jump_cost=35, top_cost=3.0, wide=N.WIDE)

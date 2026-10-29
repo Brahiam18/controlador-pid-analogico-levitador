@@ -1,6 +1,6 @@
 # Estado del proyecto: controlador PID analógico para levitador magnético
 
-Resumen para retomar el trabajo en otra conversación (actualizado 2026-10-25).
+Resumen para retomar el trabajo en otra conversación (actualizado 2026-10-28).
 
 ## Qué hay
 - 4 PID analógicos idénticos en paralelo (U1 error, U2 P, U3 I, U4 D, U5 sumador, U6 Vref, U7 Voff, U8 convertidor V-I) con 2 × TL074CN por PID.
@@ -25,4 +25,4 @@ Resumen para retomar el trabajo en otra conversación (actualizado 2026-10-25).
 - Reabrir los nuevos `.sch`/`.brd` en Fusion (borrar `pid4_levitador` y subir `pid2_levitador`).
 - Vref ajustable (pot de 500k) y compensación del campo de la bobina (Rc) todavía no están en la PCB.
 - Montaje práctico: grabado de las dos tarjetas (revisar cortos +16 V / GND antes de soldar), soldadura y pruebas.
-- Fuente ±16 V / +5 V (monografía, tema 3) diseñada en `fuente/`: informe, esquemáticos, simulación, PCB (EAGLE + cobre 1:1), lista de materiales y plan de pruebas. Falta fabricar, montar y llenar `fuente/pruebas/mediciones.csv`.
+- Fuente ±16 V / 1,5 A y +5 V (monografía, tema 3), versión 2, en `fuente/`: transformador 18-0-18 V / 3 A (por comprar), puente 1N5408, C1 15 000 µF y 2 × 6800 µF, limitador con foldback (Darlington TIP42C/BD140) y ampliación de corriente TIP42C/TIP41C alrededor de los mismos LM317/LM337. Carga de prueba R_L = 10 Ω removible en J4/J5 (un riel a la vez). Disipador ≤ 2 °C/W por riel. Placa 190,5 × 139,7 mm con 7 puentes. Falta comprar, fabricar, montar y llenar `fuente/pruebas/mediciones.csv`.

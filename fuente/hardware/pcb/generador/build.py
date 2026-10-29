@@ -19,7 +19,7 @@ if __name__ == '__main__':
     prob, mind, cross = V.verify(parts, routes, nets, W, H)
     assert not prob, prob[:5]
     jl = pdfs.jumpers(parts, routes)
-    labels = [(100.0, 1.6, 'Fuente +-16V / +5V - B. Campino - U. Ibague 2026', 1.2, 'R0')]
+    labels = [(W/2, 1.6, 'Fuente +-16V 1.5A / +5V (v2) - B. Campino - U. Ibague 2026', 1.2, 'R0')]
     open(os.path.join(dst, 'fuente.brd'), 'w', encoding='utf-8').write(E.brd_xml(parts, routes, W, H, P.HOLES, labels))
     open(os.path.join(dst, 'fuente.sch'), 'w', encoding='utf-8').write(E.sch_xml())
     for e in ('.brd', '.sch'): ET.parse(os.path.join(dst, 'fuente'+e))
@@ -29,7 +29,7 @@ if __name__ == '__main__':
     pdfs.copper_pdf(os.path.join(dst, 'cobre_espejado_1a1.pdf'), parts, routes, W, H, P.HOLES, png=os.path.join(dst, 'img', 'cobre_espejado.png'))
     pdfs.assembly_pdf(os.path.join(dst, 'ensamble_1a1.pdf'), parts, routes, W, H, P.HOLES, jl, png=os.path.join(dst, 'img', 'ensamble.png'))
     L = ['| N.º | Red | Longitud aprox. | Extremos |', '|:-:|---|--:|---|']
-    for k, j in enumerate(jl, 1): L.append('| J%d | `%s` | %d mm | %s |' % (k, j['net'], round(j['length']), ' ↔ '.join(j['ends'])))
+    for k, j in enumerate(jl, 1): L.append('| P%d | `%s` | %d mm | %s |' % (k, j['net'], round(j['length']), ' ↔ '.join(j['ends'])))
     open(os.path.join(dst, 'puentes.md'), 'w', encoding='utf-8').write('# Puentes de alambre (lado de componentes)\n\n' + '\n'.join(L) + '\n')
     json.dump(dict(W=W, H=H, puentes=len(jl), holgura_min=mind, parts={k: [p.kind, p.x, p.y, p.r] for k, p in parts.items()}), open(os.path.join(dst, 'resumen_placa.json'), 'w'), indent=1)
     print('placa %.1f x %.1f mm | %d puentes | holgura mínima %.2f mm' % (W, H, len(jl), mind))

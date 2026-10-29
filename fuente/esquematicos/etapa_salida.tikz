@@ -9,4 +9,5 @@
 \foreach \y/\n/\t in {-0.6/1/$V_{RAW+}$ (TP1), -1.6/2/GND, -2.6/3/$V_{RAW-}$ (TP2)} {
   \draw (10.6,\y) -- (11.2,\y) node[right, font=\scriptsize]{\t}; \node[font=\scriptsize] at (8.9,\y) {\n};
 }
-\node[font=\scriptsize, align=left, anchor=north west] at (8.6,-3.4) {puntas del osciloscopio para medir\\el rizado de $C_1$ y $C_2$};
+\node[font=\scriptsize, align=left, anchor=north west] at (8.6,-3.4) {puntas del osciloscopio para medir\\el rizado de $C_1$ y $C_{2A}$/$C_{2B}$};
+\node[font=\scriptsize, align=left, anchor=north west] at (0,-4.8) {J4 (+16 V / GND) y J5 ($-$16 V / GND): borneras de 2 vías para conectar\\y quitar la resistencia de carga de prueba $R_L$ = 10 $\Omega$ (ver etapas 2 y 3).};

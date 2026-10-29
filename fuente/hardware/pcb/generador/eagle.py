@@ -31,7 +31,10 @@ def pad(name, x, y, shape='round', drill=DRILL, dia=PAD_D):
 def txt(x, y, s, size=1.27, layer=25, align='center', rot=''):
     return '<text x="%s" y="%s" size="%s" layer="%d" align="%s"%s>%s</text>' % (f(x), f(y), f(size), layer, align, ' rot="%s"' % rot if rot else '', escape(s))
 
-DESC = {'TERM2':'Bornera de tornillo 2 vías, paso 5.08 mm','TERM4':'Bornera de tornillo 4 vías (2 x 2 vías), paso 5.08 mm',
+DESC = {'TERM3':'Bornera de tornillo 3 vías, paso 5.08 mm','RES5W':'Resistencia de potencia 5 W (cemento), 27.94 mm',
+ 'CPOL35':'Electrolítico radial D35 mm, paso 10 mm (15000 uF/50 V); pad 1 = +','CPOL8':'Electrolítico radial D8 mm, paso 3.5 mm (220 uF/25 V); pad 1 = +',
+ 'TO126':'TO-126 vertical (BD139/BD140): 1 = E, 2 = C, 3 = B; cara metálica hacia la línea gruesa (disipador)',
+ 'DIODE':'Diodo DO-201 (1N5408), 15.24 mm; pad 2 = cátodo','TERM2':'Bornera de tornillo 2 vías, paso 5.08 mm','TERM4':'Bornera de tornillo 4 vías (2 x 2 vías), paso 5.08 mm',
  'FUSE':'Portafusible de PCB para fusible 5x20 mm, 22.86 mm entre clips','DO41':'Diodo DO-41 (1N4007), 10.16 mm; pad 2 = cátodo',
  'DO35':'Diodo DO-35 (1N4148), 7.62 mm; pad 2 = cátodo','CPOL25':'Electrolítico radial D28 mm, paso 10 mm (6800 uF/50 V); pad 1 = +',
  'CPOL6':'Electrolítico radial D6.3 mm, paso 2.54 mm; pad 1 = +','CPOL5':'Electrolítico radial D5 mm, paso 2.54 mm; pad 1 = +',
@@ -43,14 +46,14 @@ def packages_xml():
     out = '<packages>\n'
     for kind, desc in DESC.items():
         pads = fp_pads(kind); L = []
-        for pin, x, y in pads: L.append(pad(pin, x, y, 'square' if pin == '1' else 'round', drill_of(kind), 2.4 if kind in ('TERM2','TERM4','FUSE','CPOL25') else PAD_D))
+        for pin, x, y in pads: L.append(pad(pin, x, y, 'square' if pin == '1' else 'round', drill_of(kind), pad_d(kind)))
         x0, y0, x1, y1 = fp_box(kind); cx = (x0+x1)/2; cy = (y0+y1)/2
         if kind.startswith('CPOL') or kind == 'LED5':
             L.append(circ(cx, cy, (x1-x0)/2-0.2)); L.append(txt(-1.6, 1.4, '+', 1.2, 21))
         else:
             L += rect_lines(x0+0.3, y0+0.3, x1-0.3, y1-0.3)
-        if kind == 'TO220': L.append(wire(x0+0.3, y1-0.9, x1-0.3, y1-0.9, 0.6, 21))
-        if kind in ('DO41', 'DO35'): L.append(wire(pads[1][1]-2.6, y0+0.3, pads[1][1]-2.6, y1-0.3, 0.6, 21))
+        if kind in ('TO220', 'TO126'): L.append(wire(x0+0.3, y1-0.9, x1-0.3, y1-0.9, 0.6, 21))
+        if kind in ('DO41', 'DO35', 'DIODE'): L.append(wire(pads[1][1]-2.6, y0+0.3, pads[1][1]-2.6, y1-0.3, 0.6, 21))
         L.append(txt(cx, y1+0.4, '>NAME', 1.27, 25, 'bottom-center')); L.append(txt(cx, y0-0.4, '>VALUE', 1.0, 27, 'top-center'))
         out += '<package name="%s">\n<description>%s</description>\n' % (kind, escape(desc)) + '\n'.join(L) + '\n</package>\n'
     return out + '</packages>\n'
@@ -90,7 +93,11 @@ SYMS = build_symbols()
 def single(sym, pk, pre, pins, pads=None):
     return dict(prefix=pre, package=pk, gates=[('G$1', sym, 'next')], connects=[('G$1', p, d) for p, d in zip(pins, pads or pins)])
 DEVSETS = {
- 'R10': single('R', 'RES10', 'R', ['1', '2']), 'R1W': single('R', 'RES1W', 'R', ['1', '2']), 'R2W': single('R', 'RES2W', 'R', ['1', '2']), 'R3W': single('R', 'RES3W', 'R', ['1', '2']),
+ 'R10': single('R', 'RES10', 'R', ['1', '2']), 'R5W': single('R', 'RES5W', 'R', ['1', '2']),
+ 'CPOL35': single('CPOL', 'CPOL35', 'C', ['+', '-'], ['1', '2']), 'CPOL8': single('CPOL', 'CPOL8', 'C', ['+', '-'], ['1', '2']),
+ 'D201': single('D', 'DIODE', 'D', ['A', 'K'], ['1', '2']), 'TERM3': single('HDR3', 'TERM3', 'J', ['1', '2', '3']),
+ 'TIP41C': single('NPN', 'TO220', 'Q', ['B', 'C', 'E'], ['1', '2', '3']), 'TIP42C': single('PNP', 'TO220', 'Q', ['B', 'C', 'E'], ['1', '2', '3']),
+ 'BD139': single('NPN', 'TO126', 'Q', ['E', 'C', 'B'], ['1', '2', '3']), 'BD140': single('PNP', 'TO126', 'Q', ['E', 'C', 'B'], ['1', '2', '3']), 'R1W': single('R', 'RES1W', 'R', ['1', '2']), 'R2W': single('R', 'RES2W', 'R', ['1', '2']), 'R3W': single('R', 'RES3W', 'R', ['1', '2']),
  'C': single('C', 'CAP', 'C', ['1', '2']),
  'CPOL25': single('CPOL', 'CPOL25', 'C', ['+', '-'], ['1', '2']), 'CPOL6': single('CPOL', 'CPOL6', 'C', ['+', '-'], ['1', '2']),
  'CPOL5': single('CPOL', 'CPOL5', 'C', ['+', '-'], ['1', '2']), 'CTANT': single('CPOL', 'CTANT', 'C', ['+', '-'], ['1', '2']),
@@ -104,9 +111,8 @@ DEVSETS = {
 }
 def dev_of(ref):
     kind, val = N.PARTS[ref]
-    if kind == 'TO220': return val
-    if kind == 'TO92': return val
-    return {'RES10': 'R10', 'RES1W': 'R1W', 'RES2W': 'R2W', 'RES3W': 'R3W', 'CAP': 'C', 'DO41': 'D41', 'DO35': 'D35', 'LED5': 'LED'}.get(kind, kind)
+    if kind in ('TO220', 'TO92', 'TO126'): return val
+    return {'RES5W': 'R5W', 'DIODE': 'D201', 'RES10': 'R10', 'RES1W': 'R1W', 'RES2W': 'R2W', 'RES3W': 'R3W', 'CAP': 'C', 'DO41': 'D41', 'DO35': 'D35', 'LED5': 'LED'}.get(kind, kind)
 def sympin(ref, padn):
     for g, sp, pd in DEVSETS[dev_of(ref)]['connects']:
         if pd == padn: return g, sp
@@ -125,12 +131,16 @@ def libraries(sch=True):
     return out + '</library>\n</libraries>\n'
 HEAD = '<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE eagle SYSTEM "eagle.dtd">\n<eagle version="9.6.2">\n<drawing>\n<settings>\n<setting alwaysvectorfont="no"/>\n<setting verticaltext="up"/>\n</settings>\n<grid distance="1.27" unitdist="mm" unit="mm" style="lines" multiple="1" display="yes" altdistance="0.635" altunitdist="mm" altunit="mm"/>\n'
 TAIL = '</drawing>\n</eagle>\n'
-ROWS = [('Entrada y rectificadores', ['J1', 'F2', 'D1', 'D2', 'C1', 'C2', 'J3']),
-        ('Limitador +16 V', ['RSC1', 'Q1', 'Q2', 'R3', 'C5']), ('Regulador +16 V', ['U1', 'R5', 'R7', 'RV1', 'C7', 'D3', 'D4']),
-        ('Salida +16 V', ['C9', 'C10', 'D7', 'R12', 'LED1', 'J2']),
-        ('Limitador -16 V', ['RSC2', 'Q3', 'Q4', 'R4', 'C6']), ('Regulador -16 V', ['U2', 'R6', 'R8', 'RV2', 'C8', 'D5', 'D6']),
-        ('Salida -16 V', ['C11', 'C12', 'D8', 'R13', 'LED2']),
-        ('Rama +5 V', ['R9', 'C13', 'C14', 'U3', 'R10', 'R11', 'RV3']), ('Salida +5 V', ['C15', 'D9', 'D10', 'C16', 'C17', 'D11', 'R14', 'LED3'])]
+ROWS = [('Entrada, puente y filtros', ['J1', 'F2', 'F3', 'D1', 'D2', 'D3', 'D4', 'C1', 'C3']),
+        ('Filtro -  y puntos de prueba', ['C2A', 'C2B', 'C4', 'J3', 'J2']),
+        ('Limitador +16 V (foldback)', ['RSC1', 'Q1', 'Q2', 'Q3', 'R3', 'R4', 'R5', 'R6']),
+        ('Ampliación y regulador +16 V', ['R7', 'Q4', 'C5', 'U1', 'R8', 'R9', 'RV1', 'C6', 'D5', 'D6']),
+        ('Salida +16 V', ['C7', 'C8', 'C9', 'D7', 'R10', 'LED1', 'J4']),
+        ('Limitador -16 V (foldback)', ['RSC2', 'Q5', 'Q6', 'Q7', 'R11', 'R12', 'R13', 'R14']),
+        ('Ampliación y regulador -16 V', ['R15', 'Q8', 'C10', 'U2', 'R16', 'R17', 'RV2', 'C11', 'D8', 'D9']),
+        ('Salida -16 V', ['C12', 'C13', 'C14', 'D10', 'R18', 'LED2', 'J5']),
+        ('Rama +5 V', ['R19', 'C15', 'C16', 'U3', 'R20', 'R21', 'RV3', 'C17']),
+        ('Salida +5 V', ['D11', 'D12', 'C18', 'C19', 'D13', 'R22', 'LED3'])]
 def sch_xml():
     flat = [r for _, rr in ROWS for r in rr]; assert sorted(flat) == sorted(N.PARTS), set(flat) ^ set(N.PARTS)
     pos = {}; plain = ''; inst = ''
@@ -151,9 +161,9 @@ def sch_xml():
             else: ex, ey = px, py-5.08; lab = (ex, ey); rot = ' rot="R270"'
             nets[net].append('<segment>\n<pinref part="%s" gate="%s" pin="%s"/>\n' % (ref, g, sp) + wire(px, py, ex, ey, 0.1524, 91) + '\n<label x="%s" y="%s" size="1.27" layer="95"%s/>\n</segment>\n' % (f(lab[0]), f(lab[1]), rot))
     netxml = ''.join('<net name="%s" class="0">\n' % n + ''.join(s) + '</net>\n' for n, s in nets.items())
-    plain += '<text x="5.08" y="12.7" size="3.81" layer="97">Fuente ±16 V / +5 V para los 4 PID del levitador (conexiones por etiquetas de red; ver esquematicos/ para el dibujo)</text>\n'
+    plain += '<text x="5.08" y="12.7" size="3.81" layer="97">Fuente ±16 V / 1,5 A y +5 V, versión 2 (conexiones por etiquetas de red; ver esquematicos/ para el dibujo)</text>\n'
     parts = ''.join('<part name="%s" library="%s" deviceset="%s" device="" value="%s"/>\n' % (r, LIB, dev_of(r), escape(N.PARTS[r][1])) for r in N.PARTS)
-    out = HEAD + layers_xml() + '<schematic xreflabel="%F%N/%S.%C%R" xrefpart="/%S.%C%R">\n<description>Fuente ±16 V / +5 V - Brahiam Alberto Campiño Romero</description>\n'
+    out = HEAD + layers_xml() + '<schematic xreflabel="%F%N/%S.%C%R" xrefpart="/%S.%C%R">\n<description>Fuente ±16 V / 1,5 A y +5 V (v2) - Brahiam Alberto Campiño Romero</description>\n'
     out += libraries(True) + '<attributes>\n</attributes>\n<variantdefs>\n</variantdefs>\n<classes>\n<class number="0" name="default" width="0" drill="0"/>\n</classes>\n<parts>\n' + parts + '</parts>\n<sheets>\n<sheet>\n<plain>\n' + plain + '</plain>\n<instances>\n' + inst + '</instances>\n<busses>\n</busses>\n<nets>\n' + netxml + '</nets>\n</sheet>\n</sheets>\n</schematic>\n' + TAIL
     return out
 def merge_edges(edges, layer):
@@ -202,7 +212,7 @@ def brd_xml(parts, routes, W, H, holes=(), labels=()):
                  ('mdCopperDimension', '0.6mm'), ('msWidth', '0.8mm'), ('msDrill', '0.9mm')):
         dr += '<param name="%s" value="%s"/>\n' % (k, v)
     dr += '</designrules>\n'
-    out = HEAD + layers_xml() + '<board>\n<description>Fuente ±16 V / +5 V, una cara (cobre inferior) con puentes de alambre</description>\n<plain>\n' + plain + '</plain>\n'
+    out = HEAD + layers_xml() + '<board>\n<description>Fuente ±16 V / 1,5 A y +5 V (v2), una cara (cobre inferior) con puentes de alambre</description>\n<plain>\n' + plain + '</plain>\n'
     out += libraries(False) + '<attributes>\n</attributes>\n<variantdefs>\n</variantdefs>\n<classes>\n<class number="0" name="default" width="0.8" drill="0.9"/>\n</classes>\n'
     out += dr + '<elements>\n' + elems + '</elements>\n<signals>\n' + sig + '</signals>\n</board>\n' + TAIL
     return out

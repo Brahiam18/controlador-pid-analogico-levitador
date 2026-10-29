@@ -124,7 +124,7 @@ Voltaje teórico vs. práctico por etapa, para error mínimo, medio y máximo (`
 │   └── lista_de_materiales.csv
 ├── datos/
 │   └── mediciones_practicas.csv         # teórico vs. práctico, con error absoluto y relativo
-├── fuente/                              # fuente ±16 V / +5 V de los 4 PID (informe, esquemáticos, simulación, PCB, pruebas)
+├── fuente/                              # fuente ±16 V (1,5 A) / +5 V de los 4 PID (informe, esquemáticos, simulación, PCB, pruebas)
 ├── LICENSE
 └── README.md
 ```

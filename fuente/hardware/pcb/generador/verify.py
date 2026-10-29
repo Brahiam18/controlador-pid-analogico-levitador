@@ -14,12 +14,12 @@ def verify(parts,routes,nets,W,H,min_clear=0.30,verbose=True):
     geoms=[]   # (net, geom, kind)
     for net,pins in nets.items():
         for ref,pin in pins:
-            x,y=padpos[(ref,pin)]; geoms.append((net,Point(x,y).buffer(PAD_D/2),'pad'))
+            x,y=padpos[(ref,pin)]; geoms.append((net,Point(x,y).buffer(pad_d(parts[ref].kind)/2),'pad'))
     nc=0
     for ref,p in parts.items():
         for pin,(x,y) in p.pads().items():
             if not any((ref,pin) in set(v) for v in nets.values()):
-                geoms.append(('NC_%s_%s'%(ref,pin),Point(x,y).buffer(PAD_D/2),'pad'))
+                geoms.append(('NC_%s_%s'%(ref,pin),Point(x,y).buffer(pad_d(p.kind)/2),'pad'))
     for net,rt in routes.items():
         for s in merge_edges(rt['edges'],0):
             geoms.append((net,LineString([(s[0],s[1]),(s[2],s[3])]).buffer(N.width_of(net)/2,cap_style=1),'trace'))
@@ -60,7 +60,7 @@ def verify(parts,routes,nets,W,H,min_clear=0.30,verbose=True):
     cross=0
     for (n1,l1),(n2,l2) in itertools.combinations(top,2):
         if n1!=n2 and l1.distance(l2)<0.6: cross+=1
-    padg=[(n,Point(*padpos[(r,p)]).buffer(PAD_D/2)) for n,pins in nets.items() for r,p in pins]
+    padg=[(n,Point(*padpos[(r,p)]).buffer(pad_d(parts[r].kind)/2)) for n,pins in nets.items() for r,p in pins]
     touch=0
     for n1,l1 in top:
         for n2,g in padg:

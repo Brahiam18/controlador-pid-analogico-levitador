@@ -17,6 +17,11 @@ class PF:
             for pin,(x,y) in p.pads().items():
                 net=pad_net.get((ref,pin),'NC_%s_%s'%(ref,pin))
                 i,j=s.g.idx(x,y); s.g.add_pad(i,j,net); s.pads.setdefault(net,[]).append((i,j)); s.padset.add((i,j))
+                if p.kind in BIG_PADS:      # pad grande (2.6 mm): reserva también las diagonales
+                    for l in (0,1):
+                        for di,dj in DIAG:
+                            k=(i+di,j+dj); cur=s.g.res[l].get(k)
+                            s.g.res[l][k]=net if cur in (None,net) else -1
         s.nets=[n for n in s.pads if len(set(s.pads[n]))>=2]
         s.occ=[collections.defaultdict(set),collections.defaultdict(set)]
         s.shadow=[collections.defaultdict(set),collections.defaultdict(set)]
