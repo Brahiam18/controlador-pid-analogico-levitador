@@ -14,7 +14,7 @@ C2A C2B,Electrolítico,6800 µF,50 V radial D28 mm paso 10 mm,2,Filtro − (en p
 C3 C4 C5 C8 C10 C13 C16 C19,Cerámico multicapa,100 nF,50 V (C3 y C4 de 100 V) paso 5.08 mm,8,Desacople,poliéster 100 nF,
 C6 C11 C17,Electrolítico,10 µF,25 V radial D5 mm,3,Pin ADJ (rechazo de rizado),10 µF/35 V,
 C7 C12 C18,Tántalo,10 µF,25 V gota paso 2.54 mm,3,Estabilidad de la salida,electrolítico 47 µF/25 V,Respetar la polaridad
-C9 C14,Electrolítico,220 µF,25 V radial D8 mm,2,Respuesta a escalones de 1,5 A,220 µF/35 V,
+C9 C14,Electrolítico,220 µF,25 V radial D8 mm,2,"Respuesta a escalones de 1,5 A",220 µF/35 V,
 C15,Electrolítico,100 µF,25 V radial D6.3 mm,1,Filtro RC de la rama de +5 V,100 µF/35 V,
 RSC1 RSC2,Resistencia de potencia,0.27 Ω,5 W cemento,2,Sensado del limitador con foldback,2 x 0.56 Ω 2 W en paralelo,
 R3 R11,Resistencia,2.7 kΩ,1 W,2,Polarización del Darlington,,
@@ -42,7 +42,7 @@ LED1-LED3,LED,verde,5 mm,3,Indicadores,,
 J2,Bornera de tornillo,4 vías (2 x 2),paso 5.08 mm,1,Salida: +16 / −16 / GND / +5,,Mismo orden que J_PWR de las tarjetas PID
 J4 J5,Bornera de tornillo,2 vías,paso 5.08 mm,2,Conexión removible de la carga de prueba RL,,
 J3,Regleta macho,1x3,2.54 mm,1,Puntos de prueba V_RAW+ / GND / V_RAW−,,
-RL,Resistencia de carga de prueba (externa),10 Ω,≥ 30 W (aluminio) o 4 x 39 Ω 10 W en paralelo,1,Comprobar 1.6 A en cada riel,,Se conecta en J4 o J5; se calienta
+RL,Resistencia de cemento para la carga de prueba (externa),10 Ω,10 W; 4 unidades en serie-paralelo (2 ramas de 2 en serie) = 10 Ω y 6.4 W cada una,4,Comprobar 1.6 A en cada riel,4 x 39 Ω 10 W en paralelo (9.75 Ω) o una de 10 Ω ≥ 30 W de aluminio,Se conecta en J4 o J5 solo para la prueba; se calienta (separarlas y no tocarlas)
 —,Disipador de aluminio aletado,≤ 2 °C/W,para 3 TO-220 + 1 TO-126,2,Uno por riel (borde superior e inferior),,P. ej. perfil de 100 x 60 x 30 mm
 —,Kit de aislamiento,mica + buje + tornillo M3,TO-220 / TO-126,8,Aislar cada pieza del disipador,lámina de silicona,Comprobar aleta-disipador abierto
 —,Grasa térmica,—,—,1,,,
