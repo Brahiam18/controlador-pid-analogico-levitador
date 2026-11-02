@@ -56,7 +56,7 @@ def pad_d(kind): return 2.6 if kind in BIG_PADS else PAD_D
 # cajas de cuerpo especiales (xmin,ymin,xmax,ymax) locales, en mm
 BOX_OF={
  'TO220':(-3.0,-4.0,8.1,6.0),
- 'TERM2':(-3.6,-5.2,8.7,5.6),
+ 'TERM2':(-2.5,-5.2,7.58,5.6),
  'RSBANK':(-5.5,-3.2,(RSB_COLS-1)*RSB_DX*G+5.5,RSB_YI*G+3.2),
  'TERM4':(-3.6,-5.2,18.84,5.6),
  'TERM3':(-3.6,-5.2,13.76,5.6),

@@ -11,6 +11,7 @@
 \usepackage{multirow}
 \usepackage{array}
 \usepackage[output-decimal-marker={,}]{siunitx}
+\usepackage{xurl}
 \usepackage[hidelinks]{hyperref}
 \usepackage{float}
 \usepackage{caption}
@@ -39,7 +40,7 @@ brahiam.campino@estudiantesunibague.edu.co}
 \maketitle
 
 \begin{abstract}
-Se diseña, simula y lleva a placa una fuente lineal que entrega $+16$~V y $-16$~V, cada una capaz de 1,5~A, y $+5$~V, para alimentar los cuatro controladores PID analógicos de un levitador magnético y para demostrar la corriente de especificación sobre una carga de prueba removible. El método es el del tema 3 de la monografía \emph{Electrónica Tomo II}~\cite{monografia}: transformador, rectificador, filtro y regulador, con regulación de línea, regulación de carga, factor de rizado y protecciones. Como los reguladores LM317 y LM337 no podían cambiarse, su capacidad se amplía con un transistor de potencia (Fig.~3-21 de la monografía), de modo que el integrado conduzca solo una cuarta parte de la corriente. Antes de cada regulador hay un limitador de corriente con transistor Darlington y protección \emph{foldback} (Figs.~3-26 y 3-27): limita a unos 2,4~A en sobrecarga y reduce la corriente de cortocircuito a 0,8--1,2~A, y está ajustado para que la carga de prueba no lo deje trabado al arrancar. Un transformador de 18-0-18~V / 3~A con puente rectificador alimenta los dos rieles, y se reutilizan capacitores de $\SI{15000}{\micro F}$ y $2\times\SI{6800}{\micro F}$. La simulación en ngspice muestra salidas de $\pm15{,}98$~V con 1,6~A, regulación de carga del 0,09~\%, rizado de salida de 0,1~mV$_{pp}$, regulación aun con la red al $-10$~\%, y recuperación automática tras cortocircuitos sostenidos. Se entregan los esquemáticos, los archivos EAGLE/Fusion de una placa de una cara de $190\times140$~mm, la lista de materiales y el plan de pruebas.
+Se diseña, simula y lleva a placa una fuente lineal que entrega $+16$~V y $-16$~V, cada una capaz de 1,5~A, y $+5$~V, para alimentar los cuatro controladores PID analógicos de un levitador magnético y para demostrar la corriente de especificación sobre una carga de prueba removible. El método es el del tema 3 de la monografía \emph{Electrónica Tomo II}~\cite{monografia}: transformador, rectificador, filtro y regulador, con regulación de línea, regulación de carga, factor de rizado y protecciones. Como los reguladores LM317 y LM337 no podían cambiarse, su capacidad se amplía con un transistor de potencia (Fig.~3-21 de la monografía), de modo que el integrado conduzca solo una cuarta parte de la corriente. Antes de cada regulador hay un limitador de corriente con transistor Darlington y protección \emph{foldback} (Figs.~3-26 y 3-27): limita a unos 2,4~A en sobrecarga y reduce la corriente de cortocircuito a 0,3--0,9~A según la red, y está ajustado para que la carga de prueba no lo deje trabado al arrancar. Un transformador de 18-0-18~V / 5~A con puente rectificador alimenta los dos rieles, y se reutilizan capacitores de $\SI{15000}{\micro F}$ y $2\times\SI{6800}{\micro F}$. La simulación en ngspice muestra salidas de $\pm15{,}98$~V con 1,6~A, regulación de carga del 0,08~\%, rizado de salida de 0,1~mV$_{pp}$, regulación aun con la red al $-10$~\%, y recuperación automática tras cortocircuitos sostenidos. La validación en Proteus llevó a dos ajustes (versión 2.1): el divisor de foldback pasó de 270 a \SI{330}{\ohm} y el transformador de 3 a 5~A. Se entregan los esquemáticos, los archivos EAGLE/Fusion de una placa de una cara de $190\times140$~mm con pistas a 45°, la lista de materiales y el plan de pruebas.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -51,7 +52,9 @@ fuente lineal, LM317, LM337, ampliación de corriente, foldback, limitador de co
 % =========================================================
 El levitador magnético del proyecto usa cuatro controladores PID analógicos idénticos, uno por bobina. Cada uno tiene dos TL074CN, un sensor Hall SS495A y un divisor que genera la referencia $V_{ref}=2$~V a partir de $+5$~V~\cite{informepid}. Los amplificadores se alimentan con $\pm16$~V, el divisor y los sensores con $+5$~V, y las bobinas con una fuente aparte, cuyo negativo (PGND) se une a la tierra de señal en un solo punto.
 
-La primera versión de esta fuente se dimensionó solo para los operacionales: 0,27~A por riel con el transformador M509 disponible. Después se agregó una especificación: la fuente debe entregar \textbf{1,5~A en los rieles de $\pm16$~V} sobre una carga de prueba que pueda conectarse y desconectarse, para medir con y sin carga. Además, debía \textbf{conservar las protecciones} y usar los mismos reguladores LM317 y LM337, porque no había tiempo para conseguir otros. Este informe documenta el diseño definitivo (versión 2) y explica qué cambió y por qué.
+La primera versión de esta fuente se dimensionó solo para los operacionales: 0,27~A por riel con el transformador M509 disponible. Después se agregó una especificación: la fuente debe entregar \textbf{1,5~A en los rieles de $\pm16$~V} sobre una carga de prueba que pueda conectarse y desconectarse, para medir con y sin carga. Además, debía \textbf{conservar las protecciones} y usar los mismos reguladores LM317 y LM337, porque no había tiempo para conseguir otros. Este informe documenta el diseño definitivo (versión 2.1, ajustada tras la validación en Proteus) y explica qué cambió y por qué.
+
+Todos los archivos (cálculos, simulaciones en ngspice y Proteus, esquemáticos, placa, lista de materiales y pruebas) están en el repositorio \url{https://github.com/Brahiam18/Fuente-1.6A--16v-5v-con-anti-corto-en-solo-un-fuente-a-la-vez-carga-y-sin-carga}.
 
 El método es el del tema 3 de la monografía~\cite{monografia}. La fuente se divide en los bloques de su Fig.~3-1: transformador, rectificador, filtro y regulador. Los parámetros se definen como allí: voltaje y corriente de salida, regulación de línea ante $\pm10$~\%, regulación de carga, factor de rizado y coeficiente de temperatura. Las topologías y los criterios de diseño también son los de la monografía.
 
@@ -83,7 +86,7 @@ I_{L(-16)}&=1{,}6+0{,}017=\SI{1,617}{A}.
 La carga de 1,5~A se prueba \textbf{en un riel a la vez}, y con eso se dimensiona el transformador.
 
 \begin{table}[htbp]
-\caption{Especificaciones de la fuente (versión 2)}
+\caption{Especificaciones de la fuente (versión 2.1)}
 \label{tab:espec}
 \centering
 \footnotesize
@@ -94,11 +97,11 @@ Parámetro & +16~V & $-16$~V & +5~V \\
 Ajuste de salida & \multicolumn{2}{c}{$\pm$15 a $\pm$17~V} & 4,7 a 5,2~V \\
 Corriente nominal & 1,5~A ($R_L$) & 1,5~A ($R_L$) & 57~mA \\
 Límite en sobrecarga & \multicolumn{2}{c}{$\approx$2,4~A} & $\approx$90~mA \\
-Corriente de corto & \multicolumn{2}{c}{$\leq$1,2~A (foldback)} & 0,145~A \\
+Corriente de corto & \multicolumn{2}{c}{0,3--0,9~A (foldback)} & 0,145~A \\
 Regulación de carga & \multicolumn{3}{c}{$\leq$0,5~\%} \\
 Regulación de línea ($\pm10$~\%) & \multicolumn{3}{c}{$\leq$0,2~\% de $V_{out}$} \\
 Rizado de salida & \multicolumn{3}{c}{$<$1~mV$_{pp}$} \\
-Entrada & \multicolumn{3}{c}{115~V$_{rms}$ $\pm$10~\%, 60~Hz} \\
+Entrada & \multicolumn{3}{c}{120~V$_{rms}$ $\pm$10~\%, 60~Hz} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -150,7 +153,8 @@ I_{SC}=\frac{V_{BE}}{kR_{SC}},\qquad I_{FB}=I_{SC}+\frac{(1-k)V_{out}}{kR_{SC}} 
 La Tabla~\ref{tab:versiones} resume la evolución del diseño.
 \begin{itemize}
 \item \textbf{Versión 1.} Solo alimentaba los operacionales. Con el M509 (9-6-0-6-9~V / 2~A) usaba el devanado completo de 18~V con dos rectificadores de media onda, limitadores de 0,39 y 0,32~A y capacitores de $\SI{3300}{\micro F}$. Estos se cambiaron luego por $\SI{6800}{\micro F}$, que ya se tenían.
-\item \textbf{Versión 2.} Al pedirse 1,5~A, el M509 ya no alcanzaba: con media onda, su secundario habría conducido unos 3,6~A eficaces, casi el doble de su capacidad. Además, el LM317 solo a 1,5~A estaría en su límite y no habría disipador capaz de mantenerlo frío. Se compró un transformador de 18-0-18~V / 3~A y se pasó a onda completa. Los capacitores disponibles se reutilizaron: el de $\SI{15000}{\micro F}$ en el riel positivo y los dos de $\SI{6800}{\micro F}$ en paralelo en el negativo. Se agregaron la ampliación de corriente y el limitador con foldback. El regulador de $+5$~V no cambió.
+\item \textbf{Versión 2.} Al pedirse 1,5~A, el M509 ya no alcanzaba: con media onda, su secundario habría conducido unos 3,6~A eficaces, casi el doble de su capacidad. Además, el LM317 solo a 1,5~A estaría en su límite y no habría disipador capaz de mantenerlo frío. Se especificó un transformador de 18-0-18~V / 3~A y se pasó a onda completa. Los capacitores disponibles se reutilizaron: el de $\SI{15000}{\micro F}$ en el riel positivo y los dos de $\SI{6800}{\micro F}$ en paralelo en el negativo. Se agregaron la ampliación de corriente y el limitador con foldback. El regulador de $+5$~V no cambió.
+\item \textbf{Versión 2.1.} La simulación en Proteus (Sección~\ref{sec:proteus}) mostró dos ajustes necesarios. (a) Con el transformador de 3~A y la red al $-10$~\%, la salida con $R_L$ caía a 14,6~V: la resistencia de su devanado le quitaba el poco margen que había. Con uno de 5~A, de menor resistencia, regula. (b) El sensor $Q_3$ del modelo de Proteus conduce con $\approx0{,}8$~V en vez de 0,7~V, y la corriente de corto con la red baja subía a 1,26~A ($\approx23$~W en $Q_1$). Con $R_5=R_{13}=\SI{330}{\ohm}$ el foldback es más fuerte, la corriente de corto baja a 0,3--0,9~A y la fuente sigue sin trabarse con $R_L$. Además, $J_2$ pasó a dos borneras de 2 vías y las pistas de la placa se trazaron a 45°.
 \end{itemize}
 
 \begin{table}[htbp]
@@ -163,11 +167,11 @@ La Tabla~\ref{tab:versiones} resume la evolución del diseño.
  & Versión 1 & Versión 2 \\
 \midrule
 Corriente de $\pm16$~V & 0,27~A (PID) & 1,5~A ($R_L$) \\
-Transformador & M509, 18~V, 2~A & 18-0-18~V, 3~A \\
+Transformador & M509, 18~V, 2~A & 18-0-18~V, 5~A (v2.1) \\
 Rectificación & 2 medias ondas (60~Hz) & puente con toma central (120~Hz) \\
 Filtro + / $-$ & 6800 / 6800~µF & 15\,000 / 13\,600~µF \\
 Paso de corriente & solo LM317/LM337 & LM + TIP42C/TIP41C \\
-Protección & límite constante 0,39~A & foldback 2,4~A / $\leq$1,2~A \\
+Protección & límite constante 0,39~A & foldback 2,4~A / 0,3--0,9~A \\
 Disipador por riel & 5~°C/W & 2~°C/W \\
 \bottomrule
 \end{tabular}
@@ -179,7 +183,7 @@ La Fig.~\ref{fig:bloques} muestra cada riel. Después del puente y el filtro, el
 \begin{figure}[htbp]
 \centering
 \begin{tikzpicture}[font=\scriptsize, node distance=2.5mm and 2.5mm, b/.style={draw, rounded corners=1pt, align=center, minimum height=7mm, inner sep=2pt}, >={Stealth[length=1.6mm]}]
-\node[b] (tr) {18-0-18 V\\3 A};
+\node[b] (tr) {18-0-18 V\\5 A};
 \node[b, right=of tr] (pt) {Puente\\D1--D4};
 \node[b, right=of pt, yshift=7mm] (c1) {C1\\15\,000~µF};
 \node[b, right=of pt, yshift=-7mm] (c2) {C2A+C2B\\13\,600~µF};
@@ -194,14 +198,14 @@ La Fig.~\ref{fig:bloques} muestra cada riel. Después del puente y el filtro, el
 \node[b, above=3mm of u1] (u3) {R19 +\\LM317};
 \draw[->] (u1.north) -- (u3.south); \draw[->] (u3.east) -- ++(3mm,0) node[right]{+5};
 \end{tikzpicture}
-\caption{Diagrama de bloques de la versión 2: estructura de la Fig.~3-1 de~\cite{monografia}, con un limitador con foldback y una ampliación de corriente en cada riel.}
+\caption{Diagrama de bloques de la versión 2.1: estructura de la Fig.~3-1 de~\cite{monografia}, con un limitador con foldback y una ampliación de corriente en cada riel.}
 \label{fig:bloques}
 \end{figure}
 
 \subsection{Transformador y rectificador}
 Cada mitad del secundario da 18~V$_{rms}$. Con la toma central a tierra, el puente D1--D4 (1N5408, 3~A) entrega $+V$ y $-V$ en onda completa, con una caída de diodo por riel ($V_D\approx1{,}1$~V con picos de varios amperios):
 \begin{align}
-V_p&=18\sqrt{2}-1{,}1=\SI{24,36}{V}\quad\text{(115~V)},\\
+V_p&=18\sqrt{2}-1{,}1=\SI{24,36}{V}\quad\text{(120~V)},\\
 V_{p(min)}&=0{,}9\cdot18\sqrt{2}-1{,}1=\SI{21,81}{V},\\
 V_{p(max)}&=1{,}21\cdot18\sqrt{2}-1{,}1=\SI{29,7}{V}.
 \end{align}
@@ -211,7 +215,7 @@ Con onda completa, cada mitad del devanado entrega pulsos a un riel en un semici
 \begin{equation}
 I_{rms}\approx1{,}6\sqrt{1{,}67^2+0{,}22^2}\approx\SI{2,7}{A}<\SI{3}{A}.
 \end{equation}
-La simulación da 2,18~A (Sección~\ref{sec:sim}). Si ambos rieles se cargaran a 1,6~A a la vez con la red baja, la corriente subiría a 2,94~A, en el límite del transformador. Por eso la especificación es un riel a la vez.
+La simulación da 2,28~A (Sección~\ref{sec:sim}). Si ambos rieles se cargaran a 1,6~A a la vez con la red baja, la corriente subiría a 3,08~A: un transformador de 3~A quedaría sobrepasado. El de 5~A elegido (Sección~\ref{sec:proteus}) lo soporta, pero la especificación se sigue probando en un riel a la vez.
 
 \subsection{Capacitores de filtro (reutilizados)}
 El rizado es de 120~Hz. Con la corriente del filtro (carga más 9~mA del limitador), el rizado y el valle con la red baja son:
@@ -252,18 +256,18 @@ V_{EB3}=I R_{SC1}+k'\,(V_{E1}-V_{A1}).
 \end{equation}
 En operación normal $Q_1$ está saturado, $V_{E1}-V_{A1}\approx1{,}2$~V, y el término de foldback es casi nulo y no depende de la red. En un cortocircuito, $V_{A1}$ cae a la caída mínima del regulador ($\approx2{,}9$~V), $V_{E1}-V_{A1}$ sube a unos 20~V y la corriente necesaria para activar el sensor baja. Es la misma idea de las ecs.~(3.29)--(3.35), con la tensión de referencia tomada sobre el transistor de paso.
 
-\textit{Cálculo.} Se elige $R_{SC1}=\SI{0,27}{\ohm}$ (5~W) y $k'=270/(270+12\,000)=0{,}022$ ($R_5=\SI{270}{\ohm}$, $R_6=\SI{12}{k\ohm}$). Con $V_{BE}=0{,}7$~V:
+\textit{Cálculo.} Se elige $R_{SC1}=\SI{0,27}{\ohm}$ (5~W) y $k'=330/(330+12\,000)=0{,}027$ ($R_5=\SI{330}{\ohm}$, $R_6=\SI{12}{k\ohm}$; en la versión 2 era \SI{270}{\ohm}, ver la Sección~\ref{sec:proteus}). Con $V_{BE}=0{,}7$~V:
 \begin{align}
-I_{lim}&=\frac{0{,}7-0{,}022\cdot1{,}2}{0{,}27}=\SI{2,49}{A}\quad\text{(sobrecarga)},\\
-I_{SC}&=\frac{0{,}7-0{,}022\,(V_{E1}-V_{A1})}{0{,}27}.
+I_{lim}&=\frac{0{,}7-0{,}027\cdot1{,}2}{0{,}27}=\SI{2,47}{A}\quad\text{(sobrecarga)},\\
+I_{SC}&=\frac{0{,}7-0{,}027\,(V_{E1}-V_{A1})}{0{,}27}.
 \end{align}
-Con $V_{E1}-V_{A1}=20{,}5$~V (red nominal), $I_{SC}=0{,}91$~A. Con la red baja es de 1,11~A y con la red alta de 0,70~A. El transistor de paso disipa entonces 18,8, 20,2 y 16,2~W, frente a unos 45~W sin foldback.
+Con $V_{E1}-V_{A1}\approx20{,}7$~V (red nominal), $I_{SC}=0{,}54$~A. Con la red baja es de 0,79~A y con la red alta de 0,29~A. El transistor de paso disipa entonces 11,2, 14,4 y 6,7~W, frente a unos 45~W sin foldback. Proteus dio 0,60, 0,89 y 0,28~A (Tabla~\ref{tab:proteus}).
 
 \textit{Arranque con $R_L$ conectada.} Un foldback demasiado fuerte puede dejar la salida trabada al encender con carga: si en algún punto de la subida el límite fuera menor que lo que pide $R_L$, la tensión no seguiría subiendo. La condición es que el límite supere la demanda para toda tensión $x$ entre 0 y 16~V:
 \begin{equation}
 \frac{V_{BE}-k'\,(V_{E1}-x-2{,}9)}{R_{SC}}>\frac{x}{R_L}+I_{int}.
 \end{equation}
-Se evaluó en el peor caso (red al $+10$~\%, que da más foldback, y $V_{BE}=0{,}65$~V). El margen mínimo es de 0,16~A. Con $R_5=\SI{330}{\ohm}$ el margen caía a 0,03~A, y por eso se eligió \SI{270}{\ohm}. La simulación confirma el arranque con $R_L$ en los dos extremos de red (Fig.~\ref{fig:sim_arr}).
+Se evaluó en el peor caso de red (red al $+10$~\%, que da más foldback). Con $V_{BE}=0{,}7$~V el margen mínimo es de 0,22~A; con un $V_{BE}$ pesimista de 0,65~V cae a 0,04~A. En la versión 2 se había elegido \SI{270}{\ohm} por ese margen. Sin embargo, en Proteus el sensor conduce con $\approx0{,}8$~V, lo que aumenta el margen, y con \SI{330}{\ohm} la fuente arrancó y se recuperó del corto con $R_L$ puesta en los tres valores de red (Sección~\ref{sec:proteus}). La simulación en ngspice también confirma el arranque (Fig.~\ref{fig:sim_arr}). Esta es la prueba P8 del plan, que debe repetirse en el montaje real.
 
 \textit{Polarización.} El Darlington necesita $I_B\geq2{,}5/(15\cdot40)=4{,}2$~mA para conducir el límite con las ganancias mínimas. Con $R_3=\SI{2,7}{k\ohm}$ a tierra, $I_B=(20{,}88-0{,}45-1{,}6)/2700=7{,}0$~mA, que permite hasta 4,2~A. $R_3$ disipa como máximo $29{,}7^2/2700=0{,}33$~W, y se usa de 1~W. $R_4=\SI{1}{k\ohm}$ entre base y emisor de $Q_1$ drena las corrientes de fuga del driver. $Q_3$ (BC557~\cite{bc547}) solo tiene que desviar la corriente de $R_3$, unos 11~mA como máximo. El riel negativo usa $Q_5$ (TIP41C), $Q_6$ (BD139), $Q_7$ (BC547) y $R_{11}$--$R_{14}$.
 
@@ -282,10 +286,10 @@ Cada riel lleva un disipador en el borde de la placa con sus cuatro semiconducto
 \toprule
 Elemento & Con $R_L$ (1,67~A) & Corto (foldback) \\
 \midrule
-Q1+Q2 (Darlington) & 2,0 / 2,0~W & 18,8 / 16,2~W \\
+Q1+Q2 (Darlington) & 2,0 / 2,0~W & 11,2 / 6,7~W \\
 Q4 (ampliación) & 8,0 / 11,2~W & $\approx$0 \\
 U1 LM317 & 2,1 / 3,1~W & $<$1~W \\
-Total en el disipador & 12,1 / 16,3~W & $\leq$20,2~W (red baja) \\
+Total en el disipador & 12,1 / 16,3~W & $\leq$14,4~W (red baja) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -293,15 +297,15 @@ Total en el disipador & 12,1 / 16,3~W & $\leq$20,2~W (red baja) \\
 Con un disipador de $\theta_{SA}=2$~°C/W:
 \begin{itemize}
 \item Con $R_L$ y red alta, el disipador queda a $40+16{,}3\cdot2=73$~°C. Las junturas: $Q_4$ a $73+11{,}2\cdot2{,}92=106$~°C y U1 a $73+3{,}1\cdot6=92$~°C.
-\item En corto con red baja, el disipador llega a $40+20{,}2\cdot2=80$~°C y $Q_1$ a $80+20{,}2\cdot2{,}92=139$~°C, por debajo de 150~°C.
+\item En corto con red baja ($\approx$16~W según Proteus), el disipador llega a $40+16\cdot2=72$~°C y $Q_1$ a $72+16\cdot2{,}92=119$~°C, por debajo de 150~°C. Con \SI{270}{\ohm} (versión 2) habría disipado $\approx$23~W y llegado a $\approx$153~°C.
 \end{itemize}
 Por tanto se pide \textbf{un disipador de $\leq2$~°C/W por riel}, por ejemplo un perfil aletado de unos $100\times60\times30$~mm. $U_3$ (+5~V) no necesita disipador.
 
 \subsection{Protecciones}
 \begin{itemize}
-\item \textbf{F1} (T1~A, lento) en el primario. El transformador es de 108~VA y el consumo estimado es de 0,53~A.
+\item \textbf{F1} (T1~A, lento) en el primario. El transformador es de 180~VA y el consumo estimado es de 0,53~A.
 \item \textbf{F2 y F3} (T3,15~A, lentos), uno en cada mitad del secundario.
-\item \textbf{Limitadores con foldback} en $\pm16$~V: 2,4~A en sobrecarga y 0,7--1,2~A en corto, sostenible indefinidamente con recuperación automática.
+\item \textbf{Limitadores con foldback} en $\pm16$~V: 2,4~A en sobrecarga y 0,3--0,9~A en corto, sostenible indefinidamente con recuperación automática.
 \item \textbf{$R_{19}$} limita $+5$~V a 0,145~A. Un corto en $+5$~V no apaga los $\pm16$~V.
 \item \textbf{Protección térmica interna} de LM317/LM337 como respaldo, y \textbf{diodos} OUT$\rightarrow$IN y ADJ$\rightarrow$OUT.
 \item \textbf{Diodos de polaridad inversa} $D_7$ y $D_{10}$ (1N5408~\cite{d1n5408}, por la corriente de 2,4~A si se cruzan los rieles) y $D_{13}$.
@@ -317,7 +321,7 @@ Las Figs.~\ref{fig:esq_entrada} a \ref{fig:esq_salida} muestran cada etapa con r
 \begin{figure*}[!t]
 \centering
 \includegraphics[width=0.86\textwidth]{esq_entrada.pdf}
-\caption{Etapa 1: red, F1 y S1 (fuera de la placa), transformador 18-0-18~V / 3~A, bornera J1, fusibles F2 y F3, puente D1--D4 y filtros C1 ($+$) y C2A+C2B ($-$).}
+\caption{Etapa 1: red, F1 y S1 (fuera de la placa), transformador 18-0-18~V / 5~A, bornera J1, fusibles F2 y F3, puente D1--D4 y filtros C1 ($+$) y C2A+C2B ($-$).}
 \label{fig:esq_entrada}
 \end{figure*}
 
@@ -345,7 +349,7 @@ Las Figs.~\ref{fig:esq_entrada} a \ref{fig:esq_salida} muestran cada etapa con r
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{esq_salida.pdf}
-\caption{Bornera de salida J2 (hacia \texttt{J\_PWR} de las tarjetas PID), regleta de prueba J3 y borneras J4/J5 de la carga.}
+\caption{Bornera de salida J2, formada por dos borneras de 2 vías J2A y J2B (hacia \texttt{J\_PWR} de las tarjetas PID), regleta de prueba J3 y borneras J4/J5 de la carga.}
 \label{fig:esq_salida}
 \end{figure}
 
@@ -354,7 +358,7 @@ Las Figs.~\ref{fig:esq_entrada} a \ref{fig:esq_salida} muestran cada etapa con r
 \label{sec:sim}
 % =========================================================
 \subsection{Método}
-Se simuló el circuito completo en ngspice~42~\cite{ngspice} con análisis transitorio. Los diodos y los BC547/BC557 usan parámetros publicados. El LM317 y el LM337 son \emph{modelos de comportamiento} propios: reproducen la referencia de 1,25~V, $I_Q$, la caída mínima, la regulación de línea de 0,01~\%/V y el límite interno de 1,5~A. Los TIP41C/TIP42C y BD139/BD140 usan modelos genéricos con $h_{FE}\approx50$ y 80. El transformador es una fuente por mitad de 19,4~V$_{rms}$ en vacío, con \SI{0,45}{\ohm} y 0,3~mH. $R_L$ y los PID se modelan como conductancias que se conectan y desconectan en el tiempo, igual que en la prueba real. Los promedios se calculan con muestreo uniforme. Los archivos están en \texttt{fuente/simulacion/}.
+Se simuló el circuito completo en ngspice~42~\cite{ngspice} con análisis transitorio. Los diodos y los BC547/BC557 usan parámetros publicados. El LM317 y el LM337 son \emph{modelos de comportamiento} propios: reproducen la referencia de 1,25~V, $I_Q$, la caída mínima, la regulación de línea de 0,01~\%/V y el límite interno de 1,5~A. Los TIP41C/TIP42C y BD139/BD140 usan modelos genéricos con $h_{FE}\approx50$ y 80. El transformador es una fuente por mitad de 19,4~V$_{rms}$ en vacío, con \SI{0,2}{\ohm} (transformador de 5~A) y 0,3~mH; el divisor de foldback es el de la versión 2.1 ($R_5=R_{13}=\SI{330}{\ohm}$). $R_L$ y los PID se modelan como conductancias que se conectan y desconectan en el tiempo, igual que en la prueba real. Los promedios se calculan con muestreo uniforme. Los archivos están en \texttt{simulacion/}.
 
 \subsection{Resultados}
 La Tabla~\ref{tab:sim} compara cálculo y simulación.
@@ -368,21 +372,21 @@ La Tabla~\ref{tab:sim} compara cálculo y simulación.
 \toprule
 Magnitud & Cálculo & Simulación \\
 \midrule
-$V_{RAW+}$ media / rizado ($R_L$, 115~V) & 23,9~V / 0,94~V$_{pp}$ & 22,8~V / 0,60~V$_{pp}$ \\
-+16~V sin / con $R_L$ & 16,00 / $\geq$15,92~V & 15,991 / 15,977~V \\
-$-16$~V sin / con $R_L$ & $-16{,}00$ / $\leq-15{,}92$~V & $-15{,}993$ / $-15{,}978$~V \\
+$V_{RAW+}$ media / rizado ($R_L$, 120~V) & 23,9~V / 0,94~V$_{pp}$ & 23,9~V / 0,63~V$_{pp}$ \\
++16~V sin / con $R_L$ & 16,00 / $\geq$15,92~V & 15,992 / 15,979~V \\
+$-16$~V sin / con $R_L$ & $-16{,}00$ / $\leq-15{,}92$~V & $-15{,}994$ / $-15{,}980$~V \\
 Corriente en $R_L$ & 1,60~A & 1,598~A \\
-Corriente de $Q_4$ / del LM317 & 1,28 / 0,39~A & 1,33 / 0,26~A \\
-\%Reg (\ref{eq:reg}) +16 / $-16$ / +5 & $\leq$0,5~\% & 0,09 / 0,10 / 0,00~\% \\
+Corriente de $Q_4$ / del LM317 & 1,28 / 0,39~A & 1,34 / 0,26~A \\
+\%Reg (\ref{eq:reg}) +16 / $-16$ / +5 & $\leq$0,5~\% & 0,08 / 0,09 / 0,00~\% \\
 Rizado de salida $\pm16$~V con $R_L$ & $<$0,4~mV$_{pp}$ & 0,11 / 0,12~mV$_{pp}$ \\
-$\Delta V_{out}$ por línea $\pm10$~\% & $\leq$33~mV & 8,8~mV \\
-+16~V, red $-10$~\% y $R_L$ & regula & 15,974~V \\
-$I_{rms}$ por mitad del secundario & $\approx$2,7~A & 2,18~A \\
-Límite en sobrecarga & 2,49~A & 2,35--2,38~A \\
-$I$ de corto +16 / $-16$ / +5 & 0,91 / 0,91 / 0,145~A & 0,84 / 0,90 / 0,14~A \\
-$P$ del Darlington en corto & 18,8~W & 17,8 / 18,9~W \\
+$\Delta V_{out}$ por línea $\pm10$~\% & $\leq$33~mV & 8,6~mV \\
++16~V, red $-10$~\% y $R_L$ & regula & 15,976~V \\
+$I_{rms}$ por mitad del secundario & $\approx$2,7~A & 2,28~A \\
+Límite en sobrecarga & 2,47~A & 2,33--2,37~A \\
+$I$ de corto +16 / $-16$ / +5 & 0,54 / 0,54 / 0,145~A & 0,32 / 0,38 / 0,14~A \\
+$P$ del Darlington en corto & 11,2~W & 7,3 / 8,6~W \\
 Recuperación tras el corto con $R_L$ & 16~V & 15,98~V \\
-Arranque con $R_L$, red $\pm10$~\% & sin trabarse & 15,97 / 15,98~V \\
+Arranque con $R_L$, red $\pm10$~\% & sin trabarse & 15,976 / 15,985~V \\
 \bottomrule
 \end{tabular}}
 \end{table}
@@ -423,15 +427,66 @@ Arranque con $R_L$, red $\pm10$~\% & sin trabarse & 15,97 / 15,98~V \\
 \end{figure}
 
 \subsection{Análisis}
-\textit{Filtro.} El rizado simulado es menor que el calculado (0,60 frente a 0,94~V$_{pp}$), porque el cálculo supone descarga durante todo el semiperiodo. La tensión media es 1~V menor, por la resistencia del devanado y la caída real de los diodos con picos de varios amperios. Aun así, con la red al $-10$~\% el regulador sigue regulando (15,974~V).
+\textit{Filtro.} El rizado simulado es menor que el calculado (0,63 frente a 0,94~V$_{pp}$), porque el cálculo supone descarga durante todo el semiperiodo. Con el transformador de 5~A, de devanado de menor resistencia, la tensión media coincide con el cálculo (23,9~V); con el de 3~A era 1~V menor. Con la red al $-10$~\% el regulador sigue regulando (15,976~V).
 
-\textit{Reparto de corriente.} Con $R_L$, $Q_4$ lleva 1,33~A y el LM317 solo 0,26~A, el 17~\% de su máximo, por debajo del 50~\% que recomienda la monografía. Por eso el integrado disipa unos 2~W y no hacía falta cambiarlo.
+\textit{Reparto de corriente.} Con $R_L$, $Q_4$ lleva 1,34~A y el LM317 solo 0,26~A, el 17~\% de su máximo, por debajo del 50~\% que recomienda la monografía. Por eso el integrado disipa unos 2~W y no hacía falta cambiarlo.
 
-\textit{Regulación.} Conectar y quitar $R_L$ cambia la salida 14~mV en régimen (0,09~\%), con transitorios de 13~mV que se recuperan en unos 20~ms (Fig.~\ref{fig:sim_carga}). La regulación de línea es de 8,8~mV para $\pm10$~\% de red y el rizado de salida es de 0,1~mV$_{pp}$. En $+5$~V, las dos etapas en cascada y el filtro $R_{19}C_{15}$ dejan un rizado despreciable.
+\textit{Regulación.} Conectar y quitar $R_L$ cambia la salida 13~mV en régimen (0,08~\%), con transitorios de 12~mV que se recuperan en unos 20~ms (Fig.~\ref{fig:sim_carga}). La regulación de línea es de 8,6~mV para $\pm10$~\% de red y el rizado de salida es de 0,1~mV$_{pp}$. En $+5$~V, las dos etapas en cascada y el filtro $R_{19}C_{15}$ dejan un rizado despreciable.
 
-\textit{Foldback.} La curva V--I (Fig.~\ref{fig:sim_fb}) tiene la forma de la Fig.~3-27b. La salida se mantiene en 16~V hasta unos 2,35~A y luego la corriente se pliega hasta 0,8--1,2~A en corto, menos cuanto mayor es la tensión de red, como predice (\ref{eq:veb3}). El límite simulado (2,35~A) es algo menor que el calculado (2,49~A), porque el BC557 empieza a conducir con unos 0,66~V. La recta de $R_L$ queda siempre a la izquierda de la rama de foldback, así que la carga de prueba no traba la fuente. Lo confirman el arranque con red alta y baja (Fig.~\ref{fig:sim_arr}) y la recuperación después de cada corto con $R_L$ puesta (Fig.~\ref{fig:sim_corto}).
+\textit{Foldback.} La curva V--I (Fig.~\ref{fig:sim_fb}) tiene la forma de la Fig.~3-27b. La salida se mantiene en 16~V hasta unos 2,35~A y luego la corriente se pliega; con 1~V de salida queda en 0,93, 0,67 y 0,43~A para la red baja, nominal y alta, menos cuanto mayor es la tensión de red, como predice (\ref{eq:veb3}). Proteus dio 0,89, 0,60 y 0,28~A en corto franco. El límite simulado (2,35~A) es algo menor que el calculado (2,47~A), porque el BC557 del modelo empieza a conducir con unos 0,66~V. La recta de $R_L$ queda siempre a la izquierda de la rama de foldback, así que la carga de prueba no traba la fuente. Lo confirman el arranque con red alta y baja (Fig.~\ref{fig:sim_arr}) y la recuperación después de cada corto con $R_L$ puesta (Fig.~\ref{fig:sim_corto}).
 
-\textit{Cortocircuito.} En corto, el Darlington disipa 17,8~W (+16~V) y 18,9~W ($-16$~V), y ese valor define el disipador de 2~°C/W. Un corto en $+5$~V no afecta a $+16$~V (15,98~V).
+\textit{Cortocircuito.} En corto franco con la red nominal, el Darlington disipa 7,3~W (+16~V) y 8,6~W ($-16$~V); con la versión 2 ($R_5=\SI{270}{\ohm}$) eran 17,8 y 18,9~W. El peor caso para el disipador es la red baja (14--16~W según el cálculo y Proteus). Un corto en $+5$~V no afecta a $+16$~V (15,98~V).
+
+% =========================================================
+\section{Validación en Proteus y ajustes (versión 2.1)}
+\label{sec:proteus}
+% =========================================================
+El circuito se armó también en Proteus (archivo \path{simulacion/proteus/lab3fuenteselec2.pdsprj}), con los modelos de su biblioteca: LM317K, LM337, TIP41/TIP42, BD139/BD140 y BC547/BC557. Es una comprobación independiente de la de ngspice, porque usa modelos de otro fabricante de software.
+
+\textit{Transformador.} Se usó el TRAN-2P3S (secundario con toma central) con $L_p=10$~H, acoplamiento 0,999 y una fuente VSINE de 170~V de pico (120~V$_{rms}$). Proteus reparte la inductancia del secundario por partes iguales entre las dos mitades, aunque la inductancia crece con el cuadrado de las vueltas. Por eso la ``inductancia total'' que hay que escribir es el doble de la de cada mitad: $2\,(19{,}4/120)^2\cdot10\approx0{,}52$~H, que da 19,4~V en vacío por mitad, como un transformador real de 18~V. El tamaño del transformador se representó con la resistencia de los devanados: primario/secundario de 2 y 0,9~$\Omega$ para el de 3~A, y de 1,2 y 0,4~$\Omega$ para el de 5~A.
+
+\textit{Ajuste 1: transformador de 5~A.} Con el de 3~A, $R_L$ conectada y la red al $-10$~\% (V1~=~153~V), la salida caía a 14,6~V: el regulador se quedaba sin tensión. Con el de 5~A la caída en el devanado es menor y la salida se mantuvo. La Tabla~\ref{tab:trafo} resume por qué no sirve el de 2~A y por qué se prefirió el de 5~A.
+
+\begin{table}[htbp]
+\caption{Comparación de transformadores 18-0-18~V (un riel a 1,67~A)}
+\label{tab:trafo}
+\centering
+\scriptsize\setlength{\tabcolsep}{3pt}
+\resizebox{\linewidth}{!}{\begin{tabular}{@{}lccc@{}}
+\toprule
+ & 2~A & 3~A & 5~A \\
+\midrule
+$I_{rms}$ por mitad / nominal & 2,7 / 2~A (135~\%) & 2,7 / 3~A (90~\%) & 2,7 / 5~A (54~\%) \\
+Pérdidas en el cobre / nominales & 1,8 veces & 0,8 veces & 0,3 veces \\
+Salida con $R_L$ y red $-10$~\% (Proteus) & no regula & 14,6~V & regula \\
+Resultado & descartado & sin margen & \textbf{elegido} \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\textit{Ajuste 2: $R_5=R_{13}=\SI{330}{\ohm}$.} Con \SI{270}{\ohm}, el corto con la red baja daba 1,26~A, unos 23~W en $Q_1$, que lo llevarían a $\approx$153~°C con el disipador de 2~°C/W. La causa es que el BC557 del modelo empieza a conducir con $\approx0{,}8$~V, de modo que el limitador se pliega menos de lo calculado. Al subir $R_5$ a \SI{330}{\ohm} ($k'=0{,}027$), la corriente de corto bajó a 0,89~A con la red baja y la potencia a $\approx$16~W. La Tabla~\ref{tab:proteus} resume las pruebas del riel $+16$~V con el valor definitivo, hechas con el interruptor de carga y corto accionado sin detener la simulación.
+
+\begin{table}[htbp]
+\caption{Riel +16~V en Proteus ($R_5=\SI{330}{\ohm}$, transformador de 5~A)}
+\label{tab:proteus}
+\centering
+\scriptsize\setlength{\tabcolsep}{3pt}
+\resizebox{\linewidth}{!}{\begin{tabular}{@{}lccc@{}}
+\toprule
+Red (V1 pico / V$_{rms}$) & 153 / 108~V & 170 / 120~V & 187 / 132~V \\
+\midrule
+Sin carga & \multicolumn{3}{c}{15,9~V (ajustable a 16,0~V con $RV_1$)} \\
+Con $R_L$: tensión / corriente & 15,7~V / 1,57~A & 15,9~V / 1,59~A & 15,9~V / 1,59~A \\
+Corriente de corto & 0,89~A & 0,60~A & 0,28~A \\
+Corto con \SI{270}{\ohm} (antes) & 1,26~A & -- & -- \\
+Recuperación al quitar el corto con $R_L$ & sí & sí & sí \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+La corriente de corto baja cuando la red sube, como predice (\ref{eq:veb3}), y los valores coinciden con el cálculo de la Sección~\ref{sec:fb} (0,79, 0,54 y 0,29~A). Con la red baja y $R_L$, la salida queda en 15,7~V: el margen de tensión es justo, como se anticipó en la sección de caída mínima. El riel de $-16$~V se armó como espejo, con el LM337, y dio $-15{,}7$~V en vacío antes de ajustar $RV_2$.
+
+Durante el armado en Proteus aparecieron tres errores de conexión que conviene revisar también en el montaje real. Primero, los transistores con emisor y colector intercambiados: en inversa conducen con ganancia de 1 a 5, y la salida se cae en cuanto se pide corriente. Segundo, un LM317 colocado en el riel negativo, donde va el LM337; con él la salida queda en $-25$~V. Tercero, las cuatro resistencias de la carga de prueba en paralelo (2,5~$\Omega$) en lugar de en serie-paralelo (10~$\Omega$).
 
 % =========================================================
 \section{Circuito impreso}
@@ -441,7 +496,7 @@ Arranque con $R_L$, red $\pm10$~\% & sin trabarse & 15,97 / 15,98~V \\
 % =========================================================
 \section{Lista de materiales}
 % =========================================================
-La Tabla~\ref{tab:bom} es la lista de materiales; la versión con sustitutos está en \texttt{fuente/hardware/lista\_de\_materiales.csv}. El LM317, el LM337 y los capacitores de $\SI{15000}{\micro F}$ y $\SI{6800}{\micro F}$ ya estaban disponibles; el transformador hay que comprarlo.
+La Tabla~\ref{tab:bom} es la lista de materiales; la versión con sustitutos está en \texttt{hardware/lista\_de\_materiales.csv}. El LM317, el LM337 y los capacitores de $\SI{15000}{\micro F}$ y $\SI{6800}{\micro F}$ ya estaban disponibles; el transformador hay que comprarlo.
 
 \begin{table}[htbp]
 \caption{Lista de materiales}
@@ -452,7 +507,7 @@ La Tabla~\ref{tab:bom} es la lista de materiales; la versión con sustitutos est
 \toprule
 Referencia & Componente & Cant. \\
 \midrule
-T1 & Transformador 18-0-18~V / 3~A, 115~V & 1 \\
+T1 & Transformador 18-0-18~V / 5~A, 120~V & 1 \\
 F1 / F2, F3 & Fusible 5$\times$20 lento T1~A / T3,15~A, con portafusibles & 1 / 2 \\
 S1 & Interruptor 250~VAC & 1 \\
 D1--D4, D7, D10 & 1N5408 & 6 \\
@@ -462,10 +517,10 @@ C3, C4, C5, C8, C10, C13, C16, C19 & 100~nF cerámico & 8 \\
 C6, C11, C17 / C7, C12, C18 & $\SI{10}{\micro F}$ electrolítico / tántalo & 3 / 3 \\
 C9, C14 / C15 & $\SI{220}{\micro F}$ / $\SI{100}{\micro F}$, 25~V & 2 / 1 \\
 $R_{SC1}$, $R_{SC2}$ & $\SI{0,27}{\ohm}$, 5~W & 2 \\
-R3, R11 / R7, R15 & $\SI{2,7}{k\ohm}$ / $\SI{2,7}{\ohm}$, 1~W & 2 / 2 \\
-R4, R12 / R5, R13 / R6, R14 & $\SI{1}{k\ohm}$ / $\SI{270}{\ohm}$ / $\SI{12}{k\ohm}$ & 2 / 2 / 2 \\
+R3, R11 / R7, R15 & $\SI{2,7}{k\ohm}$, 1~W / $\SI{2,7}{\ohm}$, 2~W & 2 / 2 \\
+R4, R12 / R5, R13 / R6, R14 & $\SI{1}{k\ohm}$ / $\SI{330}{\ohm}$ / $\SI{12}{k\ohm}$ & 2 / 2 / 2 \\
 R8, R16, R20 / R9, R17 / R21 & $\SI{120}{\ohm}$ / $\SI{1,3}{k\ohm}$ / $\SI{330}{\ohm}$, 1~\% & 3 / 2 / 1 \\
-R19 & $\SI{100}{\ohm}$, 3~W & 1 \\
+R19 & $\SI{100}{\ohm}$, 5~W & 1 \\
 R10, R18 / R22 & $\SI{2,2}{k\ohm}$ / $\SI{470}{\ohm}$ & 2 / 1 \\
 RV1, RV2 / RV3 & Trimmer 3296W $\SI{200}{\ohm}$ / $\SI{50}{\ohm}$ & 2 / 1 \\
 Q1, Q4 / Q5, Q8 & TIP42C / TIP41C & 2 / 2 \\
@@ -473,8 +528,8 @@ Q2 / Q6 & BD140 / BD139 & 1 / 1 \\
 Q3 / Q7 & BC557 / BC547 & 1 / 1 \\
 U1, U3 / U2 & LM317T / LM337T (disponibles) & 2 / 1 \\
 LED1--LED3 & LED verde 5~mm & 3 \\
-J1 / J2 / J3 / J4, J5 & Bornera 3 vías / 4 vías / regleta 1$\times$3 / bornera 2 vías & 1/1/1/2 \\
-$R_L$ (externa) & $\SI{10}{\ohm}$, $\geq$30~W & 1 \\
+J1 / J2A, J2B, J4, J5 / J3 & Bornera 3 vías / bornera 2 vías / regleta 1$\times$3 & 1/4/1 \\
+$R_L$ (externa) & $\SI{10}{\ohm}$: 4 de $\SI{10}{\ohm}$/10~W en serie-paralelo & 4 \\
 -- & Disipador $\leq$2~°C/W (3 TO-220 + 1 TO-126) & 2 \\
 -- & Mica, buje y tornillo M3 & 8 \\
 -- & Baquela una cara 20$\times$15~cm & 1 \\
@@ -485,7 +540,7 @@ $R_L$ (externa) & $\SI{10}{\ohm}$, $\geq$30~W & 1 \\
 % =========================================================
 \section{Plan de pruebas}
 % =========================================================
-Las pruebas van de menor a mayor riesgo. El detalle está en \texttt{fuente/pruebas/plan\_de\_pruebas.md}.
+Las pruebas van de menor a mayor riesgo. El detalle está en \texttt{pruebas/plan\_de\_pruebas.md}.
 \begin{enumerate}
 \item[P0] \textit{Sin energía:} polaridades, ausencia de cortos y aislamiento aleta--disipador.
 \item[P1] \textit{Primer encendido} sin carga: V~AC por mitad, $V_{RAW\pm}$ y LED.
@@ -520,7 +575,7 @@ P3 & \%Reg +16 / $-16$ & $\leq$0,5~\% & & \\
 P4 & Rizado sobre C1 / C2 & 0,6--0,9 / 0,65--1,0~V$_{pp}$ & & \\
 P4 & Rizado de salida $\pm16$~V & $<$1~mV$_{pp}$ & & \\
 P5 & $\Delta V_{out}$ con red $\pm10$~\% & $<$33~mV & & \\
-P6 & $I$ de corto +16 / $-16$ / +5 & 0,7--1,1 / 0,7--1,1 / 0,14~A & & \\
+P6 & $I$ de corto $\pm$16 (red $-$10/0/+10~\%) / +5 & 0,8 / 0,6 / 0,3 / 0,14~A & & \\
 P6 & Salida tras el corto, con $R_L$ & $\pm$16~V & & \\
 P6 & $T$ disipador tras 60~s de corto & $<$85~°C & & \\
 P7 & $I$ máxima antes de caer & $\approx$2,4~A & & \\
@@ -538,16 +593,19 @@ P10 & Rieles en los TL074 & $\pm$16,0~V & & \\
 Pasar de 0,27 a 1,5~A por riel no fue un simple cambio de valores. Obligó a sustituir el transformador (el M509 de 2~A con media onda habría trabajado al doble de su capacidad) y a pasar a onda completa. Los capacitores de $\SI{15000}{\micro F}$ y $\SI{6800}{\micro F}$ se reutilizaron y dejan un rizado menor de 1~V$_{pp}$ a 120~Hz.
 
 \subsection{Sobre los reguladores}
-Sin poder cambiar el LM317 ni el LM337, la ampliación de corriente de la Fig.~3-21 permitió cumplir la especificación con el integrado conduciendo solo 0,26~A (17~\% de su máximo). El regulador sigue fijando la tensión, y la regulación simulada es del 0,09~\%.
+Sin poder cambiar el LM317 ni el LM337, la ampliación de corriente de la Fig.~3-21 permitió cumplir la especificación con el integrado conduciendo solo 0,26~A (17~\% de su máximo). El regulador sigue fijando la tensión, y la regulación simulada es del 0,08~\%.
 
 \subsection{Sobre la protección}
-La protección no podía ir en el transistor de la ampliación, porque el LM317 en corto intentaría entregar su máximo a través del sensor. Por eso se colocó un limitador antes del regulador, que acota la corriente total del riel. A 1,5~A, un límite constante haría disipar unos 45~W al transistor de paso durante un corto; con el foldback (Fig.~3-27) la corriente baja a 0,8--1,2~A y la disipación a menos de 20~W, que un disipador de 2~°C/W soporta indefinidamente. El punto delicado del foldback es no trabar la fuente con la carga de prueba. Se resolvió eligiendo $k'=0{,}022$ con un margen verificado en el peor caso de red, y lo confirman la curva V--I y las simulaciones de arranque y de recuperación con $R_L$ conectada.
+La protección no podía ir en el transistor de la ampliación, porque el LM317 en corto intentaría entregar su máximo a través del sensor. Por eso se colocó un limitador antes del regulador, que acota la corriente total del riel. A 1,5~A, un límite constante haría disipar unos 45~W al transistor de paso durante un corto; con el foldback (Fig.~3-27) la corriente baja a 0,3--0,9~A y la disipación a menos de 16~W, que un disipador de 2~°C/W soporta indefinidamente. El punto delicado del foldback es no trabar la fuente con la carga de prueba; con $k'=0{,}027$ se verificó en ngspice y en Proteus que arranca y se recupera con $R_L$ en los tres valores de red.
+
+\subsection{Sobre los ajustes de la versión 2.1}
+La simulación en Proteus, con modelos distintos de los de ngspice, mostró que el diseño estaba en el límite en dos puntos, y se corrigieron antes de fabricar. El transformador pasó de 3 a 5~A porque, con la red baja y 1,6~A, la resistencia del devanado del de 3~A dejaba al LM317 sin tensión (14,6~V); el de 5~A además trabaja al 54~\% de su corriente, con un tercio de las pérdidas, y el de 2~A queda descartado al 135~\%. $R_5$ y $R_{13}$ pasaron de 270 a \SI{330}{\ohm} porque con el sensor real (que conduce cerca de 0,8~V) el foldback era débil: el corto con la red baja llegaba a 1,26~A y $\approx$23~W. Con \SI{330}{\ohm} el corto queda en 0,3--0,9~A según la red y la fuente sigue arrancando y recuperándose con $R_L$ puesta. Como el margen contra el bloqueo depende del $V_{BE}$ real del sensor, la prueba P8 (arranque con $R_L$) es obligatoria en el montaje.
 
 \subsection{Limitaciones y trabajo pendiente}
 Hay tres limitaciones:
 \begin{itemize}
-\item Con la red al $-10$~\% y 1,6~A, el margen de caída es de solo 0,3--0,6~V.
-\item La especificación de 1,5~A es para un riel a la vez, por la capacidad del transformador de 3~A.
+\item Con la red al $-10$~\% y 1,6~A, el margen de caída es de solo 0,3--0,6~V; en Proteus la salida queda en 15,7~V en ese caso.
+\item La especificación de 1,5~A es para un riel a la vez, para no exigir al transformador la carga simultánea de los dos rieles.
 \item Los modelos del LM317, del LM337 y de los transistores de potencia son de comportamiento o genéricos, de modo que los valores dinámicos y los límites deben confirmarse con el plan de pruebas.
 \end{itemize}
 Queda pendiente fabricar la placa, montar los disipadores y llenar la Tabla~\ref{tab:med}.
@@ -570,7 +628,7 @@ Queda pendiente fabricar la placa, montar los disipadores y llenar la Tabla~\ref
 \begin{figure*}[p]
 \centering
 \includegraphics[width=\textwidth,height=0.92\textheight,keepaspectratio]{esq_completo.pdf}
-\caption{Esquemático completo de la fuente $\pm$16~V / 1,5~A y +5~V (versión 2).}
+\caption{Esquemático completo de la fuente $\pm$16~V / 1,5~A y +5~V (versión 2.1).}
 \label{fig:completo}
 \end{figure*}
 

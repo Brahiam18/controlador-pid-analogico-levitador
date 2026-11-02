@@ -2,13 +2,14 @@ La placa es de una sola cara, de $190{,}5\times139{,}7$~mm, para una baquela de 
 \begin{itemize}
 \item Pistas de 0,8~mm, y de 1,6~mm para las redes de corriente alta: secundario, $V_{RAW\pm}$, emisores y colectores de los transistores de paso, salidas $\pm16$~V y GND. Con cobre de 35~µm, 1,6~mm conducen unos 3~A con 10~°C de aumento.
 \item Pads de 2,0~mm, y de 2,6~mm en borneras, portafusibles, diodos 1N5408, $R_{SC}$ y capacitores grandes.
-\item Separación mínima entre redes de 0,40~mm, verificada sobre la geometría final.
+\item Separación mínima entre redes de 0,40~mm, verificada sobre la geometría final (0,59~mm en la placa definitiva).
+\item Esquinas de las pistas biseladas a 45° (225 esquinas) en lugar de ángulos rectos. Se evita la esquina exterior de 90°, donde el cobre se ataca de forma desigual al grabar y la densidad de corriente se concentra. Solo quedan a 90° las uniones en T y los quiebres que caen sobre un pad.
 \end{itemize}
 Las 32 redes quedan completas, sin cortos, y el esquemático y la placa son consistentes. Hay siete puentes de alambre del lado de componentes (P1--P7, lista en \texttt{puentes.md}), todos en redes de señal o de baja corriente.
 
-Los cuatro semiconductores de potencia de cada riel van alineados en un borde con la aleta hacia afuera: $Q_1$, $Q_2$, $Q_4$ y U1 arriba, y $Q_5$, $Q_6$, $Q_8$ y U2 abajo. Así se atornillan a un solo disipador por riel. Los capacitores de filtro están en el borde izquierdo y las borneras de salida (J2, J4, J5) en el derecho. En las esquinas hay cuatro agujeros de montaje de 3,2~mm.
+Los cuatro semiconductores de potencia de cada riel van alineados en un borde con la aleta hacia afuera: $Q_1$, $Q_2$, $Q_4$ y U1 arriba, y $Q_5$, $Q_6$, $Q_8$ y U2 abajo. Así se atornillan a un solo disipador por riel. Los capacitores de filtro están en el borde izquierdo y las borneras de salida (J2A--J2B, J4, J5) en el derecho. $J_2$ son dos borneras de 2 vías encajadas lado a lado (paso 5,08~mm), porque no se consiguió la de 4 vías; los pads son los mismos. En las esquinas hay cuatro agujeros de montaje de 3,2~mm.
 
-En la carpeta \texttt{fuente/hardware/pcb/} están:
+En la carpeta \texttt{hardware/pcb/} están:
 \begin{itemize}
 \item \texttt{fuente.sch} y \texttt{fuente.brd}, en formato EAGLE, que Fusion Electronics abre.
 \item \texttt{cobre\_espejado\_1a1.pdf}: el cobre espejado a escala 1:1, con una regla de 50~mm para comprobar la escala.
@@ -31,7 +32,7 @@ En la carpeta \texttt{fuente/hardware/pcb/} están:
 \end{figure}
 
 \subsection{Guía de conexión}
-La Tabla~\ref{tab:conex} indica cómo se conecta la fuente. Las salidas de J2 llevan el mismo orden que \texttt{J\_PWR} de las tarjetas PID, así que basta un cable de cuatro hilos a una tarjeta, y de ella a la otra. La carga de prueba $R_L$ se atornilla en J4 o J5 solo durante la prueba de 1,5~A, y se retira para medir sin carga o para alimentar los PID. La fuente de las bobinas va por separado a \texttt{J\_VBOB}, y GND con PGND se unen solo en un \texttt{JP\_GND}.
+La Tabla~\ref{tab:conex} indica cómo se conecta la fuente. Las salidas de J2A--J2B llevan el mismo orden que \texttt{J\_PWR} de las tarjetas PID, así que basta un cable de cuatro hilos a una tarjeta, y de ella a la otra. La carga de prueba $R_L$ se atornilla en J4 o J5 solo durante la prueba de 1,5~A, y se retira para medir sin carga o para alimentar los PID. La fuente de las bobinas va por separado a \texttt{J\_VBOB}, y GND con PGND se unen solo en un \texttt{JP\_GND}.
 
 \begin{table}[htbp]
 \caption{Guía de conexión}
@@ -45,8 +46,8 @@ Desde & Hacia \\
 Red L $\rightarrow$ F1 T1~A $\rightarrow$ S1 & Primario del transformador \\
 Red N & Otro extremo del primario \\
 Secundario: extremo A / toma central / extremo B & J1-1 / J1-2 (GND) / J1-3 \\
-J2-1/2/3/4 (+16, $-16$, GND, +5) & \texttt{J\_PWR} 1/2/3/4 de la tarjeta PID A; de A a B por su \texttt{J\_PWR} \\
-J4-1 (+16) y J4-2 (GND) & $R_L=\SI{10}{\ohm}$, $\geq$30~W, removible \\
+J2A-1/2 (+16, $-16$), J2B-1/2 (GND, +5) & \texttt{J\_PWR} 1/2/3/4 de la tarjeta PID A; de A a B por su \texttt{J\_PWR} \\
+J4-1 (+16) y J4-2 (GND) & $R_L=\SI{10}{\ohm}$ (4 de 10~$\Omega$/10~W en serie-paralelo), removible \\
 J5-1 ($-16$) y J5-2 (GND) & $R_L$, removible (un riel a la vez) \\
 J3 ($V_{RAW+}$, GND, $V_{RAW-}$) & Osciloscopio (rizado) \\
 Disipador superior ($\leq$2~°C/W) & $Q_1$, $Q_2$, $Q_4$ y U1, con mica y buje \\

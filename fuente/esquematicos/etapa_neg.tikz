@@ -23,10 +23,10 @@
 \node[lbl, anchor=east] at ($(Q3.B)+(-0.95,0)$) {\lab{$Q_7$}{BC547}};
 \draw (Q3.C) |- (bd2);
 \draw (Q3.B) -- ++(0.4,0) node[circ](bs){} node[above right, font=\tiny]{$BS_2$};
-\draw (bs) -- (bs |- 0,-1.0) to[R, l_={\lab{$R_{13}$}{\SI{270}{\ohm}}}] (2.8,-1.0) -- (e1);
+\draw (bs) -- (bs |- 0,-1.0) to[R, l_={\lab{$R_{13}$}{\SI{330}{\ohm}}}] (2.8,-1.0) -- (e1);
 \draw (bs) -- (bs |- 0,-5.4) -- (4.4,-5.4) to[R, l_={\lab{$R_{14}$}{\SI{12}{\kilo\ohm}}}] (6.6,-5.4) -- (7.0,-5.4) -- (va);
 % ampliación de corriente
-\draw (va) to[R, l_={\lab{$R_{15}$}{\SI{2.7}{\ohm} 1 W}}] (8.8,0) node[circ](in){} node[below right, font=\tiny]{$IN_2$} -- (10.2,0);
+\draw (va) to[R, l_={\lab{$R_{15}$}{\SI{2.7}{\ohm} 2 W}}] (8.8,0) node[circ](in){} node[below right, font=\tiny]{$IN_2$} -- (10.2,0);
 \draw (8.8,1.2) node[npn, rotate=-90, xscale=-1, anchor=B](Q4){};
 \draw (in) -- (Q4.B);
 \draw (Q4.E) -| (va);
@@ -49,7 +49,7 @@
 \draw (25.2,0) node[circ]{} to[R, l={\lab{$R_{18}$}{\SI{2.2}{\kilo\ohm}}}] (25.2,-2.8) to[leDo, invert, l={\lab{LED2}{verde}}] (25.2,-6.2);
 \draw (26.6,0) node[circ]{} -- (26.6,1.6) node[ocirc]{} node[left, font=\tiny]{J5-1};
 \draw (26.6,-6.2) node[circ]{} -- (26.6,-7.2) node[ocirc]{} node[left, font=\tiny]{J5-2};
-\draw[dashed] (26.6,1.6) -- (28.2,1.6) to[R, l={\lab{$R_L$ = 10 $\Omega$}{$\geq$30 W, externa}}] (28.2,-7.2) -- (26.6,-7.2);
+\draw[dashed] (26.6,1.6) -- (28.2,1.6) to[R, l={\lab{$R_L$ = 10 $\Omega$}{4$\times$10 $\Omega$/10 W, externa}}] (28.2,-7.2) -- (26.6,-7.2);
 \draw (0.4,-6.2) -- (27.2,-6.2) node[ocirc]{} node[right, net]{GND};
 \foreach \x in {9.6,11.5,12.9,18.0,20.0,21.6,23.8,25.2} \draw (\x,-6.2) node[circ]{};
 \draw (bd2 |- 0,-6.2) node[circ]{};

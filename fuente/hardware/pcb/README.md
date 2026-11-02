@@ -1,6 +1,6 @@
-# Placa de la fuente ±16 V / 1,5 A y +5 V (versión 2)
+# Placa de la fuente ±16 V / 1,6 A y +5 V (versión 2.1)
 
-Placa de **una sola cara** (cobre inferior) de **190,5 × 139,7 mm**, que cabe en una baquela de 20 × 15 cm. Se fabrica por transferencia de tóner o con película fotosensible. Lleva **7 puentes de alambre** (P1–P7) del lado de componentes, todos en redes de señal o de baja corriente.
+Placa de **una sola cara** (cobre inferior) de **190,5 × 139,7 mm**, que cabe en una baquela de 20 × 15 cm. Se fabrica por transferencia de tóner o con película fotosensible. Lleva **7 puentes de alambre** (P1–P7) del lado de componentes, todos en redes de señal o de baja corriente. Pistas biseladas a 45° y salida J2 hecha con dos borneras de 2 vías (J2A y J2B).
 
 ![Ensamble](img/ensamble.png)
 
@@ -16,7 +16,8 @@ Placa de **una sola cara** (cobre inferior) de **190,5 × 139,7 mm**, que cabe e
 - Pistas de 0,8 mm. Las redes de corriente alta (secundario `ACA`/`ACB`/`AC1`/`AC2`, `VRAWP`, `VRAWN`, `E1`, `E2`, `VA1`, `VA2`, `+16V`, `-16V`, `GND`) van en 1,6 mm.
 - Pads de 2,0 mm, y de 2,6 mm en borneras, portafusibles, 1N5408, R_SC (5 W) y condensadores grandes.
 - Taladros de 0,9 a 1,3 mm según la pieza (C1 de 15 000 µF: Ø ≤ 35 mm, 10 mm entre patas; C2A/C2B de 6800 µF: Ø 28 mm, 10 mm entre patas) y 3,2 mm para los 4 agujeros de montaje.
-- Separación mínima entre cobres de redes distintas: **0,40 mm**, medida sobre la geometría final.
+- Separación mínima entre cobres de redes distintas: regla de **0,40 mm**; en la placa final es de **0,59 mm**, medida sobre la geometría final.
+- **Pistas a 45°**: las 225 esquinas de las pistas están biseladas (sin ángulos rectos), lo que mejora el grabado y reparte mejor la corriente. Solo quedan a 90° las uniones en T y los quiebres sobre un pad.
 - Las 32 redes están completas, sin cortos, y el `.sch` y el `.brd` son consistentes.
 
 ## Fabricación
@@ -38,8 +39,8 @@ Placa de **una sola cara** (cobre inferior) de **190,5 × 139,7 mm**, que cabe e
 | Red 115 V (L) | Fusible F1 T1 A → interruptor S1 → primario del transformador | Fuera de la placa, con los empalmes aislados |
 | Red 115 V (N) | Otro extremo del primario | |
 | Secundario 18‑0‑18 V: extremo A, toma central, extremo B | **J1‑1**, **J1‑2 (GND)**, **J1‑3** | F2 y F3 (T3,15 A) están en la placa |
-| J2‑1 +16 V, J2‑2 −16 V, J2‑3 GND, J2‑4 +5 V | `J_PWR` pines 1, 2, 3 y 4 de **una** tarjeta PID; la otra tarjeta se une a la primera por su `J_PWR` | Mismo orden de pines en los dos lados |
-| **J4‑1 (+16 V), J4‑2 (GND)** | Carga de prueba `R_L` = 10 Ω ≥ 30 W | **Removible**: solo durante la prueba de 1,5 A |
+| **J2A**‑1 +16 V, J2A‑2 −16 V, **J2B**‑1 GND, J2B‑2 +5 V (dos borneras de 2 vías encajadas) | `J_PWR` pines 1, 2, 3 y 4 de **una** tarjeta PID; la otra tarjeta se une a la primera por su `J_PWR` | Mismo orden de pines en los dos lados |
+| **J4‑1 (+16 V), J4‑2 (GND)** | Carga de prueba `R_L` = 10 Ω (4 × 10 Ω / 10 W en serie‑paralelo) | **Removible**: solo durante la prueba de 1,5 A |
 | **J5‑1 (−16 V), J5‑2 (GND)** | Carga de prueba `R_L` | Un riel a la vez |
 | J3 (V_RAW+, GND, V_RAW−) | Osciloscopio | Medición del rizado de C1 y C2 |
 

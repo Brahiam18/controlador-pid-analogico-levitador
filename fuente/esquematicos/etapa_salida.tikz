@@ -1,13 +1,13 @@
 % ---------- Bornera de salida J2 y puntos de prueba ----------
-\draw[thick] (0,0) rectangle (2.2,-4.2); \node[font=\footnotesize\bfseries] at (1.1,0.35) {J2 (bornera 4 vías, 5,08 mm)};
-\foreach \y/\n/\t in {-0.6/1/+16 V, -1.6/2/$-$16 V, -2.6/3/GND, -3.6/4/+5 V} {
+\draw[thick] (0,0) rectangle (2.2,-2.1); \draw[thick] (0,-2.1) rectangle (2.2,-4.2); \node[font=\footnotesize\bfseries] at (1.1,0.35) {J2A + J2B (2 borneras de 2 vías)}; \node[font=\scriptsize] at (1.4,-1.1) {J2A}; \node[font=\scriptsize] at (1.4,-3.2) {J2B};
+\foreach \y/\n/\t in {-0.6/1/+16 V, -1.6/2/$-$16 V, -2.6/1/GND, -3.6/2/+5 V} {
   \draw (-1.6,\y) node[left, net]{\t} -- (0,\y); \node[font=\scriptsize] at (0.4,\y) {\n};
   \draw (2.2,\y) -- (3.6,\y) node[ocirc]{};
 }
-\node[font=\scriptsize, align=left, anchor=west] at (3.8,-2.1) {hacia J\_PWR de las tarjetas PID\\(pin 1 +16 V, 2 $-$16 V,\\3 GND, 4 +5 V: mismo orden)};
-\draw[thick] (8.6,0) rectangle (10.6,-3.2); \node[font=\footnotesize\bfseries] at (9.6,0.35) {J3 (regleta 1$\times$3)};
+\node[font=\scriptsize, align=left, anchor=west] at (3.8,-2.1) {hacia J\_PWR de las tarjetas PID\\(J2A-1 +16 V, J2A-2 $-$16 V,\\J2B-1 GND, J2B-2 +5 V: mismo orden\\que los pines 1--4 de J\_PWR)};
+\draw[thick] (10.0,0) rectangle (12.0,-3.2); \node[font=\footnotesize\bfseries] at (11.0,0.35) {J3 (regleta 1$\times$3)};
 \foreach \y/\n/\t in {-0.6/1/$V_{RAW+}$ (TP1), -1.6/2/GND, -2.6/3/$V_{RAW-}$ (TP2)} {
-  \draw (10.6,\y) -- (11.2,\y) node[right, font=\scriptsize]{\t}; \node[font=\scriptsize] at (8.9,\y) {\n};
+  \draw (12.0,\y) -- (12.6,\y) node[right, font=\scriptsize]{\t}; \node[font=\scriptsize] at (10.3,\y) {\n};
 }
-\node[font=\scriptsize, align=left, anchor=north west] at (8.6,-3.4) {puntas del osciloscopio para medir\\el rizado de $C_1$ y $C_{2A}$/$C_{2B}$};
+\node[font=\scriptsize, align=left, anchor=north west] at (10.0,-3.4) {puntas del osciloscopio para medir\\el rizado de $C_1$ y $C_{2A}$/$C_{2B}$};
 \node[font=\scriptsize, align=left, anchor=north west] at (0,-4.8) {J4 (+16 V / GND) y J5 ($-$16 V / GND): borneras de 2 vías para conectar\\y quitar la resistencia de carga de prueba $R_L$ = 10 $\Omega$ (ver etapas 2 y 3).};

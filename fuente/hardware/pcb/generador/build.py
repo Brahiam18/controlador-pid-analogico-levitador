@@ -16,10 +16,29 @@ if __name__ == '__main__':
     src, dst = sys.argv[1], sys.argv[2]
     parts, routes = load(src); W, H = P.W, P.H
     nets = {n: v for n, v in N.NETS.items()}
+    # biselado a 45°: no en pads ni vías; se veta la esquina si su bisel viola la holgura
+    E.CHAMFER['on'] = True
+    E.CHAMFER['skip'] = [(x, y, pad_d(p.kind)/2) for p in parts.values() for (x, y) in p.pads().values()]
+    E.CHAMFER['skip'] += [(i*G, j*G, PAD_D/2) for rt in routes.values() for (i, j) in rt['vias']]
+    for it in range(8):
+        prob, mind, cross = V.verify(parts, routes, nets, W, H, verbose=False)
+        if not prob: break
+        ends = {(round(s_[a], 3), round(s_[a+1], 3)) for rt in routes.values() for s_ in E.merge_edges.__wrapped__(rt['edges'], 0) for a in (0, 2)} if hasattr(E.merge_edges, '__wrapped__') else None
+        E.CHAMFER['on'] = False
+        pts = {(round(s_[a], 3), round(s_[a+1], 3)) for rt in routes.values() for s_ in E.merge_edges(rt['edges'], 0) for a in (0, 2)}
+        E.CHAMFER['on'] = True
+        for pr in prob:
+            for c in (pr[6], pr[7]):
+                for q in pts:
+                    if (q[0]-c[0])**2 + (q[1]-c[1])**2 < 3.5**2: E.CHAMFER['veto'].add(q)
+        print('iteración', it, 'problemas', len(prob), 'esquinas vetadas', len(E.CHAMFER['veto']))
     prob, mind, cross = V.verify(parts, routes, nets, W, H)
     assert not prob, prob[:5]
+    nseg = sum(len(E.merge_edges(rt['edges'], 0)) for rt in routes.values()); E.CHAMFER['on'] = False
+    nseg0 = sum(len(E.merge_edges(rt['edges'], 0)) for rt in routes.values()); E.CHAMFER['on'] = True
+    print('esquinas biseladas a 45°:', nseg - nseg0, '| vetadas por holgura:', len(E.CHAMFER['veto']))
     jl = pdfs.jumpers(parts, routes)
-    labels = [(W/2, 1.6, 'Fuente +-16V 1.5A / +5V (v2) - B. Campino - U. Ibague 2026', 1.2, 'R0')]
+    labels = [(W/2, 1.6, 'Fuente +-16V 1.6A / +5V (v2.1) - B. Campino - U. Ibague 2026', 1.2, 'R0')]
     open(os.path.join(dst, 'fuente.brd'), 'w', encoding='utf-8').write(E.brd_xml(parts, routes, W, H, P.HOLES, labels))
     open(os.path.join(dst, 'fuente.sch'), 'w', encoding='utf-8').write(E.sch_xml())
     for e in ('.brd', '.sch'): ET.parse(os.path.join(dst, 'fuente'+e))

@@ -4,15 +4,15 @@ Los valores "esperados" salen del cálculo (`calculos/`) y de la simulación (`s
 
 **Instrumentos:** multímetro digital (V DC, V AC, A DC hasta 10 A), osciloscopio de 2 canales con punta ×1/×10, termómetro o termopar y un reloj.
 
-**Carga de prueba RL (removible):** 10 Ω de al menos 30 W (resistencia de aluminio), o 4 × 39 Ω de 10 W en paralelo (9,75 Ω). Se atornilla en **J4** para probar +16 V o en **J5** para probar −16 V. Así se mide sin carga y con carga sin desoldar nada. Disipa unos 26 W y **quema**: póngala sobre una superficie que aguante el calor.
+**Carga de prueba RL (removible):** 10 Ω armada con 4 resistencias de cemento de 10 Ω / 10 W en serie-paralelo (dos ramas de 2 en serie, en paralelo: 10 Ω, 6,4 W cada una). Se atornilla en **J4** para probar +16 V o en **J5** para probar −16 V. Así se mide sin carga y con carga sin desoldar nada. Disipa unos 26 W y **quema**: póngala sobre una superficie que aguante el calor.
 
 | Carga | Valor | Corriente | Uso |
 |---|---|---|---|
-| RL en J4 o J5 | 10 Ω / ≥ 30 W | 1,60 A | Especificación (≥ 1,5 A) |
+| RL en J4 o J5 | 4 × 10 Ω / 10 W (2 × 2) | 1,60 A | Especificación (≥ 1,5 A) |
 | Media carga | 22 Ω / 25 W | 0,73 A | Regulación intermedia |
 | +5 V | 120 Ω / 1/2 W | 42 mA | Plena carga de +5 V |
 
-Los 1,5 A se prueban **en un riel a la vez**, como se definió para el transformador de 3 A.
+Los 1,5 A se prueban **en un riel a la vez**, aunque el transformador de 5 A lo soportaría, para no exigirle los dos rieles a 1,6 A a la vez.
 
 ## P0. Inspección sin energía
 1. Revise la polaridad de C1, C2A, C2B, C6, C7, C9, C11, C12, C14, C15, C17 y C18, de los diodos y de los LED. En el riel negativo, el positivo de los condensadores va a GND.
@@ -42,23 +42,23 @@ Con RV1, RV2 y RV3, lleve las salidas a 16,00 V, −16,00 V y 5,00 V. Anote el r
 3. Repita en el riel negativo con RL en J5.
 
 ## P5. Regulación de línea (solo si hay variac)
-Varíe la red entre 103,5 y 126,5 V con RL conectada. Se espera ΔV < 33 mV. Sin variac, anote la tensión de red durante las mediciones.
+Varíe la red entre 108 y 132 V (120 V ± 10 %) con RL conectada. Se espera ΔV < 33 mV. Sin variac, anote la tensión de red durante las mediciones.
 
 ## P6. Cortocircuito y foldback
-1. Sin RL, conecte el amperímetro (escala de 10 A) **directamente** entre +16 V y GND durante 5 s. Se esperan ≈ 0,8–1,2 A: es la corriente de corto con foldback, **menor** que la nominal.
+1. Sin RL, conecte el amperímetro (escala de 10 A) **directamente** entre +16 V y GND durante 5 s. Se esperan ≈ 0,3–0,9 A según la red (cálculo: 0,79 / 0,54 / 0,29 A con red baja / nominal / alta; Proteus: 0,89 / 0,60 / 0,28 A): es la corriente de corto con foldback, **menor** que la nominal. Haga primero un corto de 2–3 s y verifique la corriente antes de dejarlo más tiempo.
 2. Quite el corto: la salida debe volver sola a 16 V.
 3. Repita con RL conectada. Al quitar el corto, la salida debe volver a 16 V **con RL puesta** (comprobación de que el foldback no se queda trabado).
 4. Haga lo mismo en −16 V y en +5 V (en +5 V se esperan ≈ 0,14 A y +16 V debe seguir en 16 V).
-5. Repita el corto de +16 V durante 60 s y mida la temperatura del disipador superior. Se espera < 85 °C con un disipador de 2 °C/W.
+5. Repita el corto de +16 V durante 60 s y mida la temperatura del disipador superior. Se espera < 75 °C con un disipador de 2 °C/W (Q1 disipa ≈ 7–16 W según la red).
 
 ## P7. Límite de sobrecarga (curva V–I)
 Con un reóstato de potencia o varias resistencias en paralelo en J4, aumente la corriente desde 1,6 A. Anote V y I hasta que la tensión empiece a caer (se espera ≈ 2,3–2,5 A) y luego hasta el corto. Compare con la Fig. de la curva de foldback del informe.
 
 ## P8. Arranque con carga
-Con RL ya conectada en J4, apague y encienda la fuente cinco veces. La salida debe subir siempre a 16 V (simulación: sube en < 100 ms también con la red al ±10 %).
+Con RL ya conectada en J4, apague y encienda la fuente cinco veces. La salida debe subir siempre a 16 V (simulación: sube en < 100 ms también con la red al ±10 %). **Esta prueba es obligatoria**: con R5 = R13 = 330 Ω el margen contra el bloqueo depende del V_BE real del sensor. Si alguna vez la salida se queda baja, cambie R5 (o R13) por 300 Ω.
 
 ## P9. Temperatura en régimen
 Con RL en J4 durante 30 min, mida la temperatura del disipador superior, de RSC1 y de RL. Se espera que el disipador quede por debajo de 75 °C. Repita en el riel negativo.
 
 ## P10. Conexión a las tarjetas PID
-Con la fuente apagada y **sin RL**, conecte J2 al `J_PWR` de una tarjeta, y la segunda tarjeta a la primera. Encienda sin bobinas. Mida los rieles en los pines 4 y 11 de cada TL074, y +5 V en R13 de cada PID.
+Con la fuente apagada y **sin RL**, conecte J2A–J2B al `J_PWR` de una tarjeta, y la segunda tarjeta a la primera. Encienda sin bobinas. Mida los rieles en los pines 4 y 11 de cada TL074, y +5 V en R13 de cada PID.

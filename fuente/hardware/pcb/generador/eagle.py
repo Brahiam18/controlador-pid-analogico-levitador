@@ -34,7 +34,7 @@ def txt(x, y, s, size=1.27, layer=25, align='center', rot=''):
 DESC = {'TERM3':'Bornera de tornillo 3 vías, paso 5.08 mm','RES5W':'Resistencia de potencia 5 W (cemento), 27.94 mm',
  'CPOL35':'Electrolítico radial D35 mm, paso 10 mm (15000 uF/50 V); pad 1 = +','CPOL8':'Electrolítico radial D8 mm, paso 3.5 mm (220 uF/25 V); pad 1 = +',
  'TO126':'TO-126 vertical (BD139/BD140): 1 = E, 2 = C, 3 = B; cara metálica hacia la línea gruesa (disipador)',
- 'DIODE':'Diodo DO-201 (1N5408), 15.24 mm; pad 2 = cátodo','TERM2':'Bornera de tornillo 2 vías, paso 5.08 mm','TERM4':'Bornera de tornillo 4 vías (2 x 2 vías), paso 5.08 mm',
+ 'DIODE':'Diodo DO-201 (1N5408), 15.24 mm; pad 2 = cátodo','TERM2':'Bornera de tornillo 2 vías, paso 5.08 mm (J2 = dos de 2 vías encajadas)','TERM4':'Bornera de tornillo 4 vías (2 x 2 vías), paso 5.08 mm',
  'FUSE':'Portafusible de PCB para fusible 5x20 mm, 22.86 mm entre clips','DO41':'Diodo DO-41 (1N4007), 10.16 mm; pad 2 = cátodo',
  'DO35':'Diodo DO-35 (1N4148), 7.62 mm; pad 2 = cátodo','CPOL25':'Electrolítico radial D28 mm, paso 10 mm (6800 uF/50 V); pad 1 = +',
  'CPOL6':'Electrolítico radial D6.3 mm, paso 2.54 mm; pad 1 = +','CPOL5':'Electrolítico radial D5 mm, paso 2.54 mm; pad 1 = +',
@@ -132,7 +132,7 @@ def libraries(sch=True):
 HEAD = '<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE eagle SYSTEM "eagle.dtd">\n<eagle version="9.6.2">\n<drawing>\n<settings>\n<setting alwaysvectorfont="no"/>\n<setting verticaltext="up"/>\n</settings>\n<grid distance="1.27" unitdist="mm" unit="mm" style="lines" multiple="1" display="yes" altdistance="0.635" altunitdist="mm" altunit="mm"/>\n'
 TAIL = '</drawing>\n</eagle>\n'
 ROWS = [('Entrada, puente y filtros', ['J1', 'F2', 'F3', 'D1', 'D2', 'D3', 'D4', 'C1', 'C3']),
-        ('Filtro -  y puntos de prueba', ['C2A', 'C2B', 'C4', 'J3', 'J2']),
+        ('Filtro -  y puntos de prueba', ['C2A', 'C2B', 'C4', 'J3', 'J2A', 'J2B']),
         ('Limitador +16 V (foldback)', ['RSC1', 'Q1', 'Q2', 'Q3', 'R3', 'R4', 'R5', 'R6']),
         ('Ampliación y regulador +16 V', ['R7', 'Q4', 'C5', 'U1', 'R8', 'R9', 'RV1', 'C6', 'D5', 'D6']),
         ('Salida +16 V', ['C7', 'C8', 'C9', 'D7', 'R10', 'LED1', 'J4']),
@@ -163,9 +163,44 @@ def sch_xml():
     netxml = ''.join('<net name="%s" class="0">\n' % n + ''.join(s) + '</net>\n' for n, s in nets.items())
     plain += '<text x="5.08" y="12.7" size="3.81" layer="97">Fuente ±16 V / 1,5 A y +5 V, versión 2 (conexiones por etiquetas de red; ver esquematicos/ para el dibujo)</text>\n'
     parts = ''.join('<part name="%s" library="%s" deviceset="%s" device="" value="%s"/>\n' % (r, LIB, dev_of(r), escape(N.PARTS[r][1])) for r in N.PARTS)
-    out = HEAD + layers_xml() + '<schematic xreflabel="%F%N/%S.%C%R" xrefpart="/%S.%C%R">\n<description>Fuente ±16 V / 1,5 A y +5 V (v2) - Brahiam Alberto Campiño Romero</description>\n'
+    out = HEAD + layers_xml() + '<schematic xreflabel="%F%N/%S.%C%R" xrefpart="/%S.%C%R">\n<description>Fuente ±16 V / 1,5 A y +5 V (v2.1) - Brahiam Alberto Campiño Romero</description>\n'
     out += libraries(True) + '<attributes>\n</attributes>\n<variantdefs>\n</variantdefs>\n<classes>\n<class number="0" name="default" width="0" drill="0"/>\n</classes>\n<parts>\n' + parts + '</parts>\n<sheets>\n<sheet>\n<plain>\n' + plain + '</plain>\n<instances>\n' + inst + '</instances>\n<busses>\n</busses>\n<nets>\n' + netxml + '</nets>\n</sheet>\n</sheets>\n</schematic>\n' + TAIL
     return out
+CHAMFER = {'on': False, 'skip': [], 'veto': set()}   # biselado a 45° de las esquinas de la cara inferior
+def _chamfer(segs):
+    import math as _m
+    def key(p): return (round(p[0], 3), round(p[1], 3))
+    ends = collections.defaultdict(list)
+    for k, (x0, y0, x1, y1) in enumerate(segs):
+        ends[key((x0, y0))].append((k, 0)); ends[key((x1, y1))].append((k, 1))
+    segs = [list(s) for s in segs]
+    def interior(p, kk):
+        for k, (x0, y0, x1, y1) in enumerate(segs):
+            if k in kk: continue
+            if abs(x0-x1) < 1e-6 and abs(p[0]-x0) < 1e-6 and min(y0, y1)+1e-6 < p[1] < max(y0, y1)-1e-6: return True
+            if abs(y0-y1) < 1e-6 and abs(p[1]-y0) < 1e-6 and min(x0, x1)+1e-6 < p[0] < max(x0, x1)-1e-6: return True
+        return False
+    orig = [tuple(s) for s in segs]; diag = []
+    for p, lst in ends.items():
+        if len(lst) != 2 or p in CHAMFER['veto']: continue
+        (ka, ea), (kb, eb) = lst
+        A, B = orig[ka], orig[kb]
+        ha = abs(A[1]-A[3]) < 1e-6; hb = abs(B[1]-B[3]) < 1e-6
+        if ha == hb: continue
+        if any((p[0]-x)**2+(p[1]-y)**2 < (r+0.05)**2 for x, y, r in CHAMFER['skip']): continue
+        if interior(p, (ka, kb)): continue
+        la = _m.hypot(A[2]-A[0], A[3]-A[1]); lb = _m.hypot(B[2]-B[0], B[3]-B[1])
+        t = min(G, la/2, lb/2)
+        if t < 0.5: continue
+        pts = []
+        for k, e, L in ((ka, ea, la), (kb, eb, lb)):
+            s0 = orig[k]; ox, oy = (s0[2], s0[3]) if e == 0 else (s0[0], s0[1])
+            ux, uy = (ox-p[0])/L, (oy-p[1])/L
+            q = (p[0]+ux*t, p[1]+uy*t); pts.append(q)
+            if e == 0: segs[k][0], segs[k][1] = q
+            else: segs[k][2], segs[k][3] = q
+        diag.append((pts[0][0], pts[0][1], pts[1][0], pts[1][1]))
+    return [tuple(s) for s in segs] + diag
 def merge_edges(edges, layer):
     Hh = collections.defaultdict(set); V = collections.defaultdict(set)
     for a, b in edges:
@@ -192,6 +227,7 @@ def merge_edges(edges, layer):
                 segs.append((i*G, st*G, i*G, (pr+1)*G))
                 if v is not None: st = v
             if v is not None: pr = v
+    if layer == 0 and CHAMFER['on']: segs = _chamfer(segs)
     return segs
 def brd_xml(parts, routes, W, H, holes=(), labels=()):
     plain = ''.join(wire(*a, 0, 20)+'\n' for a in [(0, 0, W, 0), (W, 0, W, H), (W, H, 0, H), (0, H, 0, 0)])
@@ -212,7 +248,7 @@ def brd_xml(parts, routes, W, H, holes=(), labels=()):
                  ('mdCopperDimension', '0.6mm'), ('msWidth', '0.8mm'), ('msDrill', '0.9mm')):
         dr += '<param name="%s" value="%s"/>\n' % (k, v)
     dr += '</designrules>\n'
-    out = HEAD + layers_xml() + '<board>\n<description>Fuente ±16 V / 1,5 A y +5 V (v2), una cara (cobre inferior) con puentes de alambre</description>\n<plain>\n' + plain + '</plain>\n'
+    out = HEAD + layers_xml() + '<board>\n<description>Fuente ±16 V / 1,5 A y +5 V (v2.1), una cara (cobre inferior) con puentes de alambre</description>\n<plain>\n' + plain + '</plain>\n'
     out += libraries(False) + '<attributes>\n</attributes>\n<variantdefs>\n</variantdefs>\n<classes>\n<class number="0" name="default" width="0.8" drill="0.9"/>\n</classes>\n'
     out += dr + '<elements>\n' + elems + '</elements>\n<signals>\n' + sig + '</signals>\n</board>\n' + TAIL
     return out

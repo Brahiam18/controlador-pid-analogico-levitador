@@ -55,7 +55,7 @@
 <layer number="98" name="Guide" color="6" fill="1" visible="yes" active="yes"/>
 </layers>
 <schematic xreflabel="%F%N/%S.%C%R" xrefpart="/%S.%C%R">
-<description>Fuente ±16 V / 1,5 A y +5 V (v2) - Brahiam Alberto Campiño Romero</description>
+<description>Fuente ±16 V / 1,5 A y +5 V (v2.1) - Brahiam Alberto Campiño Romero</description>
 <libraries>
 <library name="fuente16">
 <packages>
@@ -126,15 +126,15 @@
 <text x="7.62" y="-2.94" size="1" layer="27" align="top-center">&gt;VALUE</text>
 </package>
 <package name="TERM2">
-<description>Bornera de tornillo 2 vías, paso 5.08 mm</description>
+<description>Bornera de tornillo 2 vías, paso 5.08 mm (J2 = dos de 2 vías encajadas)</description>
 <pad name="1" x="0" y="0" drill="1.3" diameter="2.6" shape="square"/>
 <pad name="2" x="5.08" y="0" drill="1.3" diameter="2.6" shape="round"/>
-<wire x1="-3.3" y1="-4.9" x2="8.4" y2="-4.9" width="0.2" layer="21"/>
-<wire x1="8.4" y1="-4.9" x2="8.4" y2="5.3" width="0.2" layer="21"/>
-<wire x1="8.4" y1="5.3" x2="-3.3" y2="5.3" width="0.2" layer="21"/>
-<wire x1="-3.3" y1="5.3" x2="-3.3" y2="-4.9" width="0.2" layer="21"/>
-<text x="2.55" y="6" size="1.27" layer="25" align="bottom-center">&gt;NAME</text>
-<text x="2.55" y="-5.6" size="1" layer="27" align="top-center">&gt;VALUE</text>
+<wire x1="-2.2" y1="-4.9" x2="7.28" y2="-4.9" width="0.2" layer="21"/>
+<wire x1="7.28" y1="-4.9" x2="7.28" y2="5.3" width="0.2" layer="21"/>
+<wire x1="7.28" y1="5.3" x2="-2.2" y2="5.3" width="0.2" layer="21"/>
+<wire x1="-2.2" y1="5.3" x2="-2.2" y2="-4.9" width="0.2" layer="21"/>
+<text x="2.54" y="6" size="1.27" layer="25" align="bottom-center">&gt;NAME</text>
+<text x="2.54" y="-5.6" size="1" layer="27" align="top-center">&gt;VALUE</text>
 </package>
 <package name="TERM4">
 <description>Bornera de tornillo 4 vías (2 x 2 vías), paso 5.08 mm</description>
@@ -1033,9 +1033,9 @@
 <part name="Q3" library="fuente16" deviceset="BC557" device="" value="BC557"/>
 <part name="R3" library="fuente16" deviceset="R1W" device="" value="2k7 1W"/>
 <part name="R4" library="fuente16" deviceset="R10" device="" value="1k"/>
-<part name="R5" library="fuente16" deviceset="R10" device="" value="270"/>
+<part name="R5" library="fuente16" deviceset="R10" device="" value="330"/>
 <part name="R6" library="fuente16" deviceset="R10" device="" value="12k"/>
-<part name="R7" library="fuente16" deviceset="R1W" device="" value="2R7 1W"/>
+<part name="R7" library="fuente16" deviceset="R1W" device="" value="2R7 2W"/>
 <part name="Q4" library="fuente16" deviceset="TIP42C" device="" value="TIP42C"/>
 <part name="C5" library="fuente16" deviceset="C" device="" value="100n"/>
 <part name="U1" library="fuente16" deviceset="LM317T" device="" value="LM317T"/>
@@ -1058,9 +1058,9 @@
 <part name="Q7" library="fuente16" deviceset="BC547" device="" value="BC547"/>
 <part name="R11" library="fuente16" deviceset="R1W" device="" value="2k7 1W"/>
 <part name="R12" library="fuente16" deviceset="R10" device="" value="1k"/>
-<part name="R13" library="fuente16" deviceset="R10" device="" value="270"/>
+<part name="R13" library="fuente16" deviceset="R10" device="" value="330"/>
 <part name="R14" library="fuente16" deviceset="R10" device="" value="12k"/>
-<part name="R15" library="fuente16" deviceset="R1W" device="" value="2R7 1W"/>
+<part name="R15" library="fuente16" deviceset="R1W" device="" value="2R7 2W"/>
 <part name="Q8" library="fuente16" deviceset="TIP41C" device="" value="TIP41C"/>
 <part name="C10" library="fuente16" deviceset="C" device="" value="100n"/>
 <part name="U2" library="fuente16" deviceset="LM337T" device="" value="LM337T"/>
@@ -1077,7 +1077,7 @@
 <part name="R18" library="fuente16" deviceset="R10" device="" value="2k2"/>
 <part name="LED2" library="fuente16" deviceset="LED" device="" value="verde"/>
 <part name="J5" library="fuente16" deviceset="TERM2" device="" value="RL -16"/>
-<part name="R19" library="fuente16" deviceset="R3W" device="" value="100 3W"/>
+<part name="R19" library="fuente16" deviceset="R3W" device="" value="100 5W"/>
 <part name="C15" library="fuente16" deviceset="CPOL6" device="" value="100u/25V"/>
 <part name="C16" library="fuente16" deviceset="C" device="" value="100n"/>
 <part name="U3" library="fuente16" deviceset="LM317T" device="" value="LM317T"/>
@@ -1092,7 +1092,8 @@
 <part name="D13" library="fuente16" deviceset="D41" device="" value="1N4007"/>
 <part name="R22" library="fuente16" deviceset="R10" device="" value="470"/>
 <part name="LED3" library="fuente16" deviceset="LED" device="" value="verde"/>
-<part name="J2" library="fuente16" deviceset="TERM4" device="" value="SALIDA"/>
+<part name="J2A" library="fuente16" deviceset="TERM2" device="" value="+16/-16"/>
+<part name="J2B" library="fuente16" deviceset="TERM2" device="" value="GND/+5"/>
 </parts>
 <sheets>
 <sheet>
@@ -1123,7 +1124,8 @@
 <instance part="C2B" gate="G$1" x="60.96" y="-45.72"/>
 <instance part="C4" gate="G$1" x="101.6" y="-45.72"/>
 <instance part="J3" gate="G$1" x="142.24" y="-45.72"/>
-<instance part="J2" gate="G$1" x="182.88" y="-45.72"/>
+<instance part="J2A" gate="G$1" x="182.88" y="-45.72"/>
+<instance part="J2B" gate="G$1" x="223.52" y="-45.72"/>
 <instance part="RSC1" gate="G$1" x="20.32" y="-76.2"/>
 <instance part="Q1" gate="G$1" x="60.96" y="-76.2"/>
 <instance part="Q2" gate="G$1" x="101.6" y="-76.2"/>
@@ -1558,7 +1560,7 @@
 <label x="5.08" y="-259.08" size="1.27" layer="95"/>
 </segment>
 <segment>
-<pinref part="J2" gate="G$1" pin="1"/>
+<pinref part="J2A" gate="G$1" pin="1"/>
 <wire x1="177.8" y1="-45.72" x2="167.64" y2="-45.72" width="0.1524" layer="91"/>
 <label x="167.64" y="-45.72" size="1.27" layer="95"/>
 </segment>
@@ -1798,7 +1800,7 @@
 <label x="248.92" y="-228.6" size="1.27" layer="95"/>
 </segment>
 <segment>
-<pinref part="J2" gate="G$1" pin="2"/>
+<pinref part="J2A" gate="G$1" pin="2"/>
 <wire x1="177.8" y1="-48.26" x2="167.64" y2="-48.26" width="0.1524" layer="91"/>
 <label x="167.64" y="-48.26" size="1.27" layer="95"/>
 </segment>
@@ -1923,9 +1925,9 @@
 <label x="208.28" y="-289.56" size="1.27" layer="95"/>
 </segment>
 <segment>
-<pinref part="J2" gate="G$1" pin="4"/>
-<wire x1="177.8" y1="-53.34" x2="167.64" y2="-53.34" width="0.1524" layer="91"/>
-<label x="167.64" y="-53.34" size="1.27" layer="95"/>
+<pinref part="J2B" gate="G$1" pin="2"/>
+<wire x1="218.44" y1="-48.26" x2="208.28" y2="-48.26" width="0.1524" layer="91"/>
+<label x="208.28" y="-48.26" size="1.27" layer="95"/>
 </segment>
 </net>
 <net name="LED3A" class="0">
@@ -2132,9 +2134,9 @@
 <label x="269.24" y="-289.56" size="1.27" layer="95"/>
 </segment>
 <segment>
-<pinref part="J2" gate="G$1" pin="3"/>
-<wire x1="177.8" y1="-50.8" x2="167.64" y2="-50.8" width="0.1524" layer="91"/>
-<label x="167.64" y="-50.8" size="1.27" layer="95"/>
+<pinref part="J2B" gate="G$1" pin="1"/>
+<wire x1="218.44" y1="-45.72" x2="208.28" y2="-45.72" width="0.1524" layer="91"/>
+<label x="208.28" y="-45.72" size="1.27" layer="95"/>
 </segment>
 </net>
 </nets>

@@ -12,7 +12,7 @@ PT = 72/25.4
 PAGE = (210.0, 279.0)          # entra en A4 y en Carta sin escalar
 PINLAB = {'Q1': ('B', 'C', 'E'), 'Q4': ('B', 'C', 'E'), 'Q5': ('B', 'C', 'E'), 'Q8': ('B', 'C', 'E'),
           'Q2': ('E', 'C', 'B'), 'Q6': ('E', 'C', 'B'), 'U1': ('ADJ', 'OUT', 'IN'), 'U3': ('ADJ', 'OUT', 'IN'), 'U2': ('ADJ', 'IN', 'OUT'),
-          'Q3': ('C', 'B', 'E'), 'Q7': ('C', 'B', 'E'), 'J1': ('A', 'CT', 'B'), 'J2': ('+16', '-16', 'GND', '+5'), 'J3': ('V+', 'GND', 'V-'),
+          'Q3': ('C', 'B', 'E'), 'Q7': ('C', 'B', 'E'), 'J1': ('A', 'CT', 'B'), 'J2A': ('+16', '-16'), 'J2B': ('GND', '+5'), 'J3': ('V+', 'GND', 'V-'),
           'J4': ('+16', 'GND'), 'J5': ('-16', 'GND')}
 def padd(kind): return pad_d(kind)
 
@@ -42,7 +42,7 @@ def copper_pdf(path, parts, routes, W, H, holes, png=None):
         ax.plot([x, x+sx*5], [y, y], color='k', lw=0.4); ax.plot([x, x], [y, y+sy*5], color='k', lw=0.4)
     x0 = W/2-25; ax.plot([x0, x0+50], [-5, -5], color='k', lw=0.6)
     for t in range(0, 51, 10): ax.plot([x0+t, x0+t], [-5.8, -4.2], color='k', lw=0.6)
-    ax.text(W/2, -8.5, 'Fuente ±16 V / 1,5 A y +5 V (v2)  |  CARA DE COBRE ESPEJADA  |  imprimir 1:1 sin escalar: la regla debe medir 50 mm  |  placa %.1f x %.1f mm' % (W, H), ha='center', fontsize=6)
+    ax.text(W/2, -8.5, 'Fuente ±16 V / 1,6 A y +5 V (v2.1, pistas a 45°)  |  CARA DE COBRE ESPEJADA  |  imprimir 1:1 sin escalar: la regla debe medir 50 mm  |  placa %.1f x %.1f mm' % (W, H), ha='center', fontsize=6)
     fig.savefig(path, format='pdf')
     if png: fig.savefig(png, dpi=200)
     plt.close(fig)
@@ -102,7 +102,7 @@ def assembly_pdf(path, parts, routes, W, H, holes, jl, png=None):
         ax.add_patch(Rectangle((0, 0), W, H, fc='#f6f3e8', ec='k', lw=0.8, zorder=0))
         for (x, y) in holes: ax.add_patch(Circle((x, y), 1.6, fc='w', ec='k', lw=0.6, zorder=1))
         _draw(ax, parts, routes, jl, fs=3.6*z, values=True)
-        ax.text(W/2, H+4/z*2, 'Fuente ±16 V / 1,5 A y +5 V (v2)  -  ensamble ampliado (escala %.2f:1, A4 horizontal): referencia y valor de cada pieza' % z, ha='center', fontsize=9, fontweight='bold')
+        ax.text(W/2, H+4/z*2, 'Fuente ±16 V / 1,6 A y +5 V (v2.1)  -  ensamble ampliado (escala %.2f:1, A4 horizontal): referencia y valor de cada pieza' % z, ha='center', fontsize=9, fontweight='bold')
         pdf.savefig(fig); plt.close(fig)
 
 def jumpers(parts, routes):

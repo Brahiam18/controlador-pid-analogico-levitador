@@ -1,4 +1,4 @@
-"""Cálculos de diseño de la fuente ±16 V / 1,5 A y +5 V (versión 2).
+"""Cálculos de diseño de la fuente ±16 V / 1,5 A y +5 V (versión 2.1: R5 = R13 = 330 ohm, transformador de 5 A).
 Método: monografía Electrónica Tomo II, tema 3. Ejecutar: python3 calculos.py
 Imprime todos los valores que cita el informe y los guarda en resultados_calculos.json.
 """
@@ -25,10 +25,10 @@ out('I_L(-16) diseño = RL + interno', I_RL + I_int_n, 'A')
 IP = I_RL + I_int_p; IN = I_RL + I_int_n
 out('I_L(+16) con los 4 PID (sin RL)', 0.2 + I_int_p, 'A')
 
-# ---------------- 2. Transformador 18-0-18 V / 3 A y puente ----------------
+# ---------------- 2. Transformador 18-0-18 V / 5 A y puente (red nominal 120 V) ----------------
 VS = 18.0; VD = 1.1; f = 120.0                       # onda completa: rizado a 120 Hz
 Vp = lambda v: v*math.sqrt(2) - VD
-out('Vp nominal (115 V)', Vp(VS), 'V')
+out('Vp nominal (120 V)', Vp(VS), 'V')
 out('Vp linea -10 %', Vp(0.9*VS), 'V')
 out('Vp linea +10 % y vacio (+10 %)', Vp(1.1*1.1*VS), 'V')
 out('PIV por diodo (2 Vp max)', 2*(Vp(1.21*VS)+VD), 'V')
@@ -36,6 +36,7 @@ out('PIV por diodo (2 Vp max)', 2*(Vp(1.21*VS)+VD), 'V')
 k_rms = 1.6        # Irms(mitad) ~ 1.6 Idc por riel (filtro capacitivo, onda completa con toma central)
 Irms_half = math.hypot(k_rms*IP/math.sqrt(2), k_rms*(0.2+I_int_n)/math.sqrt(2))*math.sqrt(2)
 out('I rms por mitad del secundario (aprox.)', Irms_half, 'A')
+for In in (2, 3, 5): out(f'I rms / I nominal transformador {In} A', 100*Irms_half/In, '%'); out(f'perdidas cobre relativas {In} A', (Irms_half/In)**2, 'x')
 
 # ---------------- 3. Filtros ----------------
 CP, CN = 15000e-6, 2*6800e-6
@@ -65,7 +66,7 @@ for nombre, Ir, Vval in (('+16', Irp, Vvalp), ('-16', Irn, Vvaln)):
     out(f'V minima requerida a 16,00 V ({nombre})', need, 'V'); out(f'margen linea baja ({nombre})', Vval-need, 'V')
 
 # ---------------- 5. Limitador con foldback (Fig. 3-26 + 3-27) ----------------
-VBE = 0.7; Ra, Rb = 270.0, 12e3; k = Ra/(Ra+Rb)
+VBE = 0.7; Ra, Rb = 330.0, 12e3; k = Ra/(Ra+Rb)   # v2.1: 270 -> 330 ohm (ajuste validado en Proteus)
 out("k' = Ra/(Ra+Rb)", k)
 out('I_lim con el Darlington saturado (sobrecarga)', (VBE - k*VDARL)/RSC, 'A')
 E1 = {'nominal': Vp(VS)-Vrp/2, 'baja': Vp(0.9*VS)-Vrp/2, 'alta': Vp(1.1*VS)-Vrp/2}
@@ -77,10 +78,14 @@ for lab, e in E1.items():
 e = E1['alta']; worst = 1e9
 for i in range(161):
     x = i/10; d = e - 0.5 - (x + 2.9)
-    lim = (0.65 - k*d)/RSC                          # V_BE pesimista 0,65 V
     dem = x/RL + I_int_p
-    worst = min(worst, lim - dem)
-out('margen minimo limite-demanda al arrancar con RL (A)', worst, 'A')
+    worst = min(worst, (VBE - k*d)/RSC - dem)
+out('margen minimo limite-demanda al arrancar con RL, VBE=0,7 (A)', worst, 'A')
+worst = 1e9
+for i in range(161):
+    x = i/10; d = e - 0.5 - (x + 2.9)
+    worst = min(worst, (0.65 - k*d)/RSC - (x/RL + I_int_p))
+out('idem con VBE pesimista 0,65 V (A)', worst, 'A')
 
 # ---------------- 6. Polarización del Darlington ----------------
 RB = 2.7e3

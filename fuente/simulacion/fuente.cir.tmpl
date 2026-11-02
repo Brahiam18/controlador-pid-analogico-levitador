@@ -1,11 +1,11 @@
 * Fuente ±16 V / 1,5 A y +5 V (versión 2) -- circuito completo
 .include modelos.lib
-* ---- transformador 18-0-18 V / 3 A: cada mitad 19,4 Vrms en vacío, 0,45 ohm, 0,3 mH ----
+* ---- transformador 18-0-18 V / 5 A: cada mitad 19,4 Vrms en vacío, 0,2 ohm, 0,3 mH ----
 VA1 ta 0 SIN(0 {19.4*1.41421*{KL}} 60)
 VB1 0 tb SIN(0 {19.4*1.41421*{KL}} 60)
-RWA ta ta1 0.45
+RWA ta ta1 0.2
 LWA ta1 ta2 0.3m
-RWB tb tb1 0.45
+RWB tb tb1 0.2
 LWB tb1 tb2 0.3m
 RF2 ta2 aca 0.02
 RF3 tb2 acb 0.02
@@ -26,7 +26,7 @@ Q2 va1 bd1 b1 BD140
 R4 b1 e1 1k
 R3 bd1 0 2.7k
 Q3 bd1 bs1 vrawp BC557B
-R5 bs1 e1 270
+R5 bs1 e1 330
 R6 bs1 va1 12k
 R7 va1 in1 2.7
 Q4 cq in1 va1 TIP42C
@@ -52,7 +52,7 @@ Q6 va2 bd2 b2 BD139
 R12 b2 e2 1k
 R11 bd2 0 2.7k
 Q7 bd2 bs2 vrawn BC547B
-R13 bs2 e2 270
+R13 bs2 e2 330
 R14 bs2 va2 12k
 R15 va2 in2 2.7
 Q8 n16 in2 va2 TIP41C
