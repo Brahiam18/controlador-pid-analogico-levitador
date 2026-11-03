@@ -211,9 +211,9 @@ V_{p(max)}&=1{,}21\cdot18\sqrt{2}-1{,}1=\SI{29,7}{V}.
 \end{align}
 $V_{p(max)}$ incluye la red al $+10$~\% y un 10~\% de subida en vacío. Los capacitores son de 50~V y cada diodo soporta $PIV\approx2V_{p(max)}\approx62$~V, muy por debajo de 1000~V.
 
-Con onda completa, cada mitad del devanado entrega pulsos a un riel en un semiciclo y al otro en el siguiente. Con un riel a 1,67~A y el otro con los PID (0,22~A), la corriente eficaz por mitad es del orden de
+El transformador se dimensiona por la corriente \emph{eficaz} de su devanado, que es la que lo calienta ($P=I_{rms}^2R$), y no por la corriente DC de salida. Con filtro de condensador los diodos solo conducen cerca del pico, en pulsos cortos y altos, y la corriente eficaz de los diodos de un riel es $k\approx1{,}6$--$1{,}8$ veces su corriente DC (la regla práctica para un puente con filtro capacitivo es $I_{AC}\approx1{,}6\,I_{DC}$). Con la toma central, cada mitad del devanado lleva los pulsos del riel positivo en un semiciclo y los del negativo en el siguiente, es decir, la mitad de los pulsos de cada riel. Con un riel a 1,67~A y el otro con los PID (0,22~A):
 \begin{equation}
-I_{rms}\approx1{,}6\sqrt{1{,}67^2+0{,}22^2}\approx\SI{2,7}{A}<\SI{3}{A}.
+I_{rms}\approx\frac{k}{\sqrt{2}}\sqrt{I_+^2+I_-^2}=\frac{1{,}8}{\sqrt2}\sqrt{1{,}67^2+0{,}22^2}\approx\SI{2,1}{A}.
 \end{equation}
 La simulación da 2,28~A (Sección~\ref{sec:sim}). Si ambos rieles se cargaran a 1,6~A a la vez con la red baja, la corriente subiría a 3,08~A: un transformador de 3~A quedaría sobrepasado. El de 5~A elegido (Sección~\ref{sec:proteus}) lo soporta, pero la especificación se sigue probando en un riel a la vez.
 
@@ -381,7 +381,7 @@ Corriente de $Q_4$ / del LM317 & 1,28 / 0,39~A & 1,34 / 0,26~A \\
 Rizado de salida $\pm16$~V con $R_L$ & $<$0,4~mV$_{pp}$ & 0,11 / 0,12~mV$_{pp}$ \\
 $\Delta V_{out}$ por línea $\pm10$~\% & $\leq$33~mV & 8,6~mV \\
 +16~V, red $-10$~\% y $R_L$ & regula & 15,976~V \\
-$I_{rms}$ por mitad del secundario & $\approx$2,7~A & 2,28~A \\
+$I_{rms}$ por mitad del secundario & $\approx$2,1~A & 2,28~A \\
 Límite en sobrecarga & 2,47~A & 2,33--2,37~A \\
 $I$ de corto +16 / $-16$ / +5 & 0,54 / 0,54 / 0,145~A & 0,32 / 0,38 / 0,14~A \\
 $P$ del Darlington en corto & 11,2~W & 7,3 / 8,6~W \\
@@ -456,8 +456,8 @@ El circuito se armó también en Proteus (archivo \path{simulacion/proteus/lab3f
 \toprule
  & 2~A & 3~A & 5~A \\
 \midrule
-$I_{rms}$ por mitad / nominal & 2,7 / 2~A (135~\%) & 2,7 / 3~A (90~\%) & 2,7 / 5~A (54~\%) \\
-Pérdidas en el cobre / nominales & 1,8 veces & 0,8 veces & 0,3 veces \\
+$I_{rms}$ por mitad (simulada) / nominal & 2,3 / 2~A (114~\%) & 2,3 / 3~A (76~\%) & 2,3 / 5~A (46~\%) \\
+Pérdidas en el cobre / nominales & 1,3 veces & 0,58 veces & 0,21 veces \\
 Salida con $R_L$ y red $-10$~\% (Proteus) & no regula & 14,6~V & regula \\
 Resultado & descartado & sin margen & \textbf{elegido} \\
 \bottomrule
@@ -599,7 +599,7 @@ Sin poder cambiar el LM317 ni el LM337, la ampliación de corriente de la Fig.~3
 La protección no podía ir en el transistor de la ampliación, porque el LM317 en corto intentaría entregar su máximo a través del sensor. Por eso se colocó un limitador antes del regulador, que acota la corriente total del riel. A 1,5~A, un límite constante haría disipar unos 45~W al transistor de paso durante un corto; con el foldback (Fig.~3-27) la corriente baja a 0,3--0,9~A y la disipación a menos de 16~W, que un disipador de 2~°C/W soporta indefinidamente. El punto delicado del foldback es no trabar la fuente con la carga de prueba; con $k'=0{,}027$ se verificó en ngspice y en Proteus que arranca y se recupera con $R_L$ en los tres valores de red.
 
 \subsection{Sobre los ajustes de la versión 2.1}
-La simulación en Proteus, con modelos distintos de los de ngspice, mostró que el diseño estaba en el límite en dos puntos, y se corrigieron antes de fabricar. El transformador pasó de 3 a 5~A porque, con la red baja y 1,6~A, la resistencia del devanado del de 3~A dejaba al LM317 sin tensión (14,6~V); el de 5~A además trabaja al 54~\% de su corriente, con un tercio de las pérdidas, y el de 2~A queda descartado al 135~\%. $R_5$ y $R_{13}$ pasaron de 270 a \SI{330}{\ohm} porque con el sensor real (que conduce cerca de 0,8~V) el foldback era débil: el corto con la red baja llegaba a 1,26~A y $\approx$23~W. Con \SI{330}{\ohm} el corto queda en 0,3--0,9~A según la red y la fuente sigue arrancando y recuperándose con $R_L$ puesta. Como el margen contra el bloqueo depende del $V_{BE}$ real del sensor, la prueba P8 (arranque con $R_L$) es obligatoria en el montaje.
+La simulación en Proteus, con modelos distintos de los de ngspice, mostró que el diseño estaba en el límite en dos puntos, y se corrigieron antes de fabricar. El transformador pasó de 3 a 5~A porque, con la red baja y 1,6~A, la resistencia del devanado del de 3~A dejaba al LM317 sin tensión (14,6~V); el de 5~A además trabaja al 46~\% de su corriente, con una quinta parte de sus pérdidas nominales, y el de 2~A queda descartado al 114~\%. $R_5$ y $R_{13}$ pasaron de 270 a \SI{330}{\ohm} porque con el sensor real (que conduce cerca de 0,8~V) el foldback era débil: el corto con la red baja llegaba a 1,26~A y $\approx$23~W. Con \SI{330}{\ohm} el corto queda en 0,3--0,9~A según la red y la fuente sigue arrancando y recuperándose con $R_L$ puesta. Como el margen contra el bloqueo depende del $V_{BE}$ real del sensor, la prueba P8 (arranque con $R_L$) es obligatoria en el montaje.
 
 \subsection{Limitaciones y trabajo pendiente}
 Hay tres limitaciones:

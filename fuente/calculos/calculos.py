@@ -33,10 +33,12 @@ out('Vp linea -10 %', Vp(0.9*VS), 'V')
 out('Vp linea +10 % y vacio (+10 %)', Vp(1.1*1.1*VS), 'V')
 out('PIV por diodo (2 Vp max)', 2*(Vp(1.21*VS)+VD), 'V')
 # corriente eficaz de cada mitad del secundario: un riel a 1,6 A y el otro con los PID (0,27 A)
-k_rms = 1.6        # Irms(mitad) ~ 1.6 Idc por riel (filtro capacitivo, onda completa con toma central)
-Irms_half = math.hypot(k_rms*IP/math.sqrt(2), k_rms*(0.2+I_int_n)/math.sqrt(2))*math.sqrt(2)
+k_rms = 1.8        # Irms de los diodos de un riel ~ 1.6-1.8 Idc (filtro capacitivo); 1.8 = 3.0 A / 1.67 A de la forma de onda
+# cada mitad del devanado lleva la mitad de los pulsos de cada riel -> factor 1/sqrt(2)
+Irms_half = k_rms/math.sqrt(2)*math.hypot(IP, 0.2+I_int_n)
 out('I rms por mitad del secundario (aprox.)', Irms_half, 'A')
-for In in (2, 3, 5): out(f'I rms / I nominal transformador {In} A', 100*Irms_half/In, '%'); out(f'perdidas cobre relativas {In} A', (Irms_half/In)**2, 'x')
+Irms_sim = 2.28   # simulación ngspice (un riel con RL, el otro con los PID)
+for In in (2, 3, 5): out(f'I rms (sim) / I nominal transformador {In} A', 100*Irms_sim/In, '%'); out(f'perdidas cobre relativas {In} A', (Irms_sim/In)**2, 'x')
 
 # ---------------- 3. Filtros ----------------
 CP, CN = 15000e-6, 2*6800e-6

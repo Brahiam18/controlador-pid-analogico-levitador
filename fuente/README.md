@@ -16,7 +16,7 @@ Fuente de alimentación lineal regulada diseñada para los 4 controladores PID a
 ## Diseño (versión 2.1)
 | Bloque | Solución |
 |---|---|
-| Transformador | **18-0-18 V / 5 A**, primario 120 V, toma central a GND. El de 3 A no regula con la red baja; el de 2 A trabajaría al 135 % de su corriente |
+| Transformador | **18-0-18 V / 5 A**, primario 120 V, toma central a GND. El de 3 A no regula con la red baja; el de 2 A trabajaría al ≈ 115 % de su corriente (2,3 A rms por mitad) |
 | Rectificador | Puente D1–D4 1N5408, onda completa (120 Hz) para los dos rieles |
 | Filtro | C1 = 15 000 µF (+) y C2A ‖ C2B = 2 × 6800 µF (−), 50 V, reutilizados |
 | Limitador | R_SC = 0,27 Ω / 5 W, Darlington TIP42C + BD140 (TIP41C + BD139 en −16 V), sensor BC557 (BC547) y divisor de foldback **R5 = R13 = 330 Ω**, R6 = R14 = 12 kΩ |
