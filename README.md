@@ -72,9 +72,36 @@ En [`hardware/pcb/`](hardware/pcb/) hay una placa de una sola cara (170.2 × 116
 
 ![Placa de 2 PID](hardware/pcb/img/ensamble.png)
 
+## Etapa de potencia (convertidor tensión-corriente)
+
+La salida del PID (`V_PID`, 1 V a 3 V) no mueve la bobina directamente: pasa por un **convertidor tensión-corriente** con un amplificador operacional (U8) y un transistor Darlington TIP122, de modo que la bobina recibe una **corriente proporcional a `V_PID`** y no depende de su resistencia ni de la fuente (mientras el transistor no se sature). Es lo que se necesita en un levitador: la fuerza magnética depende de la corriente.
+
+![Etapa de potencia en Proteus](informe/figuras/proteus_etapa_potencia.png)
+
+**Cómo funciona.**
+
+1. `V_PID` llega a la entrada no inversora de U8 por `R17` (10 kΩ), el potenciómetro de calibración `POT4` (10 kΩ) y `R16` (270 Ω); `POT4` fija cuántos amperios se obtienen por voltio de `V_PID`.
+2. U8 maneja la base del TIP122 a través de `R_BASE` (270 Ω) y del diodo `D2` (1N4148).
+3. La corriente de la bobina pasa por el TIP122 y por el **banco de sensado** (3 × 1 Ω / 5 W en paralelo = 0.33 Ω), cuya caída `V_ISENSE = 0.33 V/A · I` vuelve a la entrada inversora de U8 por `R18` (1 kΩ).
+4. U8 corrige la base hasta que `V_ISENSE` iguala la tensión de su entrada no inversora; por eso `I ≈ V₊ / R_sense`, es decir, **la corriente sigue a `V_PID`**.
+5. `D1` (1N5408) en antiparalelo con la bobina absorbe la tensión inducida cuando se corta la corriente. `C3` (10 nF, opcional) compensa el lazo de U8 si oscila.
+
+| Elemento | Valor | Función |
+|---|---|---|
+| `R17` | 10 kΩ | entrada del convertidor desde `V_PID` |
+| `POT4` | 10 kΩ | calibración (A por voltio de `V_PID`) |
+| `R16` | 270 Ω | protección de la entrada no inversora de U8 |
+| `R18` | 1 kΩ | realimentación de `V_ISENSE` a la entrada inversora |
+| `R_BASE` | 270 Ω | limita la corriente de base del TIP122 |
+| `R_sense` | 3 × 1 Ω / 5 W (0.33 Ω) | sensado de la corriente de la bobina |
+| `D1` / `D2` | 1N5408 / 1N4148 | protección de la bobina / protección de la base |
+| TIP122 | Darlington NPN | elemento de paso (≈ 4.7 W con 1 A: lleva disipador de ≤ 10 °C/W y tab aislado) |
+
+**Simulación (Proteus).** El archivo [`simulacion/proteus/EtapaPID1.pdsprj`](simulacion/proteus/EtapaPID1.pdsprj) contiene el PID completo con esta etapa. La captura muestra una **variante de simulación** para comprobar el principio: LM741 como U8, resistencia de sensado de 1 Ω / 10 W, bobina de 6 Ω y fuente de 24 V. Con `V₊ = 3.015 V` la corriente por el TIP122 es de **3.014 A**, igual a `V₊ / 1 Ω`: el convertidor entrega la corriente que se le pide. En el montaje real el sensado es de 0.33 Ω, la bobina ronda los 4 Ω y la corriente de trabajo es de unos 1 A, alimentada desde módulos reductores (ver [`docs/estado_del_proyecto.md`](docs/estado_del_proyecto.md)).
+
 ## Simulación en Proteus
 
-Cada etapa se simuló y midió con voltímetros virtuales antes del montaje. El esquemático completo está en [`informe/figuras/proteus_circuito_completo.png`](informe/figuras/proteus_circuito_completo.png) y el esquemático hecho a mano en [`informe/figuras/circuito_manuscrito.jpeg`](informe/figuras/circuito_manuscrito.jpeg).
+Cada etapa se simuló y midió con voltímetros virtuales antes del montaje. El proyecto de Proteus se encuentra en [`simulacion/proteus/`](simulacion/proteus/) (`EtapaPID1.pdsprj`). El esquemático completo está en [`informe/figuras/proteus_circuito_completo.png`](informe/figuras/proteus_circuito_completo.png) y el esquemático hecho a mano en [`informe/figuras/circuito_manuscrito.jpeg`](informe/figuras/circuito_manuscrito.jpeg).
 
 ![Esquemático en Proteus](informe/figuras/proteus_circuito_completo.png)
 
@@ -114,14 +141,19 @@ Voltaje teórico vs. práctico por etapa, para error mínimo, medio y máximo (`
 ├── informe/
 │   ├── informe_pid_analogico.tex        # código fuente del informe (IEEEtran)
 │   ├── Informe_PID_Analogico_Levitador.pdf
-│   └── figuras/                         # esquemáticos, cálculos a mano y diagrama de bloques
+│   └── figuras/                         # esquemáticos (incl. Proteus de la etapa de potencia), cálculos a mano y diagrama de bloques
 │       └── pruebas/                     # fotografías del montaje y de las mediciones
 ├── docs/
 │   ├── nomenclatura.md                  # nomenclatura vigente y equivalencias con la versión anterior
 │   └── errata-y-pendientes.md           # inconsistencias detectadas en el informe y tareas abiertas
 ├── hardware/
 │   ├── lista_de_materiales.md
-│   └── lista_de_materiales.csv
+│   ├── lista_de_materiales.csv
+│   └── pcb/                             # placa de 2 PID: .sch/.brd (Fusion/EAGLE), PDF de cobre y ensamble, generador
+├── simulacion/
+│   └── proteus/                         # proyecto de Proteus (PID + etapa de potencia)
+├── pruebas/
+│   └── levitacion/                      # fotos de los 4 PID levitando y Vref por altura (pendiente)
 ├── datos/
 │   └── mediciones_practicas.csv         # teórico vs. práctico, con error absoluto y relativo
 ├── fuente/                              # fuente ±16 V (1,5 A) / +5 V de los 4 PID (informe, esquemáticos, simulación, PCB, pruebas)
@@ -148,7 +180,9 @@ latexmk -pdf informe_pid_analogico.tex
 - [x] Fotografías del montaje
 - [ ] Analizar la desviación de la etapa integral con error mínimo y el valor de la etapa derivativa con error máximo
 - [ ] Capturas de osciloscopio con la escala legible (pruebas con señal senoidal)
-- [ ] Agregar el archivo del proyecto de Proteus
+- [x] Agregar el archivo del proyecto de Proteus
+- [x] Documentar la etapa de potencia (README e informe)
+- [ ] Fotos de los 4 PID con el objeto levitando y `V_ref` por altura ([`pruebas/levitacion/`](pruebas/levitacion/))
 - [ ] Aplicar la [errata](docs/errata-y-pendientes.md) al informe (versión 1.1)
 
 ## Autor

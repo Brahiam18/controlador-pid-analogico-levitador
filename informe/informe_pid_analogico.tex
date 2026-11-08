@@ -154,6 +154,16 @@ Es la salida final del controlador, con rango de operación objetivo entre 1~V y
 \subsection{Generación de \texorpdfstring{$V_{ref}$}{Vref} y \texorpdfstring{$V_{off}$}{Voff}}
 Para evitar fuentes adicionales, $V_{ref}$ y $V_{off}$ se generan desde una única fuente mediante divisores resistivos. Un divisor cargado por la etapa siguiente entrega un voltaje distinto al calculado (efecto de carga); por ello cada divisor se desacopla con un amplificador operacional en configuración de seguidor de voltaje (buffer no inversor, ganancia unitaria), de alta impedancia de entrada y baja impedancia de salida, que preserva el voltaje calculado sin alterarlo.
 
+\subsection{Etapa de potencia (convertidor tensión-corriente)}
+La salida del sumador, $V_{PID}$ (1~V a 3~V), no se aplica directamente a la bobina: la fuerza de atracción depende de la corriente, no de la tensión. Por ello se emplea un convertidor tensión-corriente formado por un amplificador operacional (U8), un transistor Darlington TIP122~\cite{tip122} como elemento de paso y un banco de sensado $R_{sense}$ en el emisor. $V_{PID}$ llega a la entrada no inversora por $R_{17}$, el potenciómetro de calibración $POT_4$ y $R_{16}$; la caída $V_{ISENSE}=R_{sense}\,I$ regresa a la entrada inversora por $R_{18}$. U8 maneja la base a través de $R_{BASE}$ y de un diodo 1N4148, y modifica la corriente de base hasta que $V_{ISENSE}$ iguala la tensión de su entrada no inversora. Así,
+\begin{equation}
+I \approx \frac{V_{+}}{R_{sense}},\qquad V_{+}=k\,V_{PID},
+\label{eq:potencia}
+\end{equation}
+donde $k$ se ajusta con $POT_4$; la corriente sigue a $V_{PID}$ y es independiente de la resistencia de la bobina mientras el transistor no se sature. Un diodo 1N5408 en antiparalelo con la bobina absorbe la tensión inducida al reducirse la corriente, y un capacitor opcional de 10~nF compensa el lazo de U8 si oscila.
+
+Valores del montaje: $R_{17}=10\,\text{k}\Omega$, $POT_4=10\,\text{k}\Omega$, $R_{16}=270\,\Omega$, $R_{18}=1\,\text{k}\Omega$, $R_{BASE}=270\,\Omega$ y $R_{sense}=3\times1\,\Omega\parallel=0.33\,\Omega$ (5~W cada una), de modo que $V_{ISENSE}=0.33\,\text{V/A}$. Con 1~A, el TIP122 disipa aproximadamente 4.7~W y requiere disipador.
+
 % =========================================================
 \section{Cálculos de Diseño}
 % =========================================================
@@ -398,6 +408,8 @@ Se verificó experimentalmente que los divisores resistivos diseñados para $V_{
 \IMG{\includegraphics[width=0.9\linewidth]{proteus_buffer_voff.png}}{Esquemático en Proteus del controlador PID completo.}
 
 \IMG{\includegraphics[width=0.9\linewidth]{proteus_buffer_vref.png}}{Esquemático en Proteus del controlador PID completo.}
+
+\IMG{\includegraphics[width=1\linewidth]{proteus_etapa_potencia.png}}{Etapa de potencia en Proteus (variante de simulación: LM741, sensado de $1\,\Omega$, bobina de $6\,\Omega$, fuente de 24~V): con $V_{+}=3.015$~V la corriente por el TIP122 es de 3.014~A.}
 
 \IMG{\includegraphics[width=0.9\linewidth]{diagrama_de_bloques.jpeg}}{Esquemático diagrama de bloques.}
 
