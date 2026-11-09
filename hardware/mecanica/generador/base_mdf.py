@@ -176,10 +176,10 @@ def page2_elevacion():
     for x in (-SENS_XY, SENS_XY):
         p.rect(X(x) - 2, yp1 + COIL_H, 4, 1.6, fc="#111", lw=0.5)
     ymr = yp1 + PED_H_ABOVE_PLATE
-    p.rect(X(-10), ymr, 20, 4.2, fc="#c0392b", lw=1.0)
-    p.rect(X(-10), yp1 + COIL_H + WORK, 20, 4.2, fc="none", ec="#c0392b", lw=1.2, ls="--")
-    p.text(X(14), ymr + 2.1, "imán en reposo (sobre el pedestal)", size=7, color="#c0392b")
-    p.text(X(14), yp1 + COIL_H + WORK + 2.1, "imán en trabajo", size=7, color="#c0392b")
+    p.rect(X(-12.7), ymr, 25.4, 2.1, fc="#c0392b", lw=1.0)
+    p.rect(X(-12.7), yp1 + COIL_H + WORK, 25.4, 2.1, fc="none", ec="#c0392b", lw=1.2, ls="--")
+    p.text(X(16), ymr + 1, "imán en reposo (sobre el pedestal)", size=7, color="#c0392b")
+    p.text(X(16), yp1 + COIL_H + WORK + 1, "imán en trabajo", size=7, color="#c0392b")
     # cotas
     xr = X(PL / 2) + 22
     p.dim(X(PL / 2) + 5, yp0, X(PL / 2) + 5, yp1, 6, "15")
@@ -238,7 +238,7 @@ def page4_lista():
     for t in ["Configuracion: repulsion, 4 bobinas abajo con nucleo de hierro, imán de neodimio arriba.",
               "Carrete: pestañas Ø36 x 3 mm, devanado Ø33 x 23 mm (29 mm de largo total), agujero Ø6, 4 Ω.",
               "Nucleo: varilla de hierro o acero comun Ø6 x 45 mm, centrada (8 mm sobre y 8 mm bajo las pestañas). No usar acero inoxidable 304.",
-              "Imán: neodimio N42, disco Ø20 x 4,2 mm (~10 g) (supuesto; confirmar).",
+              "Imán: neodimio, disco Ø25,4 x ~2,1 mm, 7,94 g (medido con calibrador y balanza).",
               "Altura de trabajo: 25 a 30 mm sobre la pestaña; corriente por bobina de ~0,7 A en trabajo (una bobina sobre el eje; 4 bobinas: estimar 1 a 1,5 A).",
               "Pedestal: reposo a 25 mm sobre la pestaña; el imán se despega con ~0,7 a 0,9 A."]: ln(t)
     y -= 3; sec("Lista de piezas")

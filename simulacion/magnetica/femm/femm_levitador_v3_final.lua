@@ -9,9 +9,9 @@ N     = 652            -- espiras
 Rc    = 3              -- nucleo Ø6
 zc0,zc1 = -11,34       -- nucleo de 45 mm: 8 mm sobre la pestaña superior y 8 mm bajo la inferior
 mur   = 1000           -- permeabilidad relativa (200 a 1500 da casi lo mismo)
-Rm,Lm = 10,4.2         -- iman N42 Ø20 x 4,2 mm
-Br    = 1.31
-peso_gf = 9.9          -- peso del iman en gf
+Rm,Lm = 12.7,2.1       -- iman Ø25,4 x 2,1 mm (medido)
+Br    = 1.31           -- T (supuesto N42)
+peso_gf = 7.94         -- peso del iman en gf (medido: 7,9375 g)
 newdocument(0)
 mi_probdef(0,"millimeters","axi",1e-8,0,20)
 mi_addmaterial("Aire",1,1,0,0,0,0,0,1,0,0,0)
