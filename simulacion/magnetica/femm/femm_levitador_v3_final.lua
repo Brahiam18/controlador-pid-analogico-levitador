@@ -21,9 +21,8 @@ mi_addmaterial("N42",1.05,1.05,(Br/(4e-7*pi*1.05)),0,0,0,0,1,0,0,0)
 mi_addcircprop("Bobina",1,1)
 -- GEOMETRIA: todos los segmentos se parten en los mismos puntos de corte para que no se superpongan
 z0=H+fl+gap
-ztop=z0+Lm+150
-rb={0,Rc,Rm,Ro,150}
-zb={-150,zc0,0,H,zc1,z0,z0+Lm,ztop}
+rb={0,Rc,Rm,Ro}
+zb={zc0,0,H,zc1,z0,z0+Lm}
 visto={}
 function seg(x1,y1,x2,y2)
   local k=format("%g_%g_%g_%g",x1,y1,x2,y2)
@@ -44,8 +43,6 @@ function hlinea(y,xa,xb)
     if rb[i]>=xa and rb[i+1]<=xb then seg(rb[i],y,rb[i+1],y) end
   end
 end
--- caja de aire y eje
-vlinea(0,-150,ztop); vlinea(150,-150,ztop); hlinea(-150,0,150); hlinea(ztop,0,150)
 -- nucleo
 vlinea(Rc,zc0,zc1); hlinea(zc0,0,Rc); hlinea(zc1,0,Rc)
 -- devanado
@@ -59,9 +56,9 @@ mi_addblocklabel(Rc/2,(zc0+zc1)/2); mi_selectlabel(Rc/2,(zc0+zc1)/2)
 mi_setblockprop("Hierro",1,0,"<None>",0,3,0); mi_clearselected()
 mi_addblocklabel(Rm/2,z0+Lm/2); mi_selectlabel(Rm/2,z0+Lm/2)
 mi_setblockprop("N42",1,0,"<None>",-90,2,0); mi_clearselected()
-mi_addblocklabel(100,100); mi_selectlabel(100,100)
+mi_addblocklabel(60,40); mi_selectlabel(60,40)
 mi_setblockprop("Aire",1,0,"<None>",0,0,0); mi_clearselected()
-mi_makeABC(7,150,0,0,0)
+mi_makeABC(7,150,0,20,0)   -- frontera abierta: semiesfera de 150 mm centrada en z = 20 mm
 mi_saveas("levitador_nucleo_final.fem")
 function fuerza(I)
   mi_modifycircprop("Bobina",1,I)
