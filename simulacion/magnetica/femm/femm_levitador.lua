@@ -9,7 +9,7 @@ newdocument(0)
 mi_probdef(0,"millimeters","axi",1e-8,0,30)
 mi_addmaterial("Aire",1,1,0,0,0,0,0,1,0,0,0)
 mi_addmaterial("Cobre",1,1,0,0,58,0,0,1,0,0,0)
-mi_addmaterial("N42",1.05,1.05,(Br/(4e-7*math.pi*1.05)),0,0,0,0,1,0,0,0)  -- Hc [A/m]
+mi_addmaterial("N42",1.05,1.05,(Br/(4e-7*pi*1.05)),0,0,0,0,1,0,0,0)  -- Hc [A/m]
 mi_addcircprop("Bobina",I,1)
 -- bobina
 mi_drawrectangle(Ri,0,Ro,H)
