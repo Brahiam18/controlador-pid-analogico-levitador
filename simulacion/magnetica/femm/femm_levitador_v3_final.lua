@@ -19,21 +19,46 @@ mi_addmaterial("Cobre",1,1,0,0,58,0,0,1,0,0,0)
 mi_addmaterial("Hierro",mur,mur,0,0,0,0,0,1,0,0,0)
 mi_addmaterial("N42",1.05,1.05,(Br/(4e-7*pi*1.05)),0,0,0,0,1,0,0,0)
 mi_addcircprop("Bobina",1,1)
--- devanado
-mi_drawrectangle(Ri,0,Ro,H)
-mi_addblocklabel((Ri+Ro)/2,H/2); mi_selectlabel((Ri+Ro)/2,H/2)
-mi_setblockprop("Cobre",1,0,"Bobina",0,1,N); mi_clearselected()
+-- GEOMETRIA: todos los segmentos se parten en los mismos puntos de corte para que no se superpongan
+z0=H+fl+gap
+ztop=z0+Lm+150
+rb={0,Rc,Rm,Ro,150}
+zb={-150,zc0,0,H,zc1,z0,z0+Lm,ztop}
+visto={}
+function seg(x1,y1,x2,y2)
+  local k=format("%g_%g_%g_%g",x1,y1,x2,y2)
+  if visto[k]==nil then
+    visto[k]=1
+    mi_addsegment(x1,y1,x2,y2)
+  end
+end
+function vlinea(x,ya,yb)
+  local i
+  for i=1,getn(zb)-1 do
+    if zb[i]>=ya and zb[i+1]<=yb then seg(x,zb[i],x,zb[i+1]) end
+  end
+end
+function hlinea(y,xa,xb)
+  local i
+  for i=1,getn(rb)-1 do
+    if rb[i]>=xa and rb[i+1]<=xb then seg(rb[i],y,rb[i+1],y) end
+  end
+end
+-- caja de aire y eje
+vlinea(0,-150,ztop); vlinea(150,-150,ztop); hlinea(-150,0,150); hlinea(ztop,0,150)
 -- nucleo
-mi_drawrectangle(0,zc0,Rc,zc1)
+vlinea(Rc,zc0,zc1); hlinea(zc0,0,Rc); hlinea(zc1,0,Rc)
+-- devanado
+vlinea(Ro,0,H); hlinea(0,Rc,Ro); hlinea(H,Rc,Ro)
+-- iman
+vlinea(Rm,z0,z0+Lm); hlinea(z0,0,Rm); hlinea(z0+Lm,0,Rm)
+-- etiquetas de material
+mi_addblocklabel((Rc+Ro)/2,H/2); mi_selectlabel((Rc+Ro)/2,H/2)
+mi_setblockprop("Cobre",1,0,"Bobina",0,1,N); mi_clearselected()
 mi_addblocklabel(Rc/2,(zc0+zc1)/2); mi_selectlabel(Rc/2,(zc0+zc1)/2)
 mi_setblockprop("Hierro",1,0,"<None>",0,3,0); mi_clearselected()
--- iman (magnetizado hacia -z: repulsion cuando I > 0)
-z0=H+fl+gap
-mi_drawrectangle(0,z0,Rm,z0+Lm)
 mi_addblocklabel(Rm/2,z0+Lm/2); mi_selectlabel(Rm/2,z0+Lm/2)
 mi_setblockprop("N42",1,0,"<None>",-90,2,0); mi_clearselected()
--- aire y frontera abierta
-mi_drawrectangle(0,-150,150,z0+Lm+150)
 mi_addblocklabel(100,100); mi_selectlabel(100,100)
 mi_setblockprop("Aire",1,0,"<None>",0,0,0); mi_clearselected()
 mi_makeABC(7,150,0,0,0)
