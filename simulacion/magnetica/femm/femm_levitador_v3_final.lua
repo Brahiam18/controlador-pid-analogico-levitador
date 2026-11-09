@@ -79,8 +79,8 @@ function fuerza(I)
   mo_groupselectblock(2)
   local f=mo_blockintegral(19)      -- fuerza z en N
   mo_clearblock()
-  local v={mo_getpointvalues(0,z0+Lm/2)}
-  print("I="..I.." A  |  Bz en el centro del iman = "..v[3].." T  |  fuerza = "..f.." N")
+  local va,vb1,vb2=mo_getpointvalues(1,z0+Lm/2)
+  print("I="..tostring(I).." A  |  Bz en el centro del iman = "..tostring(vb2).." T  |  fuerza = "..tostring(f).." N")
   return f/9.81*1000                -- gf
 end
 F0=fuerza(0); F1=fuerza(1)-F0
