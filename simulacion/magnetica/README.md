@@ -1,6 +1,6 @@
 # Simulación magnética del levitador
 
-Fuerza sobre el imán (N42 Ø20×4,2 mm, ≈10 g) en repulsión con bobinas debajo: 652 espiras, devanado Ø33×23 mm, pestañas Ø36×3 mm, núcleo de hierro Ø6×45 mm centrado.
+Fuerza sobre el imán (neodimio Ø25,4×2,1 mm, 7,94 g, medidos; Br supuesto 1,31 T de un N42) en repulsión con bobinas debajo: 652 espiras, devanado Ø33×23 mm, pestañas Ø36×3 mm, núcleo de hierro Ø6×45 mm centrado.
 
 **Aviso:** las gráficas NO son de FEMM. Se calcularon con solvers propios en Python (FEMM no corre en el entorno donde se hicieron). Los scripts `femm/*.lua` permiten repetir el caso en FEMM y comparar.
 
@@ -33,3 +33,16 @@ Las 4 bobinas (centros en ±18,5 ; ±18,5 mm), cada una con núcleo Ø6×45 mm, 
 | 35 mm | 12,4 / 11,6 | 0,85 / 0,91 |
 
 Lectura: con 4 bobinas fuera del eje del imán, la corriente necesaria a 30 mm es ≈0,9–1,0 A por bobina, no los 0,75 A del caso de una sola bobina sobre el eje. A 20 mm la fuerza útil casi desaparece y el resultado depende de la malla; no se debe usar esa altura. La malla fina baja F1 un 6–8 %, y en la validación con una bobina el solver 3D sobreestimó F1 ≈14 % respecto al 2D, así que la incertidumbre es de unos ±15 % y la corriente real podría ser algo mayor (≈1,0–1,1 A a 30 mm). Esto confirma que conviene alimentar con 12 V o más y verificar la corriente de despegue en el montaje real.
+
+## Actualización: imán real medido (Ø25,4 × ~2,1 mm, 7,94 g)
+
+Los resultados de arriba usan el imán supuesto (Ø20×4,2 mm, ≈10 g). Se midió el imán real con calibrador y balanza (Ø25,4 mm, ≈2 mm de grosor, 7,9375 g) y se repitió la simulación 3D (`scripts/run_4bobinas_3d_iman25.py`, datos en `scripts/res4coil_iman25.json`). El Br sigue siendo un supuesto (N42, 1,31 T): si el imán fuera de otro grado, la corriente cambia en proporción inversa.
+
+| Altura sobre la pestaña | F1 (gf/A) malla gruesa / fina | I eq por bobina (A) |
+|---|---|---|
+| 20 mm | 0,4 / 0,8 | no converge: casi no hay fuerza útil |
+| 25 mm | 10,1 / 9,1 | 0,86 / 0,95 |
+| 30 mm | 12,9 / 11,5 | 0,67 / 0,75 |
+| 35 mm | 12,9 / 11,4 | 0,66 / 0,75 |
+
+Con el imán real, cada bobina necesita ≈0,7–0,9 A a 30 mm (incertidumbre ≈±15 %). La corriente es parecida a la del imán supuesto porque la fuerza y el peso escalan con el volumen del imán. A 20 mm sigue sin ser utilizable.
