@@ -63,16 +63,21 @@ mi_saveas("levitador_nucleo_final.fem")
 function fuerza(I)
   mi_modifycircprop("Bobina",1,I)
   mi_analyze(1); mi_loadsolution()
+  mo_clearblock()
   mo_groupselectblock(2)
   local f=mo_blockintegral(19)      -- fuerza z en N
   mo_clearblock()
+  local v={mo_getpointvalues(0,z0+Lm/2)}
+  print("I="..I.." A  |  Bz en el centro del iman = "..v[3].." T  |  fuerza = "..f.." N")
   return f/9.81*1000                -- gf
 end
 F0=fuerza(0); F1=fuerza(1)-F0
 Ieq=(peso_gf-F0)/F1
-mo_showdensityplot(0,0,0.4,0,"bmag")
+mo_showdensityplot(1,0,0.4,0,"bmag")
+mo_zoom(0,-30,90,100)
+mo_savebitmap("mapa_B_I1A.bmp")
 showconsole()
-print("Altura "..gap.." mm sobre la pestaña")
+print("Altura "..gap.." mm sobre la pestana")
 print("F con I=0: "..F0.." gf  (negativa = el nucleo atrae al iman)")
 print("F1: "..F1.." gf por amperio")
 print("Corriente de equilibrio: "..Ieq.." A")
