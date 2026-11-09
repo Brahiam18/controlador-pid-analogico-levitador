@@ -13,7 +13,7 @@ Rm,Lm = 10,4.2         -- iman N42 Ø20 x 4,2 mm
 Br    = 1.31
 peso_gf = 9.9          -- peso del iman en gf
 newdocument(0)
-mi_probdef(0,"millimeters","axi",1e-8,0,30)
+mi_probdef(0,"millimeters","axi",1e-8,0,20)
 mi_addmaterial("Aire",1,1,0,0,0,0,0,1,0,0,0)
 mi_addmaterial("Cobre",1,1,0,0,58,0,0,1,0,0,0)
 mi_addmaterial("Hierro",mur,mur,0,0,0,0,0,1,0,0,0)
@@ -54,13 +54,13 @@ vlinea(Ro,0,H); hlinea(0,Rc,Ro); hlinea(H,Rc,Ro)
 vlinea(Rm,z0,z0+Lm); hlinea(z0,0,Rm); hlinea(z0+Lm,0,Rm)
 -- etiquetas de material
 mi_addblocklabel((Rc+Ro)/2,H/2); mi_selectlabel((Rc+Ro)/2,H/2)
-mi_setblockprop("Cobre",1,0,"Bobina",0,1,N); mi_clearselected()
+mi_setblockprop("Cobre",0,2,"Bobina",0,1,N); mi_clearselected()
 mi_addblocklabel(Rc/2,(zc0+zc1)/2); mi_selectlabel(Rc/2,(zc0+zc1)/2)
-mi_setblockprop("Hierro",1,0,"<None>",0,3,0); mi_clearselected()
+mi_setblockprop("Hierro",0,1,"<None>",0,3,0); mi_clearselected()
 mi_addblocklabel(Rm/2,z0+Lm/2); mi_selectlabel(Rm/2,z0+Lm/2)
-mi_setblockprop("N42",1,0,"<None>",-90,2,0); mi_clearselected()
+mi_setblockprop("N42",0,1.5,"<None>",-90,2,0); mi_clearselected()
 mi_addblocklabel(60,40); mi_selectlabel(60,40)
-mi_setblockprop("Aire",1,0,"<None>",0,0,0); mi_clearselected()
+mi_setblockprop("Aire",0,12,"<None>",0,0,0); mi_clearselected()
 mi_addboundprop("Dir",0,0,0,0,0,0,0,0,0)
 for i=1,getn(zb)-1 do
   mi_selectsegment(150,(zb[i]+zb[i+1])/2)
