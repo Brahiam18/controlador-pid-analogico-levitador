@@ -19,7 +19,9 @@ Piezas para imprimir (STL en mm, generadas por `../generador/base_3d.py`):
   El sensor queda unos 2 mm más alto que si se pegara directo al núcleo: el Vref se calibra con el montaje armado.
 - Cables de los sensores (4 × 3 hilos): bajan por el hueco central, siguen por un canal inferior de 12 × 5 mm y salen por una ventana
   de 24 × 6 mm al frente del soporte (con ventana igual en la tapa), donde se conecta un cabezal de 12 pines (2 × 6, paso 2,54 mm).
-- Fijación del soporte al tablero: 4 tornillos M4 en (±52, ±45), con avellanado.
+  Del cabezal, el cable plano sale por dos surcos de 7 mm (uno a cada lado, como los de los cables de las bobinas) y rodea las bobinas.
+  El canal inferior llega hasta el borde frontal del soporte: sirve de salida oculta, bajo la placa, si se prefiere no usar el cabezal.
+- Fijación del soporte al tablero: 4 tornillos M4 en (±52, ±32), con avellanado.
 - Fijación de la tapa: 4 tornillos M3 en los postes (±52, 0) y (0, ±52); piloto Ø2,6 para autorroscar.
 - Fijación de cada bandeja: 4 tornillos M4 en (±50, ±40), con avellanado; la baqueta se atornilla a los soportes con M3 (perforar la baqueta en las esquinas).
 

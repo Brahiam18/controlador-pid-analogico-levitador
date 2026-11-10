@@ -73,17 +73,20 @@ def soporte():
         cortes.append(box(min(cx, x1), max(cx, x1), cy - 4, cy + 4, PISO, PLACA + 1))
     # hueco central (cables / sin interferencia)
     cortes.append(cyl(0, 0, -1, PLACA + 1, 14.0))
-    # tornillos M4 de fijación (con avellanado) en (+-52, +-45)
+    # tornillos M4 de fijación (con avellanado) en (+-52, +-32)
     for sx in (-1, 1):
         for sy in (-1, 1):
-            cortes.append(cyl(sx * 52, sy * 45, -1, PLACA + 1, 4.5))
-            cortes.append(cyl(sx * 52, sy * 45, PLACA - 3.0, PLACA + 1, 8.5))
+            cortes.append(cyl(sx * 52, sy * 32, -1, PLACA + 1, 4.5))
+            cortes.append(cyl(sx * 52, sy * 32, PLACA - 3.0, PLACA + 1, 8.5))
     # agujero piloto M3 (autorroscante) en cada poste
     for px, py in POSTES:
         cortes.append(cyl(px, py, Z_TOP - 12, Z_TOP + 1, 2.6))
     # cables de los sensores: bajan por el hueco central, van por un canal
     # inferior (12 x 5 mm) hasta una ventana frontal 24 x 6 mm donde se conecta el cabezal de 12 pines
-    cortes.append(box(-6, 6, VENT_Y - 2.5, 0, -1, 5.0))
+    cortes.append(box(-6, 6, -H - 1, 0, -1, 5.0))     # canal inferior: llega hasta el borde frontal (salida oculta)
+    # surcos del cable plano (a las baquetas), como los de los cables de las bobinas
+    for sg in (-1, 1):
+        cortes.append(box(min(sg * 11, sg * (H + 1)), max(sg * 11, sg * (H + 1)), VENT_Y - 3.5, VENT_Y + 3.5, PISO, PLACA + 1))
     cortes.append(box(-12, 12, VENT_Y - 3, VENT_Y + 3, -1, PLACA + 1))
     return diff(base, cortes)
 
