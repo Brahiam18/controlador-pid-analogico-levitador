@@ -5,6 +5,7 @@ Piezas (medidas en mm, origen en el centro de cada pieza, z hacia arriba):
   soporte_bobinas.stl  plantilla con 4 alojamientos para las bobinas + 4 postes
   tapa_bobinas.stl     tapa de 2,5 mm que sujeta las bobinas (se atornilla a los postes)
   bandeja_baqueta.stl  bandeja para una baqueta de 200x150 (imprimir 2)
+  capuchon_sensor.stl  capuchón aislante para la punta del núcleo con asiento del sensor Hall (imprimir 4)
 
 Uso:  python3 base_3d.py [carpeta_de_salida]
 Requiere: trimesh, manifold3d
@@ -29,6 +30,7 @@ H      = LADO / 2
 POST_X = 52.0     # postes en (+-52,0) y (0,+-52)
 Z_TOP  = PISO + H_BOB            # 37: parte alta de las bobinas
 TAPA_E = 2.5
+VENT_Y = -42.0    # centro de la ventana de conexión de sensores
 
 SEC = 96
 
@@ -79,15 +81,30 @@ def soporte():
     # agujero piloto M3 (autorroscante) en cada poste
     for px, py in POSTES:
         cortes.append(cyl(px, py, Z_TOP - 12, Z_TOP + 1, 2.6))
+    # cables de los sensores: bajan por el hueco central, van por un canal
+    # inferior (12 x 5 mm) hasta una ventana frontal 24 x 6 mm donde se conecta el cabezal de 12 pines
+    cortes.append(box(-6, 6, VENT_Y - 2.5, 0, -1, 5.0))
+    cortes.append(box(-12, 12, VENT_Y - 3, VENT_Y + 3, -1, PLACA + 1))
     return diff(base, cortes)
 
 def tapa():
     base = box(-H, H, -H, H, 0, TAPA_E)
     cortes = [cyl(cx, cy, -1, TAPA_E + 1, 32.0) for cx, cy in CENTROS]
     cortes.append(cyl(0, 0, -1, TAPA_E + 1, 14.0))
+    cortes.append(box(-14, 14, VENT_Y - 5, VENT_Y + 5, -1, TAPA_E + 1))   # acceso al conector
     for px, py in POSTES:
         cortes.append(cyl(px, py, -1, TAPA_E + 1, 3.4))
         cortes.append(cyl(px, py, TAPA_E - 1.2, TAPA_E + 1, 6.5))
+    return diff(base, cortes)
+
+def capuchon():
+    """Capuchón Ø12 x 6,5: entra 4,5 mm sobre la punta del núcleo (Ø6) y aísla el sensor.
+    Asiento 3,3 x 4,3 x 1,4 para el cuerpo del SS495A (4,06 x 3,0 x 1,57) y canal de 3,2 mm
+    para los terminales hacia -x (girar el capuchón para que apunte al centro)."""
+    base = cyl(0, 0, 0, 6.5, 12.0)
+    cortes = [cyl(0, 0, -1, 4.5, 6.4),
+              box(-1.65, 1.65, -2.15, 2.15, 5.1, 7.5),
+              box(-7, 0, -1.6, 1.6, 5.5, 7.5)]
     return diff(base, cortes)
 
 def bandeja():
@@ -111,7 +128,7 @@ def bandeja():
 if __name__ == "__main__":
     out = sys.argv[1] if len(sys.argv) > 1 else "."
     os.makedirs(out, exist_ok=True)
-    for nombre, f in (("soporte_bobinas", soporte), ("tapa_bobinas", tapa), ("bandeja_baqueta", bandeja)):
+    for nombre, f in (("soporte_bobinas", soporte), ("tapa_bobinas", tapa), ("bandeja_baqueta", bandeja), ("capuchon_sensor", capuchon)):
         m = f()
         m.export(os.path.join(out, nombre + ".stl"))
         print(f"{nombre}: watertight={m.is_watertight} volumen={m.volume/1000:.1f} cm3 "
