@@ -1,4 +1,4 @@
-# Lista de materiales: fuente ±16 V / 1,5 A y +5 V (versión 2.1)
+# Lista de materiales: fuente ±16 V / 1,5 A y +5 V (versión 2.2)
 
 Valores comerciales comunes en tiendas de electrónica de Colombia. Las referencias coinciden con el esquemático, la placa y el informe. LM317, LM337 y los condensadores de 15000 µF y 6800 µF ya están disponibles; el transformador hay que comprarlo. No se ponen precios porque cambian.
 
@@ -26,7 +26,7 @@ Valores comerciales comunes en tiendas de electrónica de Colombia. Las referenc
 | R4 R12 | Resistencia | 1 kΩ | 1/4 W | 2 | Base-emisor del transistor de paso |  |  |
 | R5 R13 | Resistencia | 330 Ω | 1/4 W 1 % | 2 | Divisor de foldback (k') |  |  |
 | R6 R14 | Resistencia | 12 kΩ | 1/4 W 1 % | 2 | Divisor de foldback (k') |  |  |
-| R7 R15 | Resistencia | 2.7 Ω | 2 W (metal óxido) | 2 | Ampliación de corriente (ec. 3.24) |  |  |
+| R7A R7B R15A R15B | Resistencia | 5.6 Ω | 1 W (metal óxido) | 4 | Ampliación de corriente (ec. 3.24): dos en paralelo por riel = 2.8 Ω | Una de 2.7 Ω / 1 W en R7A (y R15A), dejando R7B y R15B vacías | Disipan ≤ 0.2 W cada una |
 | R8 R16 R20 | Resistencia película metálica | 120 Ω | 1/4 W 1 % | 3 | Red de ajuste (R1 de la monografía) |  |  |
 | R9 R17 | Resistencia película metálica | 1.3 kΩ | 1/4 W 1 % | 2 | Red de ajuste de ±16 V | 1.2 kΩ + 100 Ω en serie |  |
 | R21 | Resistencia película metálica | 330 Ω | 1/4 W 1 % | 1 | Red de ajuste de +5 V |  |  |
@@ -46,7 +46,8 @@ Valores comerciales comunes en tiendas de electrónica de Colombia. Las referenc
 | LED1-LED3 | LED | verde | 5 mm | 3 | Indicadores |  |  |
 | J2A J2B | Bornera de tornillo | 2 vías | paso 5.08 mm, encajadas lado a lado | 2 | Salida: +16 / −16 / GND / +5 |  | Mismo orden que J_PWR de las tarjetas PID |
 | J4 J5 | Bornera de tornillo | 2 vías | paso 5.08 mm | 2 | Conexión removible de la carga de prueba RL |  |  |
-| J3 | Regleta macho | 1x3 | 2.54 mm | 1 | Puntos de prueba V_RAW+ / GND / V_RAW− |  |  |
+| J3 | Regleta macho | 1x3 | 2.54 mm | 1 | Puntos de prueba V_RAW+ / GND / V_RAW− (osciloscopio) |  |  |
+| TP1-TP15 | Punto de prueba | — | pad de 2.6 mm; alambre de cobre en U o pin de regleta soldado | 15 | Medir con el multímetro (ver `pruebas/plan_de_pruebas.md`) | Medir directo sobre el pad | Opcional: un trozo de alambre 22 AWG en U para enganchar el caimán |
 | RL | Resistencia de cemento para la carga de prueba (externa) | 10 Ω | 10 W; 4 unidades en serie-paralelo (2 ramas de 2 en serie) = 10 Ω, 6.4 W cada una | 4 | Comprobar 1.6 A en cada riel | 4 x 39 Ω 10 W en paralelo (9.75 Ω) o una de 10 Ω ≥ 30 W de aluminio | Se conecta en J4 o J5 solo para la prueba; se calienta (separarlas y no tocarlas) |
 | — | Disipador de aluminio aletado | ≤ 2 °C/W | para 3 TO-220 + 1 TO-126 | 2 | Uno por riel (borde superior e inferior) |  | P. ej. perfil de 100 x 60 x 30 mm |
 | — | Kit de aislamiento | mica + buje + tornillo M3 | TO-220 / TO-126 | 8 | Aislar cada pieza del disipador | lámina de silicona | Comprobar aleta-disipador abierto |

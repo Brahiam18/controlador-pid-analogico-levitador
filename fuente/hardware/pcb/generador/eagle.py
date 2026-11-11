@@ -41,6 +41,7 @@ DESC = {'TERM3':'Bornera de tornillo 3 vías, paso 5.08 mm','RES5W':'Resistencia
  'CTANT':'Tántalo de gota, paso 2.54 mm; pad 1 = +','CAP':'Cerámico/poliéster, paso 5.08 mm','RES10':'Resistencia 1/4 W, 10.16 mm',
  'RES1W':'Resistencia 1 W, 15.24 mm','RES2W':'Resistencia 2 W, 20.32 mm','RES3W':'Resistencia 3 W, 25.4 mm',
  'TO220':'TO-220 vertical; aleta hacia la línea gruesa (borde de la placa, disipador)','TO92':'TO-92 en línea, paso 2.54 mm (BC547/BC557: 1 C, 2 B, 3 E)',
+ 'TP':'Punto de prueba: pad de 2,6 mm (alambre en U o pin) para la punta del multímetro',
  'TRIM':'Trimmer multivuelta 3296W, pines en línea 2.54 mm','LED5':'LED 5 mm; pad 1 = ánodo (pata larga)','HDR3':'Regleta 1x3, 2.54 mm'}
 def packages_xml():
     out = '<packages>\n'
@@ -81,6 +82,7 @@ def build_symbols():
         sym_pin('IN', -7.62, 0), sym_pin('OUT', 7.62, 0, 'R180'), sym_pin('ADJ', 0, -5.08, 'R90')]
     S['REG'] = (L, {'IN': (-7.62, 0, 'L'), 'OUT': (7.62, 0, 'R'), 'ADJ': (0, -5.08, 'D')})
     L = rect_lines(-3.81, -1.016, 3.81, 1.016, 0.254, 94)+[wire(0, -2.54, 0, -1.016, 0.254, 94)]+nm+[sym_pin('1', -7.62, 0), sym_pin('3', 7.62, 0, 'R180'), sym_pin('2', 0, -5.08, 'R90')]
+    S['TP'] = ([circ(0, 0, 1.27, 0.254, 94), '<text x="2.0" y="0.6" size="1.778" layer="95">&gt;NAME</text>', '<text x="2.0" y="-2.0" size="1.778" layer="96">&gt;VALUE</text>', sym_pin('1', -5.08, 0)], {'1': (-5.08, 0, 'L')})
     S['POT'] = (L, {'1': (-7.62, 0, 'L'), '3': (7.62, 0, 'R'), '2': (0, -5.08, 'D')})
     for nm_, n in (('HDR2', 2), ('HDR3', 3), ('HDR4', 4)):
         top = 1.27; bot = -(n-1)*2.54-1.27
@@ -107,6 +109,7 @@ DEVSETS = {
  'BC547': single('NPN', 'TO92', 'Q', ['C', 'B', 'E'], ['1', '2', '3']), 'BC557': single('PNP', 'TO92', 'Q', ['C', 'B', 'E'], ['1', '2', '3']),
  'LM317T': single('REG', 'TO220', 'U', ['ADJ', 'OUT', 'IN'], ['1', '2', '3']), 'LM337T': single('REG', 'TO220', 'U', ['ADJ', 'IN', 'OUT'], ['1', '2', '3']),
  'TRIM': single('POT', 'TRIM', 'RV', ['1', '2', '3']), 'FUSE': single('FUSE', 'FUSE', 'F', ['1', '2']),
+ 'TP': single('TP', 'TP', 'TP', ['1']),
  'TERM2': single('HDR2', 'TERM2', 'J', ['1', '2']), 'TERM4': single('HDR4', 'TERM4', 'J', ['1', '2', '3', '4']), 'HDR3': single('HDR3', 'HDR3', 'J', ['1', '2', '3']),
 }
 def dev_of(ref):
@@ -134,13 +137,15 @@ TAIL = '</drawing>\n</eagle>\n'
 ROWS = [('Entrada, puente y filtros', ['J1', 'F2', 'F3', 'D1', 'D2', 'D3', 'D4', 'C1', 'C3']),
         ('Filtro -  y puntos de prueba', ['C2A', 'C2B', 'C4', 'J3', 'J2A', 'J2B']),
         ('Limitador +16 V (foldback)', ['RSC1', 'Q1', 'Q2', 'Q3', 'R3', 'R4', 'R5', 'R6']),
-        ('Ampliación y regulador +16 V', ['R7', 'Q4', 'C5', 'U1', 'R8', 'R9', 'RV1', 'C6', 'D5', 'D6']),
+        ('Ampliación y regulador +16 V', ['R7A', 'R7B', 'Q4', 'C5', 'U1', 'R8', 'R9', 'RV1', 'C6', 'D5', 'D6']),
         ('Salida +16 V', ['C7', 'C8', 'C9', 'D7', 'R10', 'LED1', 'J4']),
         ('Limitador -16 V (foldback)', ['RSC2', 'Q5', 'Q6', 'Q7', 'R11', 'R12', 'R13', 'R14']),
-        ('Ampliación y regulador -16 V', ['R15', 'Q8', 'C10', 'U2', 'R16', 'R17', 'RV2', 'C11', 'D8', 'D9']),
+        ('Ampliación y regulador -16 V', ['R15A', 'R15B', 'Q8', 'C10', 'U2', 'R16', 'R17', 'RV2', 'C11', 'D8', 'D9']),
         ('Salida -16 V', ['C12', 'C13', 'C14', 'D10', 'R18', 'LED2', 'J5']),
         ('Rama +5 V', ['R19', 'C15', 'C16', 'U3', 'R20', 'R21', 'RV3', 'C17']),
-        ('Salida +5 V', ['D11', 'D12', 'C18', 'C19', 'D13', 'R22', 'LED3'])]
+        ('Salida +5 V', ['D11', 'D12', 'C18', 'C19', 'D13', 'R22', 'LED3']),
+        ('Puntos de prueba riel +16 V y +5 V', ['TP1', 'TP2', 'TP3', 'TP4', 'TP5', 'TP11', 'TP12', 'TP13']),
+        ('Puntos de prueba riel -16 V y GND', ['TP6', 'TP7', 'TP8', 'TP9', 'TP10', 'TP14', 'TP15'])]
 def sch_xml():
     flat = [r for _, rr in ROWS for r in rr]; assert sorted(flat) == sorted(N.PARTS), set(flat) ^ set(N.PARTS)
     pos = {}; plain = ''; inst = ''
@@ -163,7 +168,7 @@ def sch_xml():
     netxml = ''.join('<net name="%s" class="0">\n' % n + ''.join(s) + '</net>\n' for n, s in nets.items())
     plain += '<text x="5.08" y="12.7" size="3.81" layer="97">Fuente ±16 V / 1,5 A y +5 V, versión 2 (conexiones por etiquetas de red; ver esquematicos/ para el dibujo)</text>\n'
     parts = ''.join('<part name="%s" library="%s" deviceset="%s" device="" value="%s"/>\n' % (r, LIB, dev_of(r), escape(N.PARTS[r][1])) for r in N.PARTS)
-    out = HEAD + layers_xml() + '<schematic xreflabel="%F%N/%S.%C%R" xrefpart="/%S.%C%R">\n<description>Fuente ±16 V / 1,5 A y +5 V (v2.1) - Brahiam Alberto Campiño Romero</description>\n'
+    out = HEAD + layers_xml() + '<schematic xreflabel="%F%N/%S.%C%R" xrefpart="/%S.%C%R">\n<description>Fuente ±16 V / 1,5 A y +5 V (v2.2) - Brahiam Alberto Campiño Romero</description>\n'
     out += libraries(True) + '<attributes>\n</attributes>\n<variantdefs>\n</variantdefs>\n<classes>\n<class number="0" name="default" width="0" drill="0"/>\n</classes>\n<parts>\n' + parts + '</parts>\n<sheets>\n<sheet>\n<plain>\n' + plain + '</plain>\n<instances>\n' + inst + '</instances>\n<busses>\n</busses>\n<nets>\n' + netxml + '</nets>\n</sheet>\n</sheets>\n</schematic>\n' + TAIL
     return out
 CHAMFER = {'on': False, 'skip': [], 'veto': set()}   # biselado a 45° de las esquinas de la cara inferior
@@ -248,7 +253,7 @@ def brd_xml(parts, routes, W, H, holes=(), labels=()):
                  ('mdCopperDimension', '0.6mm'), ('msWidth', '0.8mm'), ('msDrill', '0.9mm')):
         dr += '<param name="%s" value="%s"/>\n' % (k, v)
     dr += '</designrules>\n'
-    out = HEAD + layers_xml() + '<board>\n<description>Fuente ±16 V / 1,5 A y +5 V (v2.1), una cara (cobre inferior) con puentes de alambre</description>\n<plain>\n' + plain + '</plain>\n'
+    out = HEAD + layers_xml() + '<board>\n<description>Fuente ±16 V / 1,5 A y +5 V (v2.2), una cara (cobre inferior) con puentes de alambre</description>\n<plain>\n' + plain + '</plain>\n'
     out += libraries(False) + '<attributes>\n</attributes>\n<variantdefs>\n</variantdefs>\n<classes>\n<class number="0" name="default" width="0.8" drill="0.9"/>\n</classes>\n'
     out += dr + '<elements>\n' + elems + '</elements>\n<signals>\n' + sig + '</signals>\n</board>\n' + TAIL
     return out

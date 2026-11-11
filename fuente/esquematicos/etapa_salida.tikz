@@ -6,8 +6,19 @@
 }
 \node[font=\scriptsize, align=left, anchor=west] at (3.8,-2.1) {hacia J\_PWR de las tarjetas PID\\(J2A-1 +16 V, J2A-2 $-$16 V,\\J2B-1 GND, J2B-2 +5 V: mismo orden\\que los pines 1--4 de J\_PWR)};
 \draw[thick] (10.0,0) rectangle (12.0,-3.2); \node[font=\footnotesize\bfseries] at (11.0,0.35) {J3 (regleta 1$\times$3)};
-\foreach \y/\n/\t in {-0.6/1/$V_{RAW+}$ (TP1), -1.6/2/GND, -2.6/3/$V_{RAW-}$ (TP2)} {
+\foreach \y/\n/\t in {-0.6/1/$V_{RAW+}$, -1.6/2/GND, -2.6/3/$V_{RAW-}$} {
   \draw (12.0,\y) -- (12.6,\y) node[right, font=\scriptsize]{\t}; \node[font=\scriptsize] at (10.3,\y) {\n};
 }
 \node[font=\scriptsize, align=left, anchor=north west] at (10.0,-3.4) {puntas del osciloscopio para medir\\el rizado de $C_1$ y $C_{2A}$/$C_{2B}$};
 \node[font=\scriptsize, align=left, anchor=north west] at (0,-4.8) {J4 (+16 V / GND) y J5 ($-$16 V / GND): borneras de 2 vías para conectar\\y quitar la resistencia de carga de prueba $R_L$ = 10 $\Omega$ (ver etapas 2 y 3).};
+\node[font=\footnotesize\bfseries, anchor=west] at (0,-6.3) {Puntos de prueba TP1--TP15 (pads de 2,6 mm para la punta del multímetro; negra en TP13, TP14 o TP15 = GND)};
+\node[font=\scriptsize, anchor=north west] at (0,-6.7) {\begin{tabular}{@{}llll|llll@{}}
+TP & red & conectado a & esperado & TP & red & conectado a & esperado\\\hline
+TP1 & $V_{RAW+}$ & $C_1$, $R_{SC1}$ pin 1 & +25 a +28 V (sin carga) & TP6 & $V_{RAW-}$ & $C_{2A}$/$C_{2B}$, $R_{SC2}$ & $-$25 a $-$28 V \\
+TP2 & $E_1$ & $R_{SC1}$ pin 2, emisor $Q_1$ & TP1 $-$ TP2 = $0{,}27\,\Omega\cdot I$ & TP7 & $E_2$ & $R_{SC2}$, emisor $Q_5$ & TP7 $-$ TP6 = $0{,}27\,\Omega\cdot I$ \\
+TP3 & $V_{A1}$ & colector $Q_1$, emisor $Q_4$ & 1--2 V menos que TP2 & TP8 & $V_{A2}$ & colector $Q_5$, emisor $Q_8$ & \\
+TP4 & $IN_1$ & entrada U1 & TP3 $-$ TP4 $\leq$ 1 V & TP9 & $IN_2$ & entrada U2 & \\
+TP5 & +16 V & salida U1, J4 & 16,0 V (RV1) & TP10 & $-$16 V & salida U2, J5 & $-$16,0 V (RV2) \\
+TP11 & $V_{IN5}$ & entrada U3 (tras $R_{19}$) & $\approx$ 10 V & TP12 & +5 V & salida U3 & 5,00 V (RV3) \\
+TP13--15 & GND & tierra & 0 V & & & & \\
+\end{tabular}};

@@ -34,6 +34,13 @@ def job(sd):
                 for j in range(int((hy-5)/G), int((hy+5)/G)+2):
                     if (i*G-hx)**2 + (j*G-hy)**2 <= 4.0**2:
                         for l in (0, 1): r.g.own[l][(i, j)] = 'HOLE'
+        for i in range(r.g.nx):          # borde de placa sin cobre (1 mm) y sin puentes junto al borde de los disipadores (3 mm)
+            for j in range(r.g.ny):
+                x, y = i*G, j*G
+                edge = x < 1.0 or x > P.W-1.0 or y < 1.0 or y > P.H-1.0
+                for l in (0, 1):
+                    if (i, j) in r.g.own[l]: continue
+                    if edge or (l == 1 and (y < 3.0 or y > P.H-3.0)): r.g.own[l][(i, j)] = 'EDGE'
         if not r.solve(iters=150, seed=rs): continue
         j, bot, top, comps = analyze(r)
         score = j*120 + bot*1.27 + top*1.27*3 + max(comps or [0])*30
@@ -46,7 +53,7 @@ def job(sd):
 if __name__ == '__main__':
     seeds = [int(x) for x in sys.argv[1].split(',')]; dst = sys.argv[2]
     t = time.time(); best = None
-    with mp.Pool(min(4, len(seeds))) as pool:
+    with mp.Pool(min(2, len(seeds))) as pool:
         for sd, b, o in pool.imap_unordered(job, seeds):
             print(sd, 'colocacion', round(b), None if o is None else (round(o['score']), o['jumpers'], o['bot'], o['top']), round(time.time()-t), flush=True)
             if o and (best is None or o['score'] < best['score']):

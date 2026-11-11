@@ -38,7 +38,7 @@ if __name__ == '__main__':
     nseg0 = sum(len(E.merge_edges(rt['edges'], 0)) for rt in routes.values()); E.CHAMFER['on'] = True
     print('esquinas biseladas a 45°:', nseg - nseg0, '| vetadas por holgura:', len(E.CHAMFER['veto']))
     jl = pdfs.jumpers(parts, routes)
-    labels = [(W/2, 1.6, 'Fuente +-16V 1.6A / +5V (v2.1) - B. Campino - U. Ibague 2026', 1.2, 'R0')]
+    labels = [(W/2, 1.6, 'Fuente +-16V 1.6A / +5V (v2.2) - B. Campino - U. Ibague 2026', 1.2, 'R0')]
     open(os.path.join(dst, 'fuente.brd'), 'w', encoding='utf-8').write(E.brd_xml(parts, routes, W, H, P.HOLES, labels))
     open(os.path.join(dst, 'fuente.sch'), 'w', encoding='utf-8').write(E.sch_xml())
     for e in ('.brd', '.sch'): ET.parse(os.path.join(dst, 'fuente'+e))

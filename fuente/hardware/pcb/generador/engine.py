@@ -42,15 +42,16 @@ def fp_pads(kind):
     SIMPLE2={'RES10':10.16,'RES1W':15.24,'RES2W':20.32,'RES3W':25.4,'RES5W':27.94,'DO41':10.16,'DO35':7.62,
              'CPOL25':10.16,'CPOL35':10.16,'CPOL8':3.81,'CPOL6':2.54,'CPOL5':2.54,'CTANT':2.54,'LED5':2.54,'FUSE':22.86}
     if kind in SIMPLE2: return [('1',0,0),('2',SIMPLE2[kind],0)]
+    if kind=='TP': return [('1',0,0)]
     if kind=='TERM3': return [('%d'%i,(i-1)*5.08,0) for i in range(1,4)]
     if kind in ('TO92','TRIM','HDR3','TO126'): return [('1',0,0),('2',PITCH,0),('3',2*PITCH,0)]
     if kind=='TERM4': return [('%d'%i,(i-1)*5.08,0) for i in range(1,5)]
     raise KeyError(kind)
 
 # taladro por tipo de huella (mm); el resto usa DRILL
-DRILL_OF={'TERM3':1.3,'RES5W':1.1,'CPOL35':1.3,'TO126':1.0,'TO220':1.0,'DIODE':1.3,'TERM2':1.3,'RSBANK':1.1,'TERM4':1.3,'FUSE':1.3,'DO41':1.0,'CPOL25':1.3,'RES1W':1.0,'RES2W':1.0,'RES3W':1.1}
+DRILL_OF={'TERM3':1.3,'RES5W':1.1,'CPOL35':1.3,'TO126':1.0,'TO220':1.0,'DIODE':1.3,'TERM2':1.3,'RSBANK':1.1,'TERM4':1.3,'FUSE':1.3,'DO41':1.0,'CPOL25':1.3,'RES1W':1.0,'RES2W':1.0,'RES3W':1.1,'TP':1.0}
 def drill_of(kind): return DRILL_OF.get(kind,DRILL)
-BIG_PADS=('TERM2','TERM3','TERM4','FUSE','CPOL25','CPOL35','DIODE','RES5W')
+BIG_PADS=('TP','TERM2','TERM3','TERM4','FUSE','CPOL25','CPOL35','DIODE','RES5W')
 def pad_d(kind): return 2.6 if kind in BIG_PADS else PAD_D
 
 # cajas de cuerpo especiales (xmin,ymin,xmax,ymax) locales, en mm
@@ -75,6 +76,7 @@ BOX_OF={
  'RES3W':(-1.5,-3.6,26.9,3.6),
  'RES2W':(-1.5,-3.0,21.8,3.0),
  'RES1W':(-1.5,-2.6,16.7,2.6),
+ 'TP':(-1.8,-1.8,1.8,1.8),
  'DO41':(-1.5,-2.2,11.7,2.2),
 }
 def fp_box(kind):

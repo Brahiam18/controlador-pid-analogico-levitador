@@ -2,25 +2,27 @@ La placa es de una sola cara, de $190{,}5\times139{,}7$~mm, para una baquela de 
 \begin{itemize}
 \item Pistas de 0,8~mm, y de 1,6~mm para las redes de corriente alta: secundario, $V_{RAW\pm}$, emisores y colectores de los transistores de paso, salidas $\pm16$~V y GND. Con cobre de 35~µm, 1,6~mm conducen unos 3~A con 10~°C de aumento.
 \item Pads de 2,0~mm, y de 2,6~mm en borneras, portafusibles, diodos 1N5408, $R_{SC}$ y capacitores grandes.
-\item Separación mínima entre redes de 0,40~mm, verificada sobre la geometría final (0,59~mm en la placa definitiva).
-\item Esquinas de las pistas biseladas a 45° (225 esquinas) en lugar de ángulos rectos. Se evita la esquina exterior de 90°, donde el cobre se ataca de forma desigual al grabar y la densidad de corriente se concentra. Solo quedan a 90° las uniones en T y los quiebres que caen sobre un pad.
+\item Separación mínima entre redes de 0,40~mm, verificada sobre la geometría final (0,59~mm en la placa definitiva). Ninguna pista queda a menos de 1~mm del borde, y no hay puentes junto al borde de los disipadores.
+\item Esquinas de las pistas biseladas a 45° (234 esquinas) en lugar de ángulos rectos. Se evita la esquina exterior de 90°, donde el cobre se ataca de forma desigual al grabar y la densidad de corriente se concentra. Solo quedan a 90° las uniones en T y los quiebres que caen sobre un pad.
 \end{itemize}
-Las 32 redes quedan completas, sin cortos, y el esquemático y la placa son consistentes. Hay siete puentes de alambre del lado de componentes (P1--P7, lista en \texttt{puentes.md}), todos en redes de señal o de baja corriente.
+Las 32 redes quedan completas, sin cortos, y el esquemático y la placa son consistentes. Hay ocho puentes de alambre del lado de componentes (P1--P8, lista en \texttt{puentes.md}), todos en redes de señal o de baja corriente; el de mayor corriente es P1 ($IN_1$, la parte del LM317, $\leq0{,}4$~A), suficiente para alambre 22~AWG.
 
 Los cuatro semiconductores de potencia de cada riel van alineados en un borde con la aleta hacia afuera: $Q_1$, $Q_2$, $Q_4$ y U1 arriba, y $Q_5$, $Q_6$, $Q_8$ y U2 abajo. Así se atornillan a un solo disipador por riel. Los capacitores de filtro están en el borde izquierdo y las borneras de salida (J2A--J2B, J4, J5) en el derecho. $J_2$ son dos borneras de 2 vías encajadas lado a lado (paso 5,08~mm), porque no se consiguió la de 4 vías; los pads son los mismos. En las esquinas hay cuatro agujeros de montaje de 3,2~mm.
+
+En la versión 2.2, $R_7$ y $R_{15}$ son dos huellas de 1~W cada una ($R_{7A}$, $R_{7B}$ y $R_{15A}$, $R_{15B}$) para montar dos resistencias de $\SI{5,6}{\ohm}$ en paralelo; si se consigue la de $\SI{2,7}{\ohm}$, se monta solo la A. Además hay 15 puntos de prueba (TP1--TP15, pads de 2,6~mm marcados con el nombre de la red en la hoja de ensamble) junto a la pieza donde se mide (Tabla~\ref{tab:tp}). Para hacer sitio, la placa se recolocó y se ruteó de nuevo con las mismas reglas.
 
 En la carpeta \texttt{hardware/pcb/} están:
 \begin{itemize}
 \item \texttt{fuente.sch} y \texttt{fuente.brd}, en formato EAGLE, que Fusion Electronics abre.
 \item \texttt{cobre\_espejado\_1a1.pdf}: el cobre espejado a escala 1:1, con una regla de 50~mm para comprobar la escala.
 \item \texttt{ensamble\_1a1.pdf}: vista de componentes a 1:1 y una vista ampliada con valores.
-\item \texttt{puentes.md}: la lista de los siete puentes.
+\item \texttt{puentes.md}: la lista de los ocho puentes.
 \end{itemize}
 
 \begin{figure*}[!t]
 \centering
-\includegraphics[width=0.9\textwidth]{pcb_ensamble.png}
-\caption{Vista de ensamble (lado de componentes). Rojo: puentes de alambre P1--P7. Línea gruesa de cada TO-220/TO-126: aleta, que va al disipador. Círculo azul: pin~1.}
+\includegraphics[width=0.86\textwidth]{pcb_ensamble.png}
+\caption{Vista de ensamble (lado de componentes). Rojo: puentes de alambre P1--P8; círculos rojos con nombre: puntos de prueba TP1--TP15. Línea gruesa de cada TO-220/TO-126: aleta, que va al disipador. Círculo azul: pin~1.}
 \label{fig:pcb_ens}
 \end{figure*}
 

@@ -13,14 +13,14 @@ Fuente de alimentación lineal regulada diseñada para los 4 controladores PID a
 
 ![Esquemático completo](esquematicos/esq_completo.png)
 
-## Diseño (versión 2.1)
+## Diseño (versión 2.2)
 | Bloque | Solución |
 |---|---|
 | Transformador | **18-0-18 V / 5 A**, primario 120 V, toma central a GND. El de 3 A no regula con la red baja; el de 2 A trabajaría al ≈ 115 % de su corriente (2,3 A rms por mitad) |
 | Rectificador | Puente D1–D4 1N5408, onda completa (120 Hz) para los dos rieles |
 | Filtro | C1 = 15 000 µF (+) y C2A ‖ C2B = 2 × 6800 µF (−), 50 V, reutilizados |
 | Limitador | R_SC = 0,27 Ω / 5 W, Darlington TIP42C + BD140 (TIP41C + BD139 en −16 V), sensor BC557 (BC547) y divisor de foldback **R5 = R13 = 330 Ω**, R6 = R14 = 12 kΩ |
-| Ampliación | R7 = R15 = 2,7 Ω / 2 W + TIP42C (TIP41C). El LM317 lleva solo ≈ 0,3 A |
+| Ampliación | R7 = R7A ‖ R7B y R15 = R15A ‖ R15B: 2 × 5,6 Ω / 1 W en paralelo (2,8 Ω; o una sola de 2,7 Ω / 1 W) + TIP42C (TIP41C). El LM317 lleva solo ≈ 0,38 A |
 | Reguladores | U1 LM317 (+16 V), U2 LM337 (−16 V): R1 = 120 Ω, R2 = 1,3 kΩ + trimmer 200 Ω; U3 LM317 (+5 V) desde +16 V por R19 = 100 Ω / 5 W |
 | Protecciones | F1 T1 A (primario), F2/F3 T3,15 A (secundario), foldback, R19, protección térmica interna, diodos OUT→IN, ADJ→OUT y de polaridad inversa |
 | Disipadores | Uno de **≤ 2 °C/W por riel** (≈ 100 × 69 × 36 mm) para Q1, Q2, Q4, U1 (y Q5, Q6, Q8, U2), todos con mica y buje |
@@ -30,6 +30,11 @@ Fuente de alimentación lineal regulada diseñada para los 4 controladores PID a
 2. **R5 y R13: 270 Ω → 330 Ω.** El sensor del modelo de Proteus conduce con ≈ 0,8 V, y con 270 Ω el corto con red baja daba 1,26 A (≈ 23 W en Q1). Con 330 Ω da 0,89 / 0,60 / 0,28 A con red baja / nominal / alta, y la fuente sigue arrancando y recuperándose con R_L.
 3. **J2** pasó a ser **dos borneras de 2 vías** (J2A + J2B) encajadas, con los mismos pads.
 4. **Pistas a 45°** en la placa: 225 esquinas biseladas y holgura mínima de 0,59 mm.
+
+### Cambios de la versión 2.1 a la 2.2
+1. **R7 y R15** pasan a ser **dos resistencias de 5,6 Ω / 1 W en paralelo** (2,8 Ω), porque la de 2,7 Ω no siempre se consigue. Cada una disipa ≤ 0,18 W. Con una de 2,7 Ω / 1 W basta montar R7A y R15A.
+2. **15 puntos de prueba** (TP1–TP15) en la placa para medir con el multímetro las tensiones de cada etapa y la corriente de cada riel (caída en R_SC). Ver `pruebas/plan_de_pruebas.md`.
+3. La placa se recolocó y se ruteó de nuevo: 8 puentes, 234 esquinas a 45°, holgura mínima 0,59 mm y ninguna pista a menos de 1 mm del borde.
 
 ### Resultados
 | Prueba | ngspice | Proteus |

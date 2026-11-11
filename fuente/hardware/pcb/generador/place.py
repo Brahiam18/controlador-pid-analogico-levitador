@@ -19,9 +19,11 @@ FIXED = {   # ref: (x, y, giro)
 }
 REG = {'pos': (60, 80, 150, 124), 'neg': (35, 16, 160, 50), 'p5': (148, 70, 176, 124), 'mid': (55, 56, 172, 84)}
 GROUP = {}
-for r in ('RSC1','Q3','R3','R4','R5','R6','R7','C5','R8','R9','RV1','C6','D5','D6','C7','C8','C9','D7','R10','LED1','C3'): GROUP[r] = 'pos'
-for r in ('RSC2','Q7','R11','R12','R13','R14','R15','C10','R16','R17','RV2','C11','D8','D9','C12','C13','C14','D10','R18','LED2','C4'): GROUP[r] = 'neg'
+for r in ('RSC1','Q3','R3','R4','R5','R6','R7A','R7B','C5','R8','R9','RV1','C6','D5','D6','C7','C8','C9','D7','R10','LED1','C3'): GROUP[r] = 'pos'
+for r in ('RSC2','Q7','R11','R12','R13','R14','R15A','R15B','C10','R16','R17','RV2','C11','D8','D9','C12','C13','C14','D10','R18','LED2','C4'): GROUP[r] = 'neg'
 for r in ('R19','C15','C16','R20','R21','RV3','C17','D11','D12','C18','C19','D13','R22','LED3'): GROUP[r] = 'p5'
+for r in N.PARTS:
+    if r.startswith('TP'): GROUP[r] = 'mid'
 assert set(FIXED) | set(GROUP) == set(N.PARTS), set(N.PARTS) ^ (set(FIXED) | set(GROUP))
 MARGIN = 1.5
 HOLES = [(4.0, 4.0), (W-4.0, 4.0), (4.0, H-4.0), (W-4.0, H-4.0)]

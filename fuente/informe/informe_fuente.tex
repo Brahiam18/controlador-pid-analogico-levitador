@@ -155,6 +155,7 @@ La Tabla~\ref{tab:versiones} resume la evolución del diseño.
 \item \textbf{Versión 1.} Solo alimentaba los operacionales. Con el M509 (9-6-0-6-9~V / 2~A) usaba el devanado completo de 18~V con dos rectificadores de media onda, limitadores de 0,39 y 0,32~A y capacitores de $\SI{3300}{\micro F}$. Estos se cambiaron luego por $\SI{6800}{\micro F}$, que ya se tenían.
 \item \textbf{Versión 2.} Al pedirse 1,5~A, el M509 ya no alcanzaba: con media onda, su secundario habría conducido unos 3,6~A eficaces, casi el doble de su capacidad. Además, el LM317 solo a 1,5~A estaría en su límite y no habría disipador capaz de mantenerlo frío. Se especificó un transformador de 18-0-18~V / 3~A y se pasó a onda completa. Los capacitores disponibles se reutilizaron: el de $\SI{15000}{\micro F}$ en el riel positivo y los dos de $\SI{6800}{\micro F}$ en paralelo en el negativo. Se agregaron la ampliación de corriente y el limitador con foldback. El regulador de $+5$~V no cambió.
 \item \textbf{Versión 2.1.} La simulación en Proteus (Sección~\ref{sec:proteus}) mostró dos ajustes necesarios. (a) Con el transformador de 3~A y la red al $-10$~\%, la salida con $R_L$ caía a 14,6~V: la resistencia de su devanado le quitaba el poco margen que había. Con uno de 5~A, de menor resistencia, regula. (b) El sensor $Q_3$ del modelo de Proteus conduce con $\approx0{,}8$~V en vez de 0,7~V, y la corriente de corto con la red baja subía a 1,26~A ($\approx23$~W en $Q_1$). Con $R_5=R_{13}=\SI{330}{\ohm}$ el foldback es más fuerte, la corriente de corto baja a 0,3--0,9~A y la fuente sigue sin trabarse con $R_L$. Además, $J_2$ pasó a dos borneras de 2 vías y las pistas de la placa se trazaron a 45°.
+\item \textbf{Versión 2.2.} $R_7$ y $R_{15}$ pasan a ser dos resistencias de $\SI{5,6}{\ohm}$/1~W en paralelo cada una ($R_{7A}\parallel R_{7B}$, $R_{15A}\parallel R_{15B}$), por disponibilidad comercial, y la placa incorpora 15 puntos de prueba (TP1--TP15) para medir con el multímetro las tensiones de cada etapa y la corriente de cada riel.
 \end{itemize}
 
 \begin{table}[htbp]
@@ -237,7 +238,7 @@ Se fija la parte del LM317 en $I_U\approx0{,}39$~A, el 26~\% de su máximo de 1,
 \begin{equation}
 R_7=\frac{V_{EB}}{I_U-I_B}=\frac{0{,}95}{0{,}39-0{,}043}=\SI{2,74}{\ohm}\rightarrow\SI{2,7}{\ohm},\ 1~\text{W}.
 \end{equation}
-Con los PID solos (0,27~A), $I_U R_7=0{,}73$~V: la ampliación casi no conduce y el LM317 regula prácticamente solo. En el riel negativo, $Q_8$ (TIP41C) y $R_{15}$ son el espejo. Se agregan $C_9$ y $C_{14}$ ($\SI{220}{\micro F}$) a la salida para los escalones de 1,5~A.
+Con los PID solos (0,27~A), $I_U R_7=0{,}73$~V: la ampliación casi no conduce y el LM317 regula prácticamente solo. En el riel negativo, $Q_8$ (TIP41C) y $R_{15}$ son el espejo. En la placa, $R_7$ se arma con dos resistencias de $\SI{5,6}{\ohm}$/1~W en paralelo ($R_{7A}\parallel R_{7B}=\SI{2,8}{\ohm}$), porque la de $\SI{2,7}{\ohm}$ no siempre se consigue: $I_U$ queda en $0{,}95/2{,}8+0{,}043=0{,}38$~A, prácticamente igual, y cada una disipa como máximo $1^2/5{,}6=0{,}18$~W, porque su tensión está limitada por la $V_{EB}$ de $Q_4$. Si se consigue la de $\SI{2,7}{\ohm}$/1~W, se monta solo $R_{7A}$. Lo mismo vale para $R_{15A}\parallel R_{15B}$. Se agregan $C_9$ y $C_{14}$ ($\SI{220}{\micro F}$) a la salida para los escalones de 1,5~A.
 
 \subsection{Reguladores y red de ajuste}
 La red de ajuste es la de la versión 1: $R_1=\SI{120}{\ohm}$ ($R_8$, $R_{16}$, $R_{20}$), con $I_1=10{,}42$~mA, que garantiza la carga mínima de 10~mA y cumple $I_Q\ll I_1\ll I_L$. Para 16~V, por (\ref{eq:vout}), $R_2=(16-1{,}25)/\SI{10,467}{mA}=\SI{1409}{\ohm}$, implementada con $R_9=\SI{1,3}{k\ohm}$ más el trimmer $RV_1=\SI{200}{\ohm}$. El rango de ajuste es de 14,86 a 16,95~V (con la tolerancia de $V_A$, entre 14,27--16,27 y 15,45--17,62~V). Para $+5$~V se usan $R_{21}=\SI{330}{\ohm}$ y $RV_3=\SI{50}{\ohm}$, con rango de 4,70 a 5,23~V. Los capacitores $C_6$, $C_{11}$ y $C_{17}$ de $\SI{10}{\micro F}$ en ADJ elevan el rechazo de rizado a 66--80~dB~\cite{lm317}. Los diodos $D_5$, $D_8$ y $D_{11}$ (OUT$\rightarrow$IN) y $D_6$, $D_9$ y $D_{12}$ (ADJ$\rightarrow$OUT) son las protecciones de la Fig.~3-17 y del Problema~3.6.10.
@@ -517,7 +518,7 @@ C3, C4, C5, C8, C10, C13, C16, C19 & 100~nF cerámico & 8 \\
 C6, C11, C17 / C7, C12, C18 & $\SI{10}{\micro F}$ electrolítico / tántalo & 3 / 3 \\
 C9, C14 / C15 & $\SI{220}{\micro F}$ / $\SI{100}{\micro F}$, 25~V & 2 / 1 \\
 $R_{SC1}$, $R_{SC2}$ & $\SI{0,27}{\ohm}$, 5~W & 2 \\
-R3, R11 / R7, R15 & $\SI{2,7}{k\ohm}$, 1~W / $\SI{2,7}{\ohm}$, 2~W & 2 / 2 \\
+R3, R11 / R7A, R7B, R15A, R15B & $\SI{2,7}{k\ohm}$, 1~W / $\SI{5,6}{\ohm}$, 1~W & 2 / 4 \\
 R4, R12 / R5, R13 / R6, R14 & $\SI{1}{k\ohm}$ / $\SI{330}{\ohm}$ / $\SI{12}{k\ohm}$ & 2 / 2 / 2 \\
 R8, R16, R20 / R9, R17 / R21 & $\SI{120}{\ohm}$ / $\SI{1,3}{k\ohm}$ / $\SI{330}{\ohm}$, 1~\% & 3 / 2 / 1 \\
 R19 & $\SI{100}{\ohm}$, 5~W & 1 \\
@@ -529,6 +530,7 @@ Q3 / Q7 & BC557 / BC547 & 1 / 1 \\
 U1, U3 / U2 & LM317T / LM337T (disponibles) & 2 / 1 \\
 LED1--LED3 & LED verde 5~mm & 3 \\
 J1 / J2A, J2B, J4, J5 / J3 & Bornera 3 vías / bornera 2 vías / regleta 1$\times$3 & 1/4/1 \\
+TP1--TP15 & Punto de prueba (pad; alambre en U opcional) & 15 \\
 $R_L$ (externa) & $\SI{10}{\ohm}$: 4 de $\SI{10}{\ohm}$/10~W en serie-paralelo & 4 \\
 -- & Disipador $\leq$2~°C/W (3 TO-220 + 1 TO-126) & 2 \\
 -- & Mica, buje y tornillo M3 & 8 \\
@@ -554,6 +556,28 @@ Las pruebas van de menor a mayor riesgo. El detalle está en \texttt{pruebas/pla
 \item[P9] \textit{Temperatura} tras 30~min con $R_L$.
 \item[P10] \textit{Tarjetas PID} sin $R_L$ y sin bobinas.
 \end{enumerate}
+Para estas mediciones la placa tiene 15 puntos de prueba (Tabla~\ref{tab:tp}). Además de las tensiones de cada etapa, permiten medir la corriente de cada riel sin amperímetro, por la caída en $R_{SC}$: $I_+=(V_{TP1}-V_{TP2})/\SI{0,27}{\ohm}$ (0,43~V con 1,6~A), y el margen entrada--salida del regulador como $V_{TP4}-V_{TP5}$.
+
+\begin{table}[htbp]
+\caption{Puntos de prueba (punta negra en TP13--TP15 = GND)}
+\label{tab:tp}
+\centering
+\footnotesize
+\begin{tabular}{@{}llp{0.42\linewidth}@{}}
+\toprule
+TP & Red & Valor esperado \\
+\midrule
+TP1 / TP6 & $V_{RAW+}$ / $V_{RAW-}$ & $\pm$25 a $\pm$28~V sin carga; $\pm$23 a $\pm$24~V con $R_L$ \\
+TP2 / TP7 & $E_1$ / $E_2$ & $|V_{TP1}-V_{TP2}|=0{,}27\,\Omega\cdot I$ \\
+TP3 / TP8 & $V_{A1}$ / $V_{A2}$ & 1--2~V menos (en módulo) que TP2 / TP7 \\
+TP4 / TP9 & $IN_1$ / $IN_2$ & 0,7--1,0~V menos que TP3 / TP8 con $R_L$ \\
+TP5 / TP10 & $+16$ / $-16$~V & $\pm$16,00~V \\
+TP11 / TP12 & $V_{IN5}$ / $+5$~V & $\approx$10~V / 5,00~V \\
+TP13--TP15 & GND & 0~V \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 La Tabla~\ref{tab:med} es la tabla para llenar. La versión completa, de 40 filas, está en \texttt{mediciones.csv}.
 
 \begin{table}[htbp]
@@ -599,7 +623,7 @@ Sin poder cambiar el LM317 ni el LM337, la ampliación de corriente de la Fig.~3
 La protección no podía ir en el transistor de la ampliación, porque el LM317 en corto intentaría entregar su máximo a través del sensor. Por eso se colocó un limitador antes del regulador, que acota la corriente total del riel. A 1,5~A, un límite constante haría disipar unos 45~W al transistor de paso durante un corto; con el foldback (Fig.~3-27) la corriente baja a 0,3--0,9~A y la disipación a menos de 16~W, que un disipador de 2~°C/W soporta indefinidamente. El punto delicado del foldback es no trabar la fuente con la carga de prueba; con $k'=0{,}027$ se verificó en ngspice y en Proteus que arranca y se recupera con $R_L$ en los tres valores de red.
 
 \subsection{Sobre los ajustes de la versión 2.1}
-La simulación en Proteus, con modelos distintos de los de ngspice, mostró que el diseño estaba en el límite en dos puntos, y se corrigieron antes de fabricar. El transformador pasó de 3 a 5~A porque, con la red baja y 1,6~A, la resistencia del devanado del de 3~A dejaba al LM317 sin tensión (14,6~V); el de 5~A además trabaja al 46~\% de su corriente, con una quinta parte de sus pérdidas nominales, y el de 2~A queda descartado al 114~\%. $R_5$ y $R_{13}$ pasaron de 270 a \SI{330}{\ohm} porque con el sensor real (que conduce cerca de 0,8~V) el foldback era débil: el corto con la red baja llegaba a 1,26~A y $\approx$23~W. Con \SI{330}{\ohm} el corto queda en 0,3--0,9~A según la red y la fuente sigue arrancando y recuperándose con $R_L$ puesta. Como el margen contra el bloqueo depende del $V_{BE}$ real del sensor, la prueba P8 (arranque con $R_L$) es obligatoria en el montaje.
+La simulación en Proteus, con modelos distintos de los de ngspice, mostró que el diseño estaba en el límite en dos puntos, y se corrigieron antes de fabricar. El transformador pasó de 3 a 5~A porque, con la red baja y 1,6~A, la resistencia del devanado del de 3~A dejaba al LM317 sin tensión (14,6~V); el de 5~A además trabaja al 46~\% de su corriente, con una quinta parte de sus pérdidas nominales, y el de 2~A queda descartado al 114~\%. $R_5$ y $R_{13}$ pasaron de 270 a \SI{330}{\ohm} porque con el sensor real (que conduce cerca de 0,8~V) el foldback era débil: el corto con la red baja llegaba a 1,26~A y $\approx$23~W. Con \SI{330}{\ohm} el corto queda en 0,3--0,9~A según la red y la fuente sigue arrancando y recuperándose con $R_L$ puesta. Como el margen contra el bloqueo depende del $V_{BE}$ real del sensor, la prueba P8 (arranque con $R_L$) es obligatoria en el montaje. En la versión 2.2, $R_7$ y $R_{15}$ se arman con dos resistencias de $\SI{5,6}{\ohm}$ en paralelo (2,8~$\Omega$), que cambian la parte del LM317 de 0,39 a 0,38~A, sin efecto práctico, y los 15 puntos de prueba permiten verificar cada etapa y la corriente de cada riel con solo un multímetro.
 
 \subsection{Limitaciones y trabajo pendiente}
 Hay tres limitaciones:

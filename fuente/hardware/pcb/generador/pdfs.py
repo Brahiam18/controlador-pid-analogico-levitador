@@ -42,7 +42,7 @@ def copper_pdf(path, parts, routes, W, H, holes, png=None):
         ax.plot([x, x+sx*5], [y, y], color='k', lw=0.4); ax.plot([x, x], [y, y+sy*5], color='k', lw=0.4)
     x0 = W/2-25; ax.plot([x0, x0+50], [-5, -5], color='k', lw=0.6)
     for t in range(0, 51, 10): ax.plot([x0+t, x0+t], [-5.8, -4.2], color='k', lw=0.6)
-    ax.text(W/2, -8.5, 'Fuente ±16 V / 1,6 A y +5 V (v2.1, pistas a 45°)  |  CARA DE COBRE ESPEJADA  |  imprimir 1:1 sin escalar: la regla debe medir 50 mm  |  placa %.1f x %.1f mm' % (W, H), ha='center', fontsize=6)
+    ax.text(W/2, -8.5, 'Fuente ±16 V / 1,6 A y +5 V (v2.2, pistas a 45°)  |  CARA DE COBRE ESPEJADA  |  imprimir 1:1 sin escalar: la regla debe medir 50 mm  |  placa %.1f x %.1f mm' % (W, H), ha='center', fontsize=6)
     fig.savefig(path, format='pdf')
     if png: fig.savefig(png, dpi=200)
     plt.close(fig)
@@ -57,6 +57,12 @@ def _draw(ax, parts, routes, jl, fs=3.6, values=True):
     for ref, p in parts.items():
         x0, y0, x1, y1 = p.box(); pads = p.pads(); kind = p.kind
         cx, cy = (x0+x1)/2, (y0+y1)/2
+        if kind == 'TP':      # punto de prueba: pad rojo con etiqueta de la red al lado
+            x, y = pads['1']
+            ax.add_patch(Circle((x, y), padd(kind)/2, fc='#d62728', ec='k', lw=0.4, zorder=5)); ax.add_patch(Circle((x, y), 0.45, fc='w', ec='k', lw=0.2, zorder=6))
+            ax.text(x, y+2.0, ref, fontsize=fs*0.95, ha='center', va='bottom', zorder=11, color='#8b0000', fontweight='bold')
+            ax.text(x, y-2.0, N.PARTS[ref][1], fontsize=fs*0.95, ha='center', va='top', zorder=11, color='#8b0000', fontweight='bold')
+            continue
         col = {'TO220': '#6b6b6b', 'TO126': '#555', 'DIODE': '#222', 'RES5W': '#e8e8e0', 'TERM3': '#2a6fb0', 'CPOL35': '#3b6ea8', 'CPOL8': '#3b6ea8', 'TO92': '#333', 'CPOL25': '#3b6ea8', 'CPOL6': '#3b6ea8', 'CPOL5': '#3b6ea8', 'CTANT': '#d9a62b', 'LED5': '#5cc85c',
                'TERM2': '#2a6fb0', 'TERM4': '#2a6fb0', 'FUSE': '#bbbbbb', 'TRIM': '#2a6fb0', 'DO41': '#222', 'DO35': '#d98c2b', 'HDR3': '#222', 'CAP': '#e2c15a'}.get(kind, '#d9b77e')
         if kind in ('CPOL25', 'CPOL35', 'CPOL8', 'CPOL6', 'CPOL5', 'LED5'):
@@ -91,7 +97,7 @@ def assembly_pdf(path, parts, routes, W, H, holes, jl, png=None):
         ax.add_patch(Rectangle((0, 0), W, H, fc='#f6f3e8', ec='k', lw=0.8, zorder=0))
         for (x, y) in holes: ax.add_patch(Circle((x, y), 1.6, fc='w', ec='k', lw=0.6, zorder=1))
         _draw(ax, parts, routes, jl, fs=3.0, values=False)
-        ax.text(W/2, -5, 'Lado de componentes 1:1  |  rojo = puentes de alambre aislado (P1..P%d)  |  círculo azul = pin 1  |  línea gruesa del TO-220 = aleta (va al disipador)' % len(jl), ha='center', fontsize=5.5)
+        ax.text(W/2, -5, 'Lado de componentes 1:1  |  rojo = puentes de alambre aislado (P1..P%d)  |  círculo azul = pin 1  |  rojo con nombre = punto de prueba TP  |  línea gruesa del TO-220 = aleta (va al disipador)' % len(jl), ha='center', fontsize=5.5)
         ax.text(W/2, -8.5, 'Disipadores: Q1, Q2, Q4 y U1 en el borde superior; Q5, Q6, Q8 y U2 en el inferior; uno de <= 2 °C/W por riel, cada pieza con mica y buje', ha='center', fontsize=5.5)
         pdf.savefig(fig)
         if png: fig.savefig(png, dpi=200)
@@ -102,7 +108,7 @@ def assembly_pdf(path, parts, routes, W, H, holes, jl, png=None):
         ax.add_patch(Rectangle((0, 0), W, H, fc='#f6f3e8', ec='k', lw=0.8, zorder=0))
         for (x, y) in holes: ax.add_patch(Circle((x, y), 1.6, fc='w', ec='k', lw=0.6, zorder=1))
         _draw(ax, parts, routes, jl, fs=3.6*z, values=True)
-        ax.text(W/2, H+4/z*2, 'Fuente ±16 V / 1,6 A y +5 V (v2.1)  -  ensamble ampliado (escala %.2f:1, A4 horizontal): referencia y valor de cada pieza' % z, ha='center', fontsize=9, fontweight='bold')
+        ax.text(W/2, H+4/z*2, 'Fuente ±16 V / 1,6 A y +5 V (v2.2)  -  ensamble ampliado (escala %.2f:1, A4 horizontal): referencia y valor de cada pieza' % z, ha='center', fontsize=9, fontweight='bold')
         pdf.savefig(fig); plt.close(fig)
 
 def jumpers(parts, routes):

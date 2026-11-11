@@ -1,4 +1,4 @@
-# Plan de pruebas: fuente ±16 V / 1,5 A y +5 V (versión 2)
+# Plan de pruebas: fuente ±16 V / 1,5 A y +5 V (versión 2.2)
 
 Los valores "esperados" salen del cálculo (`calculos/`) y de la simulación (`simulacion/`). Llene la columna "Medido" de `mediciones.csv` y calcule el error.
 
@@ -13,6 +13,31 @@ Los valores "esperados" salen del cálculo (`calculos/`) y de la simulación (`s
 | +5 V | 120 Ω / 1/2 W | 42 mA | Plena carga de +5 V |
 
 Los 1,5 A se prueban **en un riel a la vez**, aunque el transformador de 5 A lo soportaría, para no exigirle los dos rieles a 1,6 A a la vez.
+
+## Puntos de prueba de la placa (TP1–TP15)
+La placa tiene 15 pads marcados para la punta del multímetro. Ponga la punta **negra en TP13, TP14 o TP15 (GND)** y la roja en el punto que quiera medir. Si va a medir muchas veces, suelde en cada pad un alambre 22 AWG doblado en U para enganchar el caimán.
+
+| TP | Red | Dónde está | Sin carga | Con RL (1,6 A) en ese riel |
+|---|---|---|---|---|
+| TP1 | V_RAW+ | C1 / R_SC1 pin 1 | ≈ +25 a +28 V | ≈ +23 a +24 V (promedio, con rizado) |
+| TP2 | E1 | R_SC1 pin 2 / emisor Q1 | ≈ TP1 | TP1 − TP2 ≈ 0,43 V |
+| TP3 | V_A1 | colector Q1 / emisor Q4 | 1–2 V menos que TP2 | 1–2 V menos que TP2 |
+| TP4 | IN1 | entrada de U1 | ≈ TP3 − 0,2 V | TP3 − TP4 ≈ 0,7–1,0 V (conduce Q4) |
+| TP5 | +16 V | salida U1 / J4 | 16,00 V | ≥ 15,9 V |
+| TP6 | V_RAW− | C2A, C2B / R_SC2 | ≈ −25 a −28 V | ≈ −23 a −24 V |
+| TP7 | E2 | R_SC2 / emisor Q5 | ≈ TP6 | TP7 − TP6 ≈ 0,43 V |
+| TP8 | V_A2 | colector Q5 / emisor Q8 | | |
+| TP9 | IN2 | entrada de U2 | | |
+| TP10 | −16 V | salida U2 / J5 | −16,00 V | ≤ −15,9 V |
+| TP11 | V_IN5 | entrada de U3 (después de R19) | ≈ 10 V | ≈ 10 V |
+| TP12 | +5 V | salida U3 / J2B-2 | 5,00 V | 5,00 V |
+| TP13–TP15 | GND | tierra | 0 V | 0 V |
+
+**Corriente sin amperímetro:** la caída en R_SC = 0,27 Ω da la corriente del riel: I₊ = (TP1 − TP2)/0,27 y I₋ = (TP7 − TP6)/0,27. Mida la tensión entre TP1 y TP2 directamente (roja en TP1, negra en TP2): 0,43 V ↔ 1,6 A; en cortocircuito, 0,08–0,24 V ↔ 0,3–0,9 A.
+
+**Margen del regulador:** TP4 − TP5 es la tensión entrada-salida del LM317. Debe ser ≥ 2 V con RL puesta; si es menor, la salida empieza a caer (red baja).
+
+**R7A ‖ R7B y R15A ‖ R15B:** son dos resistencias de 5,6 Ω / 1 W en paralelo (2,8 Ω). Si consigue una de 2,7 Ω / 1 W, ponga solo R7A (y R15A) y deje R7B (y R15B) vacías.
 
 ## P0. Inspección sin energía
 1. Revise la polaridad de C1, C2A, C2B, C6, C7, C9, C11, C12, C14, C15, C17 y C18, de los diodos y de los LED. En el riel negativo, el positivo de los condensadores va a GND.
