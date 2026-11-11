@@ -1,0 +1,378 @@
+<title>Campo magnético del levitador</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+/* Una sola vista oscura a propósito: las líneas de campo brillan sobre fondo azul noche.
+   Disposición: escenario 16:9 con tarjetas de vidrio encima y controles debajo. */
+:root{
+  --bg:#070b17; --stage:#050914; --fg:#e8eeff; --muted:#8fa0c8; --line:rgba(130,160,255,.18);
+  --glass:rgba(9,15,34,.62); --cyan:#4cc9f0; --pink:#ff5d8f; --amber:#ffb454;
+  --font-body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-head:'Space Grotesk','Inter',system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:14px;line-height:1.5;
+  padding-block:18px 26px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.page{max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.stage{position:relative;width:100%;aspect-ratio:16/9;container-type:inline-size;background:var(--stage);
+  border:1px solid var(--line);border-radius:14px;overflow:hidden;user-select:none;-webkit-user-select:none}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+#co{touch-action:pan-y;cursor:default}
+.vig{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 55%,rgba(0,0,0,0) 55%,rgba(2,4,12,.55) 100%)}
+.card{position:absolute;background:var(--glass);border:1px solid var(--line);border-radius:1.1cqw;
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);padding:1cqw 1.4cqw;pointer-events:none}
+.tl{left:1.6cqw;top:1.6cqw}.tr{right:1.6cqw;top:1.6cqw;text-align:right}
+.bl{left:1.6cqw;bottom:1.6cqw}.br{right:1.6cqw;bottom:1.6cqw;max-width:30cqw}
+.eyebrow{font-size:max(9px,.82cqw);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0}
+h1{font-family:var(--font-head);font-weight:700;font-size:max(15px,2.5cqw);line-height:1.1;margin:.3cqw 0 0;text-wrap:balance}
+.sub{margin:.4cqw 0 0;font-size:max(10px,1cqw);color:var(--muted);max-width:30cqw}
+.big{font-family:var(--font-head);font-weight:700;font-size:max(20px,4.4cqw);line-height:1;font-variant-numeric:tabular-nums;color:var(--fg)}
+.big small{font-size:.45em;font-weight:500;color:var(--muted);margin-left:.2em}
+.note{font-size:max(9px,.9cqw);color:var(--muted);margin:.4cqw 0 0}
+.row{display:grid;grid-template-columns:2.6cqw 14cqw 4.6cqw;align-items:center;gap:.8cqw;margin-top:.55cqw;font-size:max(10px,1cqw);font-variant-numeric:tabular-nums}
+.row b{font-weight:600;color:var(--fg)}
+.bar{height:.9cqw;min-height:5px;border-radius:99px;background:rgba(150,170,255,.14);overflow:hidden}
+.bar i{display:block;height:100%;width:50%;border-radius:99px;background:linear-gradient(90deg,#5b6dff,#4cc9f0)}
+.row span.v{text-align:right;color:var(--fg)}
+.state{font-size:max(11px,1.2cqw);font-weight:600;line-height:1.35;margin:0}
+.state em{font-style:normal;color:var(--amber)}
+.legend{display:flex;gap:1.2cqw;margin-top:.8cqw;font-size:max(9px,.9cqw);color:var(--muted)}
+.legend i{display:inline-block;width:.9cqw;height:.9cqw;min-width:7px;min-height:7px;border-radius:50%;margin-right:.4cqw;vertical-align:baseline}
+.hint{position:absolute;left:50%;bottom:1.7cqw;transform:translateX(-50%);font-size:max(10px,1cqw);color:var(--muted);
+  background:var(--glass);border:1px solid var(--line);border-radius:99px;padding:.4cqw 1.2cqw;pointer-events:none;transition:opacity .8s}
+@container (max-width:700px){
+  .br,.sub,.legend,.eyebrow,.hint,.tr .note{display:none}
+  .card{padding:6px 10px;border-radius:10px}
+  .tl{left:8px;top:8px}.tr{right:8px;top:8px}
+  h1{font-size:15px;margin:0}
+  .big{font-size:22px}
+  .bl{left:8px;right:8px;bottom:8px;display:flex;justify-content:space-between;gap:8px}
+  .bl .row{display:flex;gap:4px;margin:0;font-size:10.5px}
+  .bl .bar{display:none}
+}
+.ctrl{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;padding:12px 16px;border:1px solid var(--line);border-radius:12px;background:#0a1124}
+button{font:inherit;font-weight:500;color:var(--fg);background:#121b36;border:1px solid var(--line);border-radius:10px;padding:8px 14px;cursor:pointer}
+button:hover{border-color:var(--cyan)}
+button[aria-pressed=true]{background:#13304a;border-color:var(--cyan)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.sl{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;flex:1 1 280px;min-width:0}
+.sl label{white-space:nowrap;font-weight:500}
+.sl output{white-space:nowrap;min-width:5ch;text-align:right;font-variant-numeric:tabular-nums;color:var(--cyan);font-weight:600}
+input[type=range]{flex:1 1 160px;min-width:120px;accent-color:var(--cyan)}
+.foot{margin:2px 0 0;font-size:12.5px;color:var(--muted);max-width:110ch}
+</style>
+
+<div class="page">
+  <div class="stage" id="stage">
+    <canvas id="cf" aria-hidden="true"></canvas>
+    <canvas id="co" role="img" aria-label="Corte vertical del levitador con las líneas del campo magnético en movimiento"></canvas>
+    <div class="vig"></div>
+    <div class="card tl">
+      <p class="eyebrow">Levitador magnético · corte por la diagonal</p>
+      <h1>Campo magnético</h1>
+      <p class="sub">Así se mueve el campo de las bobinas y cómo reaccionan sus corrientes cuando el imán cambia de lugar.</p>
+    </div>
+    <div class="card tr">
+      <p class="eyebrow">Altura sobre las bobinas</p>
+      <div class="big"><span id="gapN">30</span><small>mm</small></div>
+      <p class="note">la fija el Vref de cada PID</p>
+    </div>
+    <div class="card bl">
+      <p class="eyebrow">Corriente por bobina</p>
+      <div class="row"><b>B1</b><div class="bar"><i id="b0"></i></div><span class="v" id="v0">0.71 A</span></div>
+      <div class="row"><b>B2</b><div class="bar"><i id="b1"></i></div><span class="v" id="v1">0.71 A</span></div>
+      <div class="row"><b>B3</b><div class="bar"><i id="b2"></i></div><span class="v" id="v2">0.71 A</span></div>
+      <div class="row"><b>B4</b><div class="bar"><i id="b3"></i></div><span class="v" id="v3">0.71 A</span></div>
+    </div>
+    <div class="card br">
+      <p class="state" id="state">Equilibrado</p>
+      <div class="legend"><span><i style="background:var(--cyan)"></i>campo hacia arriba</span><span><i style="background:var(--pink)"></i>hacia abajo</span></div>
+    </div>
+    <div class="hint" id="hint">Arrastra el imán y suéltalo</div>
+  </div>
+
+  <div class="ctrl">
+    <button id="bPush" type="button">Perturbar el imán</button>
+    <button id="bAuto" type="button" aria-pressed="true">Demostración automática</button>
+    <div class="sl"><label for="gap">Altura de levitación (Vref)</label>
+      <input id="gap" type="range" min="25" max="35" step="0.5" value="30"><output id="gapOut" for="gap">30 mm</output></div>
+  </div>
+  <p class="foot">Modelo ilustrativo. Cada bobina (652 vueltas, núcleo Ø6 × 45 mm) se representa por los polos de su núcleo y el imán (Ø25,4 × 2,1 mm, 7,9 g) por un dipolo de 1,1 A·m². La corriente de cada bobina sigue la regla del PID: cuanto más cerca pasa el imán de su sensor, más corriente. El color indica el sentido vertical del campo y el brillo su intensidad (escala logarítmica). Las otras dos bobinas quedan fuera del plano de corte.</p>
+</div>
+
+<script>
+(function(){
+'use strict';
+const $ = id => document.getElementById(id);
+const cf = $('cf'), co = $('co'), stage = $('stage');
+const g = cf.getContext('2d'), o = co.getContext('2d');
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- mundo (mm) ---------- */
+const U0 = -90, W_MM = 180, H_MM = W_MM * 9 / 16, Z0 = -9;
+const D = 26.16, ZS = 47.8;                 // eje de cada bobina a la diagonal y altura del sensor
+const COILS = [{u:-D,v:0,I:.71},{u:D,v:0,I:.71},{u:0,v:D,I:.71},{u:0,v:-D,I:.71}];
+const PHI0 = 8.06e-6, I0 = 0.8, M_MAG = 1.109, EPS_P = 2, EPS_M = 5;
+const GAP_TAB = [[25,.90],[30,.71],[35,.70]];   // corriente de equilibrio de la simulación 3D con el imán real
+const ieq = gp => { const t = GAP_TAB; if (gp <= t[0][0]) return t[0][1]; for (let i = 1; i < t.length; i++) if (gp <= t[i][0]) { const a = t[i-1], b = t[i]; return a[1] + (b[1]-a[1]) * (gp-a[0]) / (b[0]-a[0]); } return t[t.length-1][1]; };
+const zRefOf = gp => 37 + gp + 1.05;
+
+let gap = 30, zRef = zRefOf(gap);
+const mag = {u:0, z:zRef, vu:0, vz:0};
+let dragging = false, simT = 0, auto = !REDUCED, autoResume = 0, hintGone = false;
+
+/* ---------- campo magnético (gauss) en el plano de corte ---------- */
+let fu = 0, fz = 0;
+function field(u, z){
+  let bu = 0, bz = 0;
+  for (let i = 0; i < 4; i++){
+    const c = COILS[i], k = 1e10 * PHI0 * (c.I / I0) / (4 * Math.PI);
+    const du = u - c.u, dv = -c.v;
+    let dz = z - 45, s2 = du*du + dv*dv + dz*dz + EPS_P*EPS_P, inv = k / (s2 * Math.sqrt(s2));
+    bu += du * inv; bz += dz * inv;
+    dz = z; s2 = du*du + dv*dv + dz*dz + EPS_P*EPS_P; inv = -k / (s2 * Math.sqrt(s2));
+    bu += du * inv; bz += dz * inv;
+  }
+  const du = u - mag.u, dz = z - mag.z, s2 = du*du + dz*dz + EPS_M*EPS_M, s = Math.sqrt(s2), s3 = s2 * s, s5 = s3 * s2;
+  const mr = -M_MAG * dz;
+  bu += 1e6 * (3 * mr * du / s5);
+  bz += 1e6 * (3 * mr * dz / s5 + M_MAG / s3);
+  fu = bu; fz = bz;
+}
+/* señal del sensor i (G): crece a medida que el imán se acerca a él (regla de diseño del PID) */
+function sens(i, mu = mag.u, mz = mag.z){
+  const c = COILS[i], du = c.u - mu, dv = c.v, dz = ZS - mz;
+  const s2 = du*du + dv*dv + dz*dz + EPS_M*EPS_M;
+  return 1.5e6 * M_MAG / (s2 * Math.sqrt(s2));
+}
+
+/* ---------- regla del PID: corriente = equilibrio + Kp·(lectura − referencia) ---------- */
+let sRef = [0,0,0,0], Kp = 0;
+function recalRef(){ for (let i = 0; i < 4; i++) sRef[i] = sens(i, 0, zRef); }
+(function calib(){ const z0 = zRefOf(30); for (let i = 0; i < 4; i++) sRef[i] = sens(i, 0, z0);
+  Kp = 0.30 / (sens(1, 8, z0) - sens(1, 0, z0)); recalRef(); })();
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+function updateCurrents(){
+  const e = ieq(gap);
+  for (let i = 0; i < 4; i++) COILS[i].I = clamp(e + Kp * (sens(i) - sRef[i]), 0.08, 1.6);
+}
+
+/* ---------- partículas que fluyen por el campo ---------- */
+let N = 3200, px, pz, page, plife;
+let seed = 12345;
+const rnd = () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+function solid(u, z){
+  if (z < 16) return true;
+  for (let i = 0; i < 2; i++){ const cu = COILS[i].u;
+    if (Math.abs(u - cu) < 18 && z < 37) return true;
+    if (Math.abs(u - cu) < 3 && z < 45) return true;
+    if (Math.abs(u - cu) < 6 && z > 40.5 && z < 48.6) return true; }
+  return Math.abs(u - mag.u) < 12.7 && Math.abs(z - mag.z) < 1.1;
+}
+function spawn(i){
+  for (let t = 0; t < 14; t++){
+    const u = U0 + rnd() * W_MM, z = Z0 + rnd() * H_MM;
+    if (solid(u, z)) continue;
+    field(u, z); const m = Math.hypot(fu, fz);
+    if (rnd() < clamp(Math.pow(m / 6, .45), .07, 1)) { px[i] = u; pz[i] = z; break; }
+  }
+  page[i] = 0; plife[i] = 70 + rnd() * 110;
+}
+function initParticles(){
+  N = stage.clientWidth < 700 ? 1700 : 3200;
+  px = new Float32Array(N); pz = new Float32Array(N); page = new Float32Array(N); plife = new Float32Array(N);
+  for (let i = 0; i < N; i++){ px[i] = U0 + rnd() * W_MM; pz[i] = Z0 + rnd() * H_MM; spawn(i); page[i] = rnd() * plife[i]; }
+}
+const NC = 9, NT = 6, bins = [], binCol = [];
+for (let c = 0; c < NC; c++) for (let t = 0; t < NT; t++){
+  const cs = -1 + 2 * c / (NC - 1), tt = t / (NT - 1);
+  binCol.push('hsla(' + (260 - 72 * cs).toFixed(0) + ',96%,' + (30 + 42 * tt).toFixed(0) + '%,' + (0.22 + 0.78 * tt).toFixed(2) + ')');
+  bins.push([]);
+}
+const LO = Math.log10(1.2), HI = Math.log10(420);
+
+let cw = 0, ch = 0, S = 1, dpr = 1;
+const X = u => (u - U0) * S, Y = z => ch - (z - Z0) * S;
+function resize(){
+  dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+  const w = stage.clientWidth, h = stage.clientHeight;
+  cw = Math.round(w * dpr); ch = Math.round(h * dpr); S = cw / W_MM;
+  for (const c of [cf, co]) { c.width = cw; c.height = ch; }
+  g.fillStyle = '#050914'; g.fillRect(0, 0, cw, ch);
+  if (!px || (w < 700) !== (N === 1700)) initParticles();
+  for (let k = 0; k < 90; k++) stepParticles(1, .06);
+  drawObjects();
+}
+
+function stepParticles(k, fade){
+  g.globalCompositeOperation = 'source-over';
+  g.fillStyle = 'rgba(5,9,20,' + fade + ')'; g.fillRect(0, 0, cw, ch);
+  for (let b = 0; b < bins.length; b++) bins[b].length = 0;
+  for (let i = 0; i < N; i++){
+    const u = px[i], z = pz[i];
+    field(u, z); const m = Math.hypot(fu, fz) + 1e-9;
+    const t = clamp((Math.log10(m) - LO) / (HI - LO), 0, 1);
+    const sp = (0.2 + 0.4 * t) * k;
+    const nu = u + fu / m * sp, nz = z + fz / m * sp;
+    const ci = Math.round((fz / m + 1) * 0.5 * (NC - 1)), ti = Math.round(t * (NT - 1));
+    const arr = bins[ci * NT + ti]; arr.push(X(u), Y(z), X(nu), Y(nz));
+    px[i] = nu; pz[i] = nz; page[i] += k;
+    if (page[i] > plife[i] || nu < U0 || nu > U0 + W_MM || nz < Z0 || nz > Z0 + H_MM || solid(nu, nz)) spawn(i);
+  }
+  g.globalCompositeOperation = 'lighter'; g.lineCap = 'round'; g.lineWidth = 1.35 * dpr;
+  for (let b = 0; b < bins.length; b++){ const a = bins[b]; if (!a.length) continue;
+    g.strokeStyle = binCol[b]; g.beginPath();
+    for (let j = 0; j < a.length; j += 4){ g.moveTo(a[j], a[j+1]); g.lineTo(a[j+2], a[j+3]); }
+    g.stroke(); }
+}
+
+/* ---------- objetos (capa superior) ---------- */
+function R(u0, z0, u1, z1){ return [X(u0), Y(z1), (u1 - u0) * S, (z1 - z0) * S]; }
+function arrow(x, y0, y1, color, lw){
+  const dir = Math.sign(y1 - y0) || 1, h = 5 * dpr;
+  o.strokeStyle = color; o.fillStyle = color; o.lineWidth = lw; o.lineCap = 'round';
+  o.beginPath(); o.moveTo(x, y0); o.lineTo(x, y1 - dir * h * .6); o.stroke();
+  o.beginPath(); o.moveTo(x, y1); o.lineTo(x - h * .8, y1 - dir * h * 1.5); o.lineTo(x + h * .8, y1 - dir * h * 1.5); o.closePath(); o.fill();
+}
+function halo(x, y, r, rgb, a){
+  const gr = o.createRadialGradient(x, y, 0, x, y, r);
+  gr.addColorStop(0, 'rgba(' + rgb + ',' + a + ')'); gr.addColorStop(1, 'rgba(' + rgb + ',0)');
+  o.fillStyle = gr; o.beginPath(); o.arc(x, y, r, 0, 6.2832); o.fill();
+}
+function drawObjects(){
+  o.clearRect(0, 0, cw, ch);
+  o.globalCompositeOperation = 'source-over';
+  /* soporte */
+  let r = R(-90, 0, 90, 16), gr = o.createLinearGradient(0, r[1], 0, r[1] + r[3]);
+  gr.addColorStop(0, '#26324f'); gr.addColorStop(1, '#141b31');
+  o.fillStyle = gr; o.fillRect(...r);
+  o.fillStyle = 'rgba(150,175,255,.35)'; o.fillRect(r[0], r[1], r[2], Math.max(1, dpr));
+  /* bobinas 3 y 4: detrás y delante del plano */
+  o.save(); o.setLineDash([5 * dpr, 4 * dpr]); o.lineWidth = Math.max(1, dpr); o.strokeStyle = 'rgba(160,180,240,.30)';
+  o.strokeRect(...R(-16.5, 11, 16.5, 34)); o.strokeRect(...R(-3, 0, 3, 45)); o.restore();
+  o.fillStyle = 'rgba(160,180,240,.45)'; o.font = (10.5 * dpr) + 'px Inter,sans-serif'; o.textAlign = 'center';
+  o.fillText('B3 y B4', X(0), Y(23)); o.fillText('fuera del corte', X(0), Y(23) + 13 * dpr);
+  /* bobinas 1 y 2 */
+  for (let i = 0; i < 2; i++){
+    const cu = COILS[i].u, I = COILS[i].I;
+    o.globalCompositeOperation = 'lighter';
+    halo(X(cu), Y(45), 17 * S * (.5 + .6 * I), '76,201,240', .16 + .30 * I);
+    o.globalCompositeOperation = 'source-over';
+    o.fillStyle = '#1d2744'; o.strokeStyle = 'rgba(150,175,255,.35)'; o.lineWidth = Math.max(1, dpr);
+    for (const [a, b] of [[8, 11], [34, 37]]) { o.fillRect(...R(cu - 18, a, cu + 18, b)); o.strokeRect(...R(cu - 18, a, cu + 18, b)); }
+    r = R(cu - 16.5, 11, cu + 16.5, 34); gr = o.createLinearGradient(r[0], 0, r[0] + r[2], 0);
+    gr.addColorStop(0, '#7a431c'); gr.addColorStop(.5, '#d58a45'); gr.addColorStop(1, '#7a431c');
+    o.fillStyle = gr; o.fillRect(...r);
+    o.strokeStyle = 'rgba(40,18,4,.35)'; o.lineWidth = 1;
+    o.beginPath(); for (let z = 12; z < 34; z += 1.6) { o.moveTo(r[0], Y(z)); o.lineTo(r[0] + r[2], Y(z)); } o.stroke();
+    r = R(cu - 3, 0, cu + 3, 45); gr = o.createLinearGradient(r[0], 0, r[0] + r[2], 0);
+    gr.addColorStop(0, '#5d6a88'); gr.addColorStop(.45, '#aebbd8'); gr.addColorStop(1, '#5d6a88');
+    o.fillStyle = gr; o.fillRect(...r);
+    r = R(cu - 6, 40.5, cu + 6, 47); o.fillStyle = '#d9a441'; o.fillRect(...r);
+    o.fillStyle = 'rgba(0,0,0,.18)'; o.fillRect(r[0], r[1] + r[3] * .72, r[2], r[3] * .28);
+    o.fillStyle = '#0d111c'; o.fillRect(...R(cu - 2, 47, cu + 2, 48.6));
+  }
+  /* plano de las bobinas y cota de altura */
+  const zb = mag.z - 1.05, gp = zb - 37;
+  o.save(); o.setLineDash([3 * dpr, 5 * dpr]); o.strokeStyle = 'rgba(160,180,240,.28)'; o.lineWidth = Math.max(1, dpr);
+  o.beginPath(); o.moveTo(X(-90), Y(37)); o.lineTo(X(90), Y(37)); o.stroke(); o.restore();
+  const cx = X(mag.u - 19);
+  o.strokeStyle = 'rgba(255,180,84,.9)'; o.lineWidth = Math.max(1.2, 1.3 * dpr); o.beginPath();
+  o.moveTo(cx, Y(37)); o.lineTo(cx, Y(zb)); o.moveTo(cx - 4 * dpr, Y(37)); o.lineTo(cx + 4 * dpr, Y(37));
+  o.moveTo(cx - 4 * dpr, Y(zb)); o.lineTo(cx + 4 * dpr, Y(zb)); o.stroke();
+  o.fillStyle = '#ffb454'; o.font = '600 ' + (12 * dpr) + 'px Inter,sans-serif'; o.textAlign = 'right';
+  o.fillText(gp.toFixed(0) + ' mm', cx - 7 * dpr, (Y(37) + Y(zb)) / 2 + 4 * dpr);
+  /* imán */
+  r = R(mag.u - 12.7, mag.z - 1.05, mag.u + 12.7, mag.z + 1.05);
+  o.globalCompositeOperation = 'lighter';
+  halo(X(mag.u), Y(mag.z - 1), 17 * S, '255,93,143', .30);
+  halo(X(mag.u), Y(mag.z + 1), 14 * S, '90,120,255', .22);
+  o.globalCompositeOperation = 'source-over';
+  gr = o.createLinearGradient(0, r[1], 0, r[1] + r[3]); gr.addColorStop(0, '#5b86ff'); gr.addColorStop(.5, '#c9d4ff'); gr.addColorStop(.52, '#ffc2d2'); gr.addColorStop(1, '#ff4d78');
+  o.fillStyle = gr; o.fillRect(...r);
+  o.strokeStyle = 'rgba(255,255,255,.55)'; o.lineWidth = Math.max(1, dpr); o.strokeRect(...r);
+  o.font = '700 ' + (11 * dpr) + 'px Inter,sans-serif'; o.textAlign = 'left';
+  o.fillStyle = '#8fb0ff'; o.fillText('S', X(mag.u + 14.5), Y(mag.z + 1.05) + 2 * dpr);
+  o.fillStyle = '#ff7a9c'; o.fillText('N', X(mag.u + 14.5), Y(mag.z - 1.05) + 11 * dpr);
+  /* fuerzas sobre el imán */
+  const sumI = COILS.reduce((a, c) => a + c.I, 0), dEq = zRef - 22.5, d = Math.max(20, mag.z - 22.5);
+  const fr = clamp(sumI / (4 * ieq(gap)) * Math.pow(dEq / d, 4), 0, 2.2), ax = X(mag.u + 21);
+  const yc = Y(mag.z);
+  arrow(ax, yc + 2 * dpr, yc + 2 * dpr + 11 * S, 'rgba(210,220,245,.9)', 2 * dpr);
+  arrow(ax + 7 * dpr, yc - 2 * dpr, yc - 2 * dpr - 11 * S * fr, '#4cc9f0', 2 * dpr);
+  o.font = '500 ' + (10 * dpr) + 'px Inter,sans-serif'; o.fillStyle = 'rgba(210,220,245,.8)'; o.textAlign = 'left';
+  o.fillText('peso', ax + 14 * dpr, yc + 9 * S);
+  o.fillStyle = '#4cc9f0'; o.fillText('fuerza magnética', ax + 14 * dpr, yc - 8 * S * fr - 2 * dpr);
+}
+
+/* ---------- dinámica del imán ---------- */
+const EV = [{t:4.5,vu:80,vz:0},{t:10,vu:-80,vz:0},{t:15,vu:35,vz:-30},{t:19.5,vu:-55,vz:26}], PERIOD = 22;
+let evIdx = 0, lastCycle = 0;
+function physics(dt){
+  simT += dt;
+  if (auto && !dragging && simT > autoResume){
+    const cyc = Math.floor(simT / PERIOD), tt = simT - cyc * PERIOD;
+    if (cyc !== lastCycle) { lastCycle = cyc; evIdx = 0; }
+    while (evIdx < EV.length && tt >= EV[evIdx].t) { mag.vu += EV[evIdx].vu; mag.vz += EV[evIdx].vz; evIdx++; }
+  }
+  if (dragging) return;
+  const wu = 5.6, zu = .32, wz = 6.6, zz = .42;
+  const au = -wu * wu * mag.u - 2 * zu * wu * mag.vu, az = -wz * wz * (mag.z - zRef) - 2 * zz * wz * mag.vz;
+  mag.vu += au * dt; mag.vz += az * dt; mag.u += mag.vu * dt; mag.z += mag.vz * dt;
+}
+
+/* ---------- panel de datos ---------- */
+let hudTick = 0, lastState = '';
+function hud(){
+  for (let i = 0; i < 4; i++){ $('b' + i).style.width = clamp(COILS[i].I / 1.5 * 100, 3, 100) + '%'; $('v' + i).textContent = COILS[i].I.toFixed(2) + ' A'; }
+  $('gapN').textContent = (mag.z - 1.05 - 37).toFixed(0);
+  const du = mag.u, dz = mag.z - zRef; let s;
+  if (Math.abs(du) < 1.2 && Math.abs(dz) < 1.2) s = 'Equilibrado';
+  else if (Math.abs(du) * 1.2 > Math.abs(dz)) s = du > 0 ? 'Imán hacia B2: <em>sube la corriente de B2</em> y lo empuja de vuelta' : 'Imán hacia B1: <em>sube la corriente de B1</em> y lo empuja de vuelta';
+  else s = dz < 0 ? 'Imán más cerca: <em>suben las corrientes</em> y crece la repulsión' : 'Imán más lejos: <em>bajan las corrientes</em> y la repulsión cede';
+  if (s !== lastState) { $('state').innerHTML = s; lastState = s; }
+}
+
+function advance(dt, sub){
+  for (let i = 0; i < sub; i++){
+    physics(dt / sub); updateCurrents();
+    stepParticles(dt * 60 / sub * (REDUCED ? .5 : 1), .06);
+  }
+  drawObjects();
+  if ((hudTick++ & 3) === 0) hud();
+}
+
+/* ---------- interacción ---------- */
+function toWorld(ev){
+  const b = co.getBoundingClientRect();
+  return { u: U0 + (ev.clientX - b.left) / b.width * W_MM, z: Z0 + (1 - (ev.clientY - b.top) / b.height) * H_MM };
+}
+const onMagnet = p => Math.abs(p.u - mag.u) < 18 && Math.abs(p.z - mag.z) < 8;
+co.addEventListener('pointerdown', ev => { const p = toWorld(ev); if (!onMagnet(p)) return;
+  dragging = true; co.setPointerCapture(ev.pointerId); co.style.cursor = 'grabbing'; mag.vu = mag.vz = 0; hideHint(); ev.preventDefault(); });
+co.addEventListener('pointermove', ev => { const p = toWorld(ev);
+  if (dragging) { mag.u += (clamp(p.u, -48, 48) - mag.u) * .45; mag.z += (clamp(p.z, 47, 86) - mag.z) * .45; }
+  else co.style.cursor = onMagnet(p) ? 'grab' : 'default'; });
+const endDrag = () => { if (dragging) { dragging = false; co.style.cursor = 'grab'; autoResume = simT + 4; } };
+co.addEventListener('pointerup', endDrag); co.addEventListener('pointercancel', endDrag);
+function hideHint(){ if (!hintGone) { hintGone = true; $('hint').style.opacity = 0; } }
+
+$('bPush').addEventListener('click', () => { const s = Math.random() < .5 ? -1 : 1; mag.vu += s * 85; mag.vz += (Math.random() - .5) * 30; hideHint(); });
+$('bAuto').addEventListener('click', e => { auto = !auto; e.currentTarget.setAttribute('aria-pressed', auto); autoResume = simT + 1; });
+$('bAuto').setAttribute('aria-pressed', auto);
+$('gap').addEventListener('input', e => { gap = +e.target.value; zRef = zRefOf(gap); recalRef(); $('gapOut').textContent = gap.toFixed(1).replace(/\.0$/, '') + ' mm'; hideHint(); });
+
+new ResizeObserver(resize).observe(stage);
+resize();
+for (let i = 0; i < 140; i++) advance(1 / 60, 1);       // precalentar: el primer cuadro ya tiene estelas
+
+window.__sim = { advance, mag, COILS, reset(){ simT = 0; evIdx = 0; lastCycle = 0; autoResume = 0; mag.u = 0; mag.z = zRef; mag.vu = mag.vz = 0; }, get gap(){ return gap; }, Kp: () => Kp, sens, ieq };
+if (!window.__manual){
+  let last = performance.now();
+  (function loop(now){ const dt = Math.min(.05, (now - last) / 1000); last = now; advance(dt, 1); requestAnimationFrame(loop); })(last);
+}
+})();
+</script>
