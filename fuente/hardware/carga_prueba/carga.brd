@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE eagle SYSTEM "eagle.dtd">
+<eagle version="9.6.2">
+<drawing>
+<settings>
+<setting alwaysvectorfont="no"/>
+<setting verticaltext="up"/>
+</settings>
+<grid distance="1.27" unitdist="mm" unit="mm" style="lines" multiple="1" display="yes" altdistance="0.635" altunitdist="mm" altunit="mm"/>
+<layers>
+<layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
+<layer number="16" name="Bottom" color="1" fill="1" visible="yes" active="yes"/>
+<layer number="17" name="Pads" color="2" fill="1" visible="yes" active="yes"/>
+<layer number="18" name="Vias" color="2" fill="1" visible="yes" active="yes"/>
+<layer number="19" name="Unrouted" color="6" fill="1" visible="yes" active="yes"/>
+<layer number="20" name="Dimension" color="15" fill="1" visible="yes" active="yes"/>
+<layer number="21" name="tPlace" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="22" name="bPlace" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="23" name="tOrigins" color="15" fill="1" visible="yes" active="yes"/>
+<layer number="24" name="bOrigins" color="15" fill="1" visible="yes" active="yes"/>
+<layer number="25" name="tNames" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="26" name="bNames" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="27" name="tValues" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="28" name="bValues" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="29" name="tStop" color="7" fill="3" visible="no" active="yes"/>
+<layer number="30" name="bStop" color="7" fill="6" visible="no" active="yes"/>
+<layer number="31" name="tCream" color="7" fill="4" visible="no" active="yes"/>
+<layer number="32" name="bCream" color="7" fill="5" visible="no" active="yes"/>
+<layer number="33" name="tFinish" color="6" fill="3" visible="no" active="yes"/>
+<layer number="34" name="bFinish" color="6" fill="6" visible="no" active="yes"/>
+<layer number="35" name="tGlue" color="7" fill="4" visible="no" active="yes"/>
+<layer number="36" name="bGlue" color="7" fill="5" visible="no" active="yes"/>
+<layer number="37" name="tTest" color="7" fill="1" visible="no" active="yes"/>
+<layer number="38" name="bTest" color="7" fill="1" visible="no" active="yes"/>
+<layer number="39" name="tKeepout" color="4" fill="11" visible="yes" active="yes"/>
+<layer number="40" name="bKeepout" color="1" fill="11" visible="yes" active="yes"/>
+<layer number="41" name="tRestrict" color="4" fill="10" visible="yes" active="yes"/>
+<layer number="42" name="bRestrict" color="1" fill="10" visible="yes" active="yes"/>
+<layer number="43" name="vRestrict" color="2" fill="10" visible="yes" active="yes"/>
+<layer number="44" name="Drills" color="7" fill="1" visible="no" active="yes"/>
+<layer number="45" name="Holes" color="7" fill="1" visible="no" active="yes"/>
+<layer number="46" name="Milling" color="3" fill="1" visible="no" active="yes"/>
+<layer number="47" name="Measures" color="7" fill="1" visible="no" active="yes"/>
+<layer number="48" name="Document" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="49" name="Reference" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="51" name="tDocu" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="52" name="bDocu" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="91" name="Nets" color="2" fill="1" visible="yes" active="yes"/>
+<layer number="92" name="Busses" color="1" fill="1" visible="yes" active="yes"/>
+<layer number="93" name="Pins" color="2" fill="1" visible="no" active="yes"/>
+<layer number="94" name="Symbols" color="4" fill="1" visible="yes" active="yes"/>
+<layer number="95" name="Names" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="96" name="Values" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="97" name="Info" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="98" name="Guide" color="6" fill="1" visible="yes" active="yes"/>
+</layers>
+<board>
+<description>Carga de prueba R_L 10/20 ohm para la fuente +-16 V (una cara)</description>
+<plain>
+<wire x1="0" y1="0" x2="95" y2="0" width="0" layer="20"/>
+<wire x1="95" y1="0" x2="95" y2="95" width="0" layer="20"/>
+<wire x1="95" y1="95" x2="0" y2="95" width="0" layer="20"/>
+<wire x1="0" y1="95" x2="0" y2="0" width="0" layer="20"/>
+<hole x="4.5" y="4.5" drill="3.2"/>
+<hole x="90.5" y="4.5" drill="3.2"/>
+<hole x="4.5" y="90.5" drill="3.2"/>
+<hole x="90.5" y="90.5" drill="3.2"/>
+<text x="52" y="50" size="3" layer="16" rot="MR0" align="center">CARGA RL 10/20 OHM</text>
+<text x="52" y="30" size="2" layer="16" rot="MR0" align="center">B. Campino - U. Ibague</text>
+<text x="14" y="88" size="1.6" layer="21" align="center-left">J1: a J4 (+16) o J5 (-16)</text>
+<text x="12" y="10" size="1.4" layer="21" align="center-left">JP1 puenteado = 10 ohm / 1,6 A; abierto = 20 ohm / 0,8 A</text>
+</plain>
+<libraries>
+<library name="carga">
+<packages>
+<package name="R10W">
+<description>Resistencia de cemento 10 W (cuerpo ~49 x 10 x 9 mm), patas a 55,88 mm; montar levantada 5-10 mm</description>
+<pad name="1" x="0" y="0" drill="1.2" diameter="3.2" shape="square"/>
+<pad name="2" x="55.88" y="0" drill="1.2" diameter="3.2" shape="round"/>
+<wire x1="2.44" y1="-5.5" x2="53.44" y2="-5.5" width="0.2" layer="21"/>
+<wire x1="53.44" y1="-5.5" x2="53.44" y2="5.5" width="0.2" layer="21"/>
+<wire x1="53.44" y1="5.5" x2="2.44" y2="5.5" width="0.2" layer="21"/>
+<wire x1="2.44" y1="5.5" x2="2.44" y2="-5.5" width="0.2" layer="21"/>
+<text x="27.94" y="5.9" size="1.6" layer="25" align="bottom-center">&gt;NAME</text>
+<text x="27.94" y="-5.9" size="1.2" layer="27" align="top-center">&gt;VALUE</text>
+</package>
+<package name="TERM2">
+<description>Bornera de tornillo 2 vías, paso 5,08 mm</description>
+<pad name="1" x="0" y="0" drill="1.3" diameter="3" shape="square"/>
+<pad name="2" x="5.08" y="0" drill="1.3" diameter="3" shape="round"/>
+<wire x1="-2.5" y1="-5.2" x2="7.58" y2="-5.2" width="0.2" layer="21"/>
+<wire x1="7.58" y1="-5.2" x2="7.58" y2="5.6" width="0.2" layer="21"/>
+<wire x1="7.58" y1="5.6" x2="-2.5" y2="5.6" width="0.2" layer="21"/>
+<wire x1="-2.5" y1="5.6" x2="-2.5" y2="-5.2" width="0.2" layer="21"/>
+<text x="2.54" y="6" size="1.6" layer="25" align="bottom-center">&gt;NAME</text>
+<text x="2.54" y="-5.6" size="1.2" layer="27" align="top-center">&gt;VALUE</text>
+</package>
+</packages>
+</library>
+</libraries>
+<attributes>
+</attributes>
+<variantdefs>
+</variantdefs>
+<classes>
+<class number="0" name="default" width="2.5" drill="1.2"/>
+</classes>
+<designrules name="default">
+<param name="layerSetup" value="(1*16)"/>
+<param name="mdWireWire" value="0.4mm"/>
+<param name="mdWirePad" value="0.4mm"/>
+<param name="mdPadPad" value="0.4mm"/>
+<param name="mdCopperDimension" value="1mm"/>
+<param name="msWidth" value="2.5mm"/>
+</designrules>
+<elements>
+<element name="R1" library="carga" package="R10W" value="10R 10W" x="25" y="80"/>
+<element name="R2" library="carga" package="R10W" value="10R 10W" x="80.88" y="60" rot="R180"/>
+<element name="R3" library="carga" package="R10W" value="10R 10W" x="25" y="40"/>
+<element name="R4" library="carga" package="R10W" value="10R 10W" x="80.88" y="20" rot="R180"/>
+<element name="J1" library="carga" package="TERM2" value="A J4 o J5" x="8" y="80" rot="R270"/>
+<element name="JP1" library="carga" package="TERM2" value="SEL 10/20R" x="8" y="25.08" rot="R270"/>
+</elements>
+<signals>
+<signal name="X">
+<contactref element="J1" pad="1"/>
+<contactref element="R1" pad="1"/>
+<contactref element="JP1" pad="1"/>
+<wire x1="8" y1="80" x2="25" y2="80" width="2.5" layer="16"/>
+<wire x1="8" y1="80" x2="5.5" y2="80" width="2.5" layer="16"/>
+<wire x1="5.5" y1="80" x2="3.5" y2="78" width="2.5" layer="16"/>
+<wire x1="3.5" y1="78" x2="3.5" y2="27.08" width="2.5" layer="16"/>
+<wire x1="3.5" y1="27.08" x2="5.5" y2="25.08" width="2.5" layer="16"/>
+<wire x1="5.5" y1="25.08" x2="8" y2="25.08" width="2.5" layer="16"/>
+</signal>
+<signal name="GND">
+<contactref element="J1" pad="2"/>
+<contactref element="R2" pad="2"/>
+<contactref element="R3" pad="1"/>
+<wire x1="8" y1="74.92" x2="13" y2="74.92" width="2.5" layer="16"/>
+<wire x1="13" y1="74.92" x2="15" y2="72.92" width="2.5" layer="16"/>
+<wire x1="15" y1="72.92" x2="15" y2="42" width="2.5" layer="16"/>
+<wire x1="15" y1="42" x2="17" y2="40" width="2.5" layer="16"/>
+<wire x1="17" y1="40" x2="25" y2="40" width="2.5" layer="16"/>
+<wire x1="15" y1="62" x2="17" y2="60" width="2.5" layer="16"/>
+<wire x1="17" y1="60" x2="25" y2="60" width="2.5" layer="16"/>
+</signal>
+<signal name="MA">
+<contactref element="R1" pad="2"/>
+<contactref element="R2" pad="1"/>
+<wire x1="80.88" y1="80" x2="80.88" y2="60" width="2.5" layer="16"/>
+</signal>
+<signal name="MB">
+<contactref element="R3" pad="2"/>
+<contactref element="R4" pad="1"/>
+<wire x1="80.88" y1="40" x2="80.88" y2="20" width="2.5" layer="16"/>
+</signal>
+<signal name="Y">
+<contactref element="R4" pad="2"/>
+<contactref element="JP1" pad="2"/>
+<wire x1="8" y1="20" x2="25" y2="20" width="2.5" layer="16"/>
+</signal>
+</signals>
+</board>
+</drawing>
+</eagle>

@@ -48,7 +48,7 @@ Valores comerciales comunes en tiendas de electrónica de Colombia. Las referenc
 | J4 J5 | Bornera de tornillo | 2 vías | paso 5.08 mm | 2 | Conexión removible de la carga de prueba RL |  |  |
 | J3 | Regleta macho | 1x3 | 2.54 mm | 1 | Puntos de prueba V_RAW+ / GND / V_RAW− (osciloscopio) |  |  |
 | TP1-TP15 | Punto de prueba | — | pad de 2.6 mm; alambre de cobre en U o pin de regleta soldado | 15 | Medir con el multímetro (ver `pruebas/plan_de_pruebas.md`) | Medir directo sobre el pad | Opcional: un trozo de alambre 22 AWG en U para enganchar el caimán |
-| RL | Resistencia de cemento para la carga de prueba (externa) | 10 Ω | 10 W; 4 unidades en serie-paralelo (2 ramas de 2 en serie) = 10 Ω, 6.4 W cada una | 4 | Comprobar 1.6 A en cada riel | 4 x 39 Ω 10 W en paralelo (9.75 Ω) o una de 10 Ω ≥ 30 W de aluminio | Se conecta en J4 o J5 solo para la prueba; se calienta (separarlas y no tocarlas) |
+| RL | Resistencia de cemento para la carga de prueba (externa) | 10 Ω | 10 W; 4 unidades en serie-paralelo (2 ramas de 2 en serie) = 10 Ω, 6.4 W cada una | 4 | Comprobar 1.6 A en cada riel | 4 x 39 Ω 10 W en paralelo (9.75 Ω) o una de 10 Ω ≥ 30 W de aluminio | Se montan en la placa `carga_prueba/` (95 × 95 mm, + 2 borneras de 2 vías): JP1 puenteado = 10 Ω / 1,6 A, abierto = 20 Ω / 0,8 A. Se conecta en J4 o J5 solo para la prueba |
 | — | Disipador de aluminio aletado | ≤ 2 °C/W | para 3 TO-220 + 1 TO-126 | 2 | Uno por riel (borde superior e inferior) |  | P. ej. perfil de 100 x 60 x 30 mm |
 | — | Kit de aislamiento | mica + buje + tornillo M3 | TO-220 / TO-126 | 8 | Aislar cada pieza del disipador | lámina de silicona | Comprobar aleta-disipador abierto |
 | — | Grasa térmica | — | — | 1 |  |  |  |
