@@ -4,7 +4,7 @@
 ![Op-amp](https://img.shields.io/badge/op--amp-LM741-informational)
 ![Simulación](https://img.shields.io/badge/simulaci%C3%B3n-Proteus-orange)
 ![Informe](https://img.shields.io/badge/informe-LaTeX%20(IEEEtran)-brightgreen)
-![Estado](https://img.shields.io/badge/estado-pruebas%20pr%C3%A1cticas%20realizadas-brightgreen)
+![Estado](https://img.shields.io/badge/estado-4%20PID%20montados%20%C2%B7%20levitaci%C3%B3n%20pendiente-orange)
 
 Diseño, cálculo, simulación, implementación y pruebas de un controlador **PID 100 % analógico**, construido solo con amplificadores operacionales LM741, para estabilizar la posición de un objeto en levitación por atracción electromagnética. El repositorio incluye el informe técnico completo (PDF y código fuente LaTeX), las figuras, la lista de materiales, las mediciones del montaje físico y su comparación con la teoría.
 
@@ -145,7 +145,13 @@ Voltaje teórico vs. práctico por etapa, para error mínimo, medio y máximo (`
 │       └── pruebas/                     # fotografías del montaje y de las mediciones
 ├── docs/
 │   ├── nomenclatura.md                  # nomenclatura vigente y equivalencias con la versión anterior
-│   └── errata-y-pendientes.md           # inconsistencias detectadas en el informe y tareas abiertas
+│   ├── errata-y-pendientes.md           # inconsistencias detectadas en el informe y tareas abiertas
+│   ├── estado_del_proyecto.md           # estado actual, qué falta y requisitos de alimentación
+│   ├── plan_2027.md                     # plan para lograr la levitación estable
+│   ├── guia_depuracion.md               # diagnósticos y pruebas de un PID
+│   ├── resumen_para_posgrado.md         # resumen del proyecto (ES/EN)
+│   ├── simulacion_campo/                # visualización interactiva del campo y video
+│   └── poster_metie/                    # póster de la muestra METIE 2026
 ├── hardware/
 │   ├── lista_de_materiales.md
 │   ├── lista_de_materiales.csv
@@ -153,6 +159,7 @@ Voltaje teórico vs. práctico por etapa, para error mínimo, medio y máximo (`
 ├── simulacion/
 │   └── proteus/                         # proyecto de Proteus (PID + etapa de potencia)
 ├── pruebas/
+│   ├── montaje/                         # fotos del montaje de los 4 PID con la base 3D (nov. 2026)
 │   └── levitacion/                      # fotos de los 4 PID levitando y Vref por altura (pendiente)
 ├── datos/
 │   └── mediciones_practicas.csv         # teórico vs. práctico, con error absoluto y relativo
@@ -171,6 +178,13 @@ latexmk -pdf informe_pid_analogico.tex
 ```
 
 ## Estado y próximos pasos
+
+**Noviembre de 2026:** los 4 PID, la etapa de potencia y la base impresa en 3D están montados y funcionando por separado, pero la levitación estable a 3 cm quedó pendiente: falta un método rápido para fijar los `V_ref` y los sensores ven una variación muy pequeña del campo. El trabajo continúa en 2027; ver [`docs/estado_del_proyecto.md`](docs/estado_del_proyecto.md), [`docs/plan_2027.md`](docs/plan_2027.md) y [`docs/guia_depuracion.md`](docs/guia_depuracion.md).
+
+<p align="center">
+  <img src="pruebas/montaje/montaje_2026-11_banco_4_pid.jpg" alt="Banco con los 4 PID y la base impresa en 3D" width="80%">
+</p>
+
 
 - [x] Diseño y cálculo de cada etapa
 - [x] Simulación en Proteus
