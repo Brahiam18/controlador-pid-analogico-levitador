@@ -134,6 +134,23 @@ Voltaje teórico vs. práctico por etapa, para error mínimo, medio y máximo (`
 |:-:|:-:|
 | <img src="informe/figuras/pruebas/montaje_protoboard.jpg" alt="Protoboard" width="100%"> | <img src="informe/figuras/pruebas/medicion_diferenciador.jpg" alt="Medición del diferenciador" width="100%"> |
 
+## Simulación del campo y póster
+
+Modelo del campo magnético de las 4 bobinas y del imán (aproximación de dipolos, solvers propios en Python, no FEMM) para estimar la corriente de equilibrio: unos **0,7 A por bobina a 30 mm** (±15 %). Es una estimación ilustrativa; **la levitación todavía no se ha logrado en el montaje**.
+
+<p align="center">
+  <a href="docs/simulacion_campo/campo_levitador_720p.mp4"><img src="docs/simulacion_campo/vista_previa.jpg" alt="Video de la simulación del campo" width="70%"></a>
+</p>
+
+- Video (720p): [`docs/simulacion_campo/campo_levitador_720p.mp4`](docs/simulacion_campo/campo_levitador_720p.mp4)
+- Visor interactivo 3D: [`docs/simulacion_campo/campo_levitador.html`](docs/simulacion_campo/campo_levitador.html) (descargar y abrir en el navegador)
+- Notas del modelo: [`docs/simulacion_campo/README.md`](docs/simulacion_campo/README.md)
+- Póster presentado en METIE 2026: [PDF](docs/poster_metie/Poster_Levitador_METIE.pdf) · [PPTX](docs/poster_metie/Poster_Levitador_METIE.pptx)
+
+<p align="center">
+  <a href="docs/poster_metie/Poster_Levitador_METIE.pdf"><img src="docs/poster_metie/poster_vista_previa.png" alt="Póster METIE 2026" width="60%"></a>
+</p>
+
 ## Estructura del repositorio
 
 ```text
